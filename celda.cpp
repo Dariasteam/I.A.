@@ -11,12 +11,12 @@ celda::celda(int i_, int j_) : QLabel(){
     i=i_;
     j=j_;
     this->setMinimumSize(5,5);
-    pix = new QPixmap("./recursos/suelo.png");
+    pix = new QPixmap("../I.A./recursos/suelo.png");
     this->setPixmap(pix->scaled(this->width(),this->height()));
 }
 
 void celda::mouseMoveEvent(QMouseEvent* A){
-   pix = new QPixmap("./recursos/muro.png");
+   pix = new QPixmap("../I.A./recursos/muro.png");
    this->setPixmap(pix->scaled(this->width(),this->height()));
 }
 
