@@ -20,8 +20,15 @@ void celda::resizeEvent(QResizeEvent* E){
    this->setPixmap(pix->scaled(this->width(),this->height()));
 }
 
-void celda::cambiarTipo(){
-    !atravesable_;
-    pix = new QPixmap("../I.A./recursos/muro.png");
-    this->setPixmap(pix->scaled(this->width(),this->height()));
+void celda::cambiarTipo(bool b){
+    cout<<"b= "<<b<<endl;
+    if(b){
+        pix = new QPixmap("../I.A./recursos/muro.png");
+        this->setPixmap(pix->scaled(this->width(),this->height()));
+        atravesable_=false;
+    }else{
+        pix = new QPixmap("../I.A./recursos/suelo.png");
+        this->setPixmap(pix->scaled(this->width(),this->height()));
+        atravesable_=true;
+    }
 }

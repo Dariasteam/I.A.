@@ -16,12 +16,14 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void mouseMoveEvent(QMouseEvent *);
+    void mousePressEvent(QMouseEvent* );
 private:
     Ui::MainWindow *ui;
-    QWidget* widPrincipal_;
-    QGridLayout* layPrincipal_;
-    int c_;
-    int f_;
+    QWidget* widPrincipal_;                     //widget de mapa
+    QGridLayout* layPrincipal_;                 //layout de mapa
+    int c_;                                     //columnas de la matriz
+    int f_;                                     //filas de la matriz
+    bool pintar_ =true;                         //true=añadir obstaculos, false=borrar obstaculos
 private slots:
 
 };

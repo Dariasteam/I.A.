@@ -48,9 +48,17 @@ void MainWindow::mouseMoveEvent(QMouseEvent* E){
         int f = ((cursor.y())-margen.top())/celdaSz.height();
         if(f>-1 && f<f_ && c>-1 && c<c_){                                         //prevenir errores de calculo de pocos pixeles
             cout<<"Corresponde a la celda "<<c<<","<<f<<endl;
-            ((celda*)layPrincipal_->itemAtPosition(f,c)->widget())->cambiarTipo();
+            ((celda*)layPrincipal_->itemAtPosition(f,c)->widget())->cambiarTipo(pintar_);
         }
     }else{
         cout<<"Clic fuera del area"<<endl;
+    }
+}
+
+void MainWindow::mousePressEvent(QMouseEvent* E){
+    if(E->button()==Qt::LeftButton){
+        pintar_=true;
+    }else if(E->button()==Qt::RightButton){
+        pintar_=false;
     }
 }

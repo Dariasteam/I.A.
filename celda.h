@@ -10,7 +10,7 @@ class celda : public QLabel{
 public:
     celda(int,int);                         //posición i j
     void resizeEvent(QResizeEvent* );
-    void cambiarTipo();
+    void cambiarTipo(bool);
 private:
     bool atravesable_ = true;
     int i;
