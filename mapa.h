@@ -9,8 +9,7 @@
 class mapa : public QWidget{
     Q_OBJECT
 public:
-    explicit mapa(QWidget *parent = 0);
-    mapa(int,int,QProgressBar*);
+    mapa(int,int,QProgressBar*,int,QWidget* parent = 0);
     void resizeEvent(QResizeEvent* );
     void mouseMoveEvent(QMouseEvent *);
     void mousePressEvent(QMouseEvent* );

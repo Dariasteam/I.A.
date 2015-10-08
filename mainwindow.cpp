@@ -13,6 +13,8 @@
 #include "mapa.h"
 #include <QPushButton>
 #include <QProgressBar>
+#include <QCheckBox>
+#include <QLabel>
 
 using namespace std;
 
@@ -22,38 +24,52 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     setMouseTracking(true);
     ui->setupUi(this);
-    widPrincipal_ = new QWidget();
-    layPrincipal_ = new QBoxLayout(QBoxLayout::TopToBottom);
+    widPrincipal_ = new QWidget(this);
+    layPrincipal_ = new QBoxLayout(QBoxLayout::TopToBottom,widPrincipal_);
+    layMenu_      = new QGridLayout();
+    barraProgreso_ = new QProgressBar(this);
 
-    barraProgreso_ = new QProgressBar();
     layPrincipal_->addWidget(barraProgreso_);
+    widMapa_ = new mapa(10,10,barraProgreso_,0,this);
 
-    widMapa_ = new mapa(10,10,barraProgreso_);
-
-    this->setCentralWidget(widPrincipal_);
+    setCentralWidget(widPrincipal_);
     widPrincipal_->setLayout(layPrincipal_);
     layPrincipal_->addWidget(widMapa_);
+    layPrincipal_->addLayout(layMenu_);
 
     QPushButton* boton_ = new QPushButton("Generar");
-    layPrincipal_->addWidget(boton_);
+    layMenu_->addWidget(boton_,0,0);
 
+    checkAleatorio_ = new QCheckBox("Obstáculos aleatorios");
+    QLabel* textoFactor = new QLabel("Factor de aleatoriedad",this);
 
 
     spinFilas_ = new QSpinBox();
     spinColumnas_ = new QSpinBox();
+    spinFactor_ = new QSpinBox();
 
     spinFilas_->setValue(10);
     spinColumnas_->setValue(10);
+    spinFactor_->setValue(1);
 
     spinFilas_->setMaximum(500);
     spinColumnas_->setMaximum(500);
+    spinFactor_->setMaximum(50);
+    spinFactor_->setMinimum(0);
+    spinFactor_->setEnabled(false);
 
 
+
+    connect(checkAleatorio_,SIGNAL(clicked(bool)),spinFactor_,SLOT(setEnabled(bool)));
     connect(boton_,SIGNAL(clicked(bool)),this,SLOT(actualizarMapa()));
 
     spinFilas_->setAcceptDrops(true);
-    layPrincipal_->addWidget(spinFilas_);
-    layPrincipal_->addWidget(spinColumnas_);
+    layMenu_->addWidget(spinFilas_,1,0);
+    layMenu_->addWidget(spinColumnas_,2,0);
+    layMenu_->addWidget(checkAleatorio_,0,1);
+    layMenu_->addWidget(textoFactor,1,1);
+    layMenu_->addWidget(spinFactor_,2,2);
+
 }
 
 MainWindow::~MainWindow()
@@ -62,7 +78,7 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::actualizarMapa(){
-    mapa* aux = new mapa(spinFilas_->value(),spinColumnas_->value(),barraProgreso_);
+    mapa* aux = new mapa(spinFilas_->value(),spinColumnas_->value(),barraProgreso_,spinFactor_->value(),this);
     layPrincipal_->replaceWidget(widMapa_,aux);
     delete widMapa_;
     widMapa_=aux;

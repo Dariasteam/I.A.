@@ -8,7 +8,7 @@ class celda : public QLabel{
     Q_OBJECT
 
 public:
-    celda(int,int,QPixmap*,QPixmap*,QWidget* = 0);                         //posición i j
+    celda(int,int,QPixmap*,QPixmap*,bool,QWidget* = 0);                         //posición i j
     ~celda();
     void resizeEvent(QResizeEvent* );
     void cambiarTipo(bool);

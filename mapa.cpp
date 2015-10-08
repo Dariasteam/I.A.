@@ -7,12 +7,17 @@
 #include <QList>
 #include <QBoxLayout>
 #include <QApplication>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 using namespace std;
 
-mapa::mapa(int filas, int columnas, QProgressBar* barra_) : QWidget(){
+mapa::mapa(int filas, int columnas, QProgressBar* barra_,int factor, QWidget* parent) : QWidget(parent){
     f_=filas;
     c_=columnas;
+    srand(time(NULL));
+    int aleatoriedad;
     layMapa_ = new QGridLayout();
     layMapa_->setSpacing(0);
     pixSuelo_ = new QPixmap("../I.A./recursos/suelo.png");
@@ -24,7 +29,13 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra_) : QWidget(){
     int barI=1;
     for(int i=0;i<f_;i++){
         for(int j=0;j<c_;j++){
-            layMapa_->addWidget (new celda(i,j,pixSuelo_,pixMuro_,this),i,j);
+            aleatoriedad = rand()%100+ 1;
+            cout<<"Aleatoriedad vale "<<aleatoriedad<<" y el factor "<<factor<<endl;
+            if(aleatoriedad<=factor){
+                layMapa_->addWidget (new celda(i,j,pixSuelo_,pixMuro_,true,this),i,j);
+            }else{
+                layMapa_->addWidget (new celda(i,j,pixSuelo_,pixMuro_,false,this),i,j);
+            }
             emit actualizarBarra(barI);
             barI++;
         }
@@ -52,10 +63,11 @@ void mapa::mouseMoveEvent(QMouseEvent* ){
     QMargins margen = layMapa_->contentsMargins();
     if(!(cursor.x() < margen.left()) && !(cursor.x() > (this->window()->width()-margen.right())) &&
        !(cursor.y() < margen.top() ) && !(cursor.y() > (this->window()->height()-margen.bottom()))){
-        int c = ((cursor.x())) /celdaSz.width();
-        int f = ((cursor.y()))  /celdaSz.height();
+        int c = ((cursor.x()))  / celdaSz.width();
+        int f = ((cursor.y()))  / celdaSz.height();
+        cout<<"c: "<<c<<endl;
         if(f>-1 && f<f_ && c>-1 && c<c_){                                         //prevenir errores de calculo de pocos pixeles
-            cout<<"Corresponde a la celda "<<c<<","<<f<<endl;
+            cout<<"Corresponde a la celda "<<f<<","<<c<<endl;
             ((celda*)layMapa_->itemAtPosition(f,c)->widget())->cambiarTipo(pintar_);
         }else{
             cout<<"Clic fuera del area"<<endl;
