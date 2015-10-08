@@ -9,6 +9,7 @@ class celda : public QLabel{
 
 public:
     celda(int,int);                         //posición i j
+    ~celda();
     void resizeEvent(QResizeEvent* );
     void cambiarTipo(bool);
 private:

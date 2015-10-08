@@ -14,10 +14,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-        celda.cpp
+        celda.cpp \
+    mapa.cpp
 
 HEADERS  += mainwindow.h \
-    celda.h
+    celda.h \
+    mapa.h
 
 FORMS    += mainwindow.ui
 
