@@ -10,9 +10,9 @@ class celda : public QLabel{
 public:
     celda(int,int);                         //posición i j
     void resizeEvent(QResizeEvent* );
-private slots:
-    void mouseMoveEvent(QMouseEvent* );
+    void cambiarTipo();
 private:
+    bool atravesable_ = true;
     int i;
     int j;
     QPixmap* pix;

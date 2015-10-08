@@ -15,10 +15,13 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void mouseMoveEvent(QMouseEvent *);
 private:
     Ui::MainWindow *ui;
     QWidget* widPrincipal_;
     QGridLayout* layPrincipal_;
+    int c_;
+    int f_;
 private slots:
 
 };
