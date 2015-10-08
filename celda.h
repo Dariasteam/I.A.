@@ -8,15 +8,17 @@ class celda : public QLabel{
     Q_OBJECT
 
 public:
-    celda(int,int);                         //posición i j
+    celda(int,int,QPixmap*,QPixmap*,QWidget* = 0);                         //posición i j
     ~celda();
     void resizeEvent(QResizeEvent* );
     void cambiarTipo(bool);
 private:
-    bool atravesable_ = true;
-    int i;
-    int j;
-    QPixmap* pix;
+    bool atravesable_;
+    int i_;
+    int j_;
+    QPixmap* pixSuelo_;
+    QPixmap* pixMuro_;
+
 };
 
 #endif // LABEL_H

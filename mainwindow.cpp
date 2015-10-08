@@ -67,6 +67,4 @@ void MainWindow::actualizarMapa(){
     delete widMapa_;
     widMapa_=aux;
 }
-//Calcular si la pulsacion se produce en el interior de la ventana
-
 

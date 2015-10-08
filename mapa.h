@@ -4,6 +4,7 @@
 #include <QGridLayout>
 #include "celda.h"
 #include <QProgressBar>
+#include <QPixmap>
 
 class mapa : public QWidget{
     Q_OBJECT
@@ -21,10 +22,11 @@ private:
     int c_;                                     //columnas de la matriz
     int f_;                                     //filas de la matriz
     bool pintar_ =true;                         //true=añadir obstaculos, false=borrar obstaculos
+    QPixmap* pixSuelo_;
+    QPixmap* pixMuro_;
 private slots:
     signals:
     void actualizarBarra(int);
-
 };
 
 
