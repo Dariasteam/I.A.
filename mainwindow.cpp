@@ -24,7 +24,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     widPrincipal_ = new QWidget();
     layPrincipal_ = new QBoxLayout(QBoxLayout::TopToBottom);
-    widMapa_ = new mapa(10,10);
+
+    barraProgreso_ = new QProgressBar();
+    layPrincipal_->addWidget(barraProgreso_);
+
+    widMapa_ = new mapa(10,10,barraProgreso_);
 
     this->setCentralWidget(widPrincipal_);
     widPrincipal_->setLayout(layPrincipal_);
@@ -58,7 +62,7 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::actualizarMapa(){
-    mapa* aux = new mapa(spinFilas_->value(),spinColumnas_->value());
+    mapa* aux = new mapa(spinFilas_->value(),spinColumnas_->value(),barraProgreso_);
     layPrincipal_->replaceWidget(widMapa_,aux);
     delete widMapa_;
     widMapa_=aux;

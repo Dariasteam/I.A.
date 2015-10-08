@@ -7,37 +7,27 @@
 #include <QList>
 #include <QBoxLayout>
 #include <QApplication>
-#include <QProgressDialog>
 
 using namespace std;
 
-mapa::mapa(int filas, int columnas) : QWidget(){
+mapa::mapa(int filas, int columnas, QProgressBar* barra_) : QWidget(){
     f_=filas;
     c_=columnas;
     layMapa_ = new QGridLayout();
-    layBox_ = new QBoxLayout(QBoxLayout::TopToBottom);
     layMapa_->setSpacing(0);
-    QProgressBar* barraProgreso_ = new QProgressBar();
-    layBox_->addLayout(layMapa_);
-    layBox_->addWidget(barraProgreso_);
-    barraProgreso_->setMaximum(columnas*filas);
-
-    QProgressDialog* eee = new QProgressDialog();
-    eee->setMaximum(columnas*filas);
-    eee->setValue(0);
-    eee->setLabelText("asdasd");
-    eee->show();
-
-    barraProgreso_->setValue(0);
+    barra_->setMaximum(columnas*filas);
+    connect(this,SIGNAL(actualizarBarra(int)),barra_,SLOT(setValue(int)));
+    emit actualizarBarra(0);
+    int barI=1;
     for(int i=0;i<f_;i++){
         for(int j=0;j<c_;j++){
             cout<<"Generando la celda "<<i<<","<<j<<endl;
-            layMapa_->addWidget (new celda(i,j),i,j);
-            //barraProgreso_->setValue((i+1)*(j+1));
-            eee->setValue((i+1)*(j+1));
+                    layMapa_->addWidget (new celda(i,j),i,j);
+                    emit actualizarBarra(barI);
+                    barI++;
         }
     }
-    setLayout(layBox_);
+    setLayout(layMapa_);
 
 }
 
