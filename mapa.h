@@ -3,6 +3,7 @@
 #include <QWidget>
 #include <QGridLayout>
 #include "celda.h"
+#include <QThread>
 
 class mapa : public QWidget{
     Q_OBJECT
@@ -15,6 +16,7 @@ public:
     int getFilas();
     int getColumnas();
 private:
+    QBoxLayout* layBox_;
     QGridLayout* layMapa_;                      //layout del mapa
     int c_;                                     //columnas de la matriz
     int f_;                                     //filas de la matriz
@@ -23,5 +25,7 @@ private slots:
     //void actualizarF(int);
     //void actualizarC(int);
 };
+
+
 
 #endif // MAPA_H

@@ -3,21 +3,42 @@
 #include <QMouseEvent>
 #include <QResizeEvent>
 #include <QGridLayout>
+#include <QProgressBar>
+#include <QList>
+#include <QBoxLayout>
+#include <QApplication>
+#include <QProgressDialog>
 
 using namespace std;
 
 mapa::mapa(int filas, int columnas) : QWidget(){
     f_=filas;
     c_=columnas;
-    layMapa_ = new QGridLayout;
+    layMapa_ = new QGridLayout();
+    layBox_ = new QBoxLayout(QBoxLayout::TopToBottom);
     layMapa_->setSpacing(0);
+    QProgressBar* barraProgreso_ = new QProgressBar();
+    layBox_->addLayout(layMapa_);
+    layBox_->addWidget(barraProgreso_);
+    barraProgreso_->setMaximum(columnas*filas);
+
+    QProgressDialog* eee = new QProgressDialog();
+    eee->setMaximum(columnas*filas);
+    eee->setValue(0);
+    eee->setLabelText("asdasd");
+    eee->show();
+
+    barraProgreso_->setValue(0);
     for(int i=0;i<f_;i++){
         for(int j=0;j<c_;j++){
             cout<<"Generando la celda "<<i<<","<<j<<endl;
-            layMapa_->addWidget(new celda(i,j),i,j);
+            layMapa_->addWidget (new celda(i,j),i,j);
+            //barraProgreso_->setValue((i+1)*(j+1));
+            eee->setValue((i+1)*(j+1));
         }
     }
-    setLayout(layMapa_);
+    setLayout(layBox_);
+
 }
 
 void mapa::mousePressEvent(QMouseEvent* E){

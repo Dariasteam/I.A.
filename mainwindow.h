@@ -6,6 +6,7 @@
 #include <QBoxLayout>
 #include "mapa.h"
 #include <QSpinBox>
+#include <QProgressBar>
 
 namespace Ui {
 class MainWindow;
@@ -18,17 +19,16 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void actualizarMapa(int,int);
 private:
     Ui::MainWindow *ui;
     QWidget* widPrincipal_;                     //widget principal de la ventana
     QBoxLayout*  layPrincipal_;                 //layout principal de la ventana
     mapa*    widMapa_;
-    QSpinBox* filas;
-    QSpinBox* columnas;
+    QSpinBox* spinFilas_;
+    QSpinBox* spinColumnas_;
+    QProgressBar* barraProgreso_;
 private slots:
-    void actualizarF(int);
-    void actualizarC(int);
+    void actualizarMapa();
 };
 
 #endif // MAINWINDOW_H

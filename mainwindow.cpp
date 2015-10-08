@@ -11,6 +11,8 @@
 #include <QBoxLayout>
 #include <QRect>
 #include "mapa.h"
+#include <QPushButton>
+#include <QProgressBar>
 
 using namespace std;
 
@@ -28,21 +30,26 @@ MainWindow::MainWindow(QWidget *parent) :
     widPrincipal_->setLayout(layPrincipal_);
     layPrincipal_->addWidget(widMapa_);
 
+    QPushButton* boton_ = new QPushButton("Generar");
+    layPrincipal_->addWidget(boton_);
 
 
 
-    filas = new QSpinBox();
-    columnas = new QSpinBox();
+    spinFilas_ = new QSpinBox();
+    spinColumnas_ = new QSpinBox();
 
-    filas->setValue(10);
-    columnas->setValue(10);
+    spinFilas_->setValue(10);
+    spinColumnas_->setValue(10);
 
-    connect(filas,SIGNAL(valueChanged(int)),this,SLOT(actualizarF(int)));
-    connect(columnas,SIGNAL(valueChanged(int)),this,SLOT(actualizarC(int)));
+    spinFilas_->setMaximum(500);
+    spinColumnas_->setMaximum(500);
 
-    filas->setAcceptDrops(true);
-    layPrincipal_->addWidget(filas);
-    layPrincipal_->addWidget(columnas);
+
+    connect(boton_,SIGNAL(clicked(bool)),this,SLOT(actualizarMapa()));
+
+    spinFilas_->setAcceptDrops(true);
+    layPrincipal_->addWidget(spinFilas_);
+    layPrincipal_->addWidget(spinColumnas_);
 }
 
 MainWindow::~MainWindow()
@@ -50,20 +57,12 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::actualizarC(int c){
-    mapa* aux = new mapa(widMapa_->getFilas(),c);
+void MainWindow::actualizarMapa(){
+    mapa* aux = new mapa(spinFilas_->value(),spinColumnas_->value());
     layPrincipal_->replaceWidget(widMapa_,aux);
     delete widMapa_;
     widMapa_=aux;
 }
-
-void MainWindow::actualizarF(int f){
-    mapa* aux = new mapa(f,widMapa_->getColumnas());
-    layPrincipal_->replaceWidget(widMapa_,aux);
-    delete widMapa_;
-    widMapa_=aux;
-}
-
 //Calcular si la pulsacion se produce en el interior de la ventana
 
 
