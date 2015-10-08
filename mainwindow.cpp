@@ -11,8 +11,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     widPrincipal_ = new QWidget();
     layPrincipal_ = new QGridLayout();
-    for(int i=0;i<30;i++){
-        for(int j=0;j<30;j++){
+    for(int i=0;i<10;i++){
+        for(int j=0;j<10;j++){
             celda* aux = new celda(i,j);
             layPrincipal_->addWidget(aux,i,j);
         }

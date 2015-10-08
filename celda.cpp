@@ -10,7 +10,7 @@ celda::celda(int i_, int j_) : QLabel(){
     setMouseTracking(true);
     i=i_;
     j=j_;
-    this->setMinimumSize(5,5);
+    this->setMinimumSize(1,1);
     pix = new QPixmap("../I.A./recursos/suelo.png");
     this->setPixmap(pix->scaled(this->width(),this->height()));
 }
