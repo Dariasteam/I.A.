@@ -15,22 +15,17 @@ public:
     void mousePressEvent(QMouseEvent* );
     int getFilas();
     int getColumnas();
-
-    void RellenarContorno();
-
 private:
-    QBoxLayout* layBox_;
     QGridLayout* layMapa_;                      //layout del mapa
     int c_;                                     //columnas de la matriz
     int f_;                                     //filas de la matriz
     bool pintar_ =true;                         //true=añadir obstaculos, false=borrar obstaculos
     QPixmap* pixSuelo_;
     QPixmap* pixMuro_;
-
-    void CeldaEn(int,int,bool);
+    void cambiarCeldaEn(int,int,bool);
 private slots:
     void limpiarMapa();
-    signals:
+signals:
     void actualizarBarra(int);
 };
 
