@@ -41,7 +41,7 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra_,int factor, QWidget* pa
     for(int i=0;i<f_;i++){
         for(int j=0;j<c_;j++){
             aleatoriedad = rand()%100+ 1;
-            if(aleatoriedad<=factor || (i == 0 || j == 0 || j == f_-1 || i == c_-1)){
+            if(aleatoriedad<=factor || (i == 0 || j == 0 || i == f_-1 || j == c_-1)){
                 layMapa_->addWidget (new celda(i,j,pixSuelo_,pixMuro_,true,this),i,j);
             }else{
                 layMapa_->addWidget (new celda(i,j,pixSuelo_,pixMuro_,false,this),i,j);

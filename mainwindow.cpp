@@ -15,6 +15,7 @@
 #include <QProgressBar>
 #include <QCheckBox>
 #include <QLabel>
+#include <QSizePolicy>
 
 using namespace std;
 
@@ -22,6 +23,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+
+
+
     setMouseTracking(true);
     ui->setupUi(this);
     widPrincipal_ = new QWidget(this);
@@ -71,6 +75,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(boton_,SIGNAL(clicked(bool)),this,SLOT(actualizarMapa()));
     connect(botonClear_, SIGNAL(clicked()), widMapa_, SLOT(limpiarMapa()));
 
+
+
     spinFilas_->setAcceptDrops(true);
     layMenu_->addWidget(spinFilas_,1,0);
     layMenu_->addWidget(spinColumnas_,2,0);
@@ -87,11 +93,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setMenuBar(menuBar_);
 
+    cout << "Construimos";
+
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::resizeEvent(QResizeEvent *e)
+{
 }
 
 
