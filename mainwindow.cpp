@@ -65,13 +65,10 @@ MainWindow::MainWindow(QWidget *parent) :
     spinFactor_->setMinimum(1);
     spinFactor_->setEnabled(false);
 
-
-
     connect(checkAleatorio_,SIGNAL(clicked(bool)),spinFactor_,SLOT(setEnabled(bool)));
     connect(boton_,SIGNAL(clicked(bool)),this,SLOT(actualizarMapa()));
     connect(botonClear_, SIGNAL(clicked()), widMapa_, SLOT(limpiarMapa()));
 
-    spinFilas_->setAcceptDrops(true);
     layMenu_->addWidget(spinFilas_,1,0);
     layMenu_->addWidget(spinColumnas_,2,0);
     layMenu_->addWidget(checkAleatorio_,0,3);
