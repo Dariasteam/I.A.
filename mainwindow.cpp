@@ -38,7 +38,10 @@ MainWindow::MainWindow(QWidget *parent) :
     layPrincipal_->addLayout(layMenu_);
 
     QPushButton* boton_ = new QPushButton("Generar");
+    QPushButton* boton_Clear = new QPushButton("Clear");
+
     layMenu_->addWidget(boton_,0,0);
+    layMenu_->addWidget(boton_Clear,0,1);
 
     checkAleatorio_ = new QCheckBox("Obstáculos aleatorios");
     QLabel* textoFactor = new QLabel("Factor de aleatoriedad [1,50]",this);
@@ -62,11 +65,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(checkAleatorio_,SIGNAL(clicked(bool)),spinFactor_,SLOT(setEnabled(bool)));
     connect(boton_,SIGNAL(clicked(bool)),this,SLOT(actualizarMapa()));
+    connect(boton_Clear, SIGNAL(clicked()), widMapa_, SLOT(limpiarMapa()));
 
     spinFilas_->setAcceptDrops(true);
     layMenu_->addWidget(spinFilas_,1,0);
     layMenu_->addWidget(spinColumnas_,2,0);
-    layMenu_->addWidget(checkAleatorio_,0,1);
+    layMenu_->addWidget(checkAleatorio_,0,3);
     layMenu_->addWidget(textoFactor,1,1);
     layMenu_->addWidget(spinFactor_,2,1);
 
@@ -76,6 +80,9 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+
+
 
 void MainWindow::actualizarMapa(){
     mapa* aux;

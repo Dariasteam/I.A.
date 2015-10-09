@@ -24,6 +24,7 @@ private:
     QPixmap* pixSuelo_;
     QPixmap* pixMuro_;
 private slots:
+    void limpiarMapa();
     signals:
     void actualizarBarra(int);
 };

@@ -54,6 +54,13 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra_,int factor, QWidget* pa
     setLayout(layMapa_);
 }
 
+void mapa::limpiarMapa()
+{
+    for(int i = 0; i < f_ ; i++)
+        for(int j = 0; j < c_ ; j++)
+            ((celda*) (layMapa_->itemAtPosition(i,j)->widget()))->cambiarTipo(false);
+}
+
 void mapa::mousePressEvent(QMouseEvent* E){
     if(E->button()==Qt::LeftButton){
         pintar_=true;
