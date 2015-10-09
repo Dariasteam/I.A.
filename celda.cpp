@@ -31,3 +31,5 @@ void celda::cambiarTipo(bool b){
         atravesable_=true;
     }
 }
+
+

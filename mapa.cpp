@@ -79,15 +79,25 @@ void mapa::mousePressEvent(QMouseEvent* E){
     }else if(E->button()==Qt::RightButton){
         pintar_=false;
     }
+    pintar();
 }
 
 void mapa::resizeEvent(QResizeEvent* ){
    layMapa_->update();
+
 }
 
+
 void mapa::mouseMoveEvent(QMouseEvent* ){
+    pintar();
+
+}
+
+void mapa::pintar()
+{
     QSize celdaSz = layMapa_->itemAtPosition(0,0)->widget()->size();
     QPoint cursor = this->mapFromGlobal(QCursor::pos());
+
     cout<<"Cursor: "<<cursor.x()<<","<<cursor.y()<<endl;
     QMargins margen = layMapa_->contentsMargins();
     if(!(cursor.x() < margen.left()) && !(cursor.x() > (this->window()->width()-margen.right())) &&
@@ -97,13 +107,16 @@ void mapa::mouseMoveEvent(QMouseEvent* ){
         cout<<"c: "<<c<<endl;
         if(f>-1 && f<f_ && c>-1 && c<c_){                                         //prevenir errores de calculo de pocos pixeles
             cout<<"Corresponde a la celda "<<f<<","<<c<<endl;
-            ((celda*)layMapa_->itemAtPosition(f,c)->widget())->cambiarTipo(pintar_);
+            //((celda*)layMapa_->itemAtPosition(f,c)->widget())->cambiarTipo(pintar_);
+            CambiarCeldaEn(f,c,pintar_);
         }else{
             cout<<"Clic fuera del area"<<endl;
         }
     }else{
         cout<<"Clic fuera del area"<<endl;
     }
+
+
 }
 
 int mapa::getColumnas(){

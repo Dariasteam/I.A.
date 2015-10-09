@@ -16,6 +16,8 @@ public:
     int getFilas();
     int getColumnas();
 
+    void pintar();
+
 private:
     QBoxLayout* layBox_;
     QGridLayout* layMapa_;                      //layout del mapa
