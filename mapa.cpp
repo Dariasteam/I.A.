@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <QPalette>
 
 using namespace std;
 
@@ -19,13 +20,18 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra_,int factor, QWidget* pa
     srand(time(NULL));
     int aleatoriedad;
     layMapa_ = new QGridLayout();
-    layMapa_->setSpacing(0);
     if(filas<35 && columnas<35){
         pixSuelo_ = new QPixmap("../I.A./recursos/suelo.png");
         pixMuro_ = new QPixmap("../I.A./recursos/muro.png");
+        layMapa_->setSpacing(0);
     }else{
         pixSuelo_ = new QPixmap("../I.A./recursos/sueloLow.png");
         pixMuro_ = new QPixmap("../I.A./recursos/muroLow.png");
+        layMapa_->setSpacing(1);
+        QPalette fondo(palette());
+        fondo.setColor(QPalette::Background, Qt::black);
+        setAutoFillBackground(true);
+        setPalette(fondo);
     }
     barra_->show();
     barra_->setMaximum(columnas*filas);
