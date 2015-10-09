@@ -16,8 +16,6 @@ public:
     int getFilas();
     int getColumnas();
 
-    void RellenarContorno();
-
 private:
     QBoxLayout* layBox_;
     QGridLayout* layMapa_;                      //layout del mapa
@@ -27,7 +25,7 @@ private:
     QPixmap* pixSuelo_;
     QPixmap* pixMuro_;
 
-    void CeldaEn(int,int,bool);
+    void CambiarCeldaEn(int,int,bool);
 private slots:
     void limpiarMapa();
     signals:

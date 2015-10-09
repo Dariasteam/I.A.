@@ -58,23 +58,12 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra_,int factor, QWidget* pa
 
 }
 
-void mapa::CeldaEn(int i, int j, bool muro)
+void mapa::CambiarCeldaEn(int i, int j, bool muro)
 {
     ((celda*) (layMapa_->itemAtPosition(i,j)->widget()))->cambiarTipo(muro);
 }
 
-void mapa::RellenarContorno()
-{
-    for(int i = 0; i < c_; i++){
-        CeldaEn(i,0,true);
-        CeldaEn(i,f_-1,true);
-    }
 
-    for(int j = 0; j < f_; j++){
-        CeldaEn(0,j,true);
-        CeldaEn(c_-1,j,true);
-    }
-}
 
 void mapa::limpiarMapa()
 {

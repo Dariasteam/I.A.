@@ -38,6 +38,9 @@ MainWindow::MainWindow(QWidget *parent) :
     layPrincipal_->addLayout(layMenu_);
 
     QPushButton* boton_ = new QPushButton("Generar");
+    boton_->setShortcut(Qt::Key_Enter);
+
+    //actAyudaAcerca_->setShortcut((QKeySequence(Qt::CTRL + Qt::Key_H)));
 
     botonClear_ = new QPushButton("Clear");
 
@@ -76,7 +79,13 @@ MainWindow::MainWindow(QWidget *parent) :
     layMenu_->addWidget(spinFactor_,2,1);
 
 
-    //widMapa_->RellenarContorno();
+    menuBar_ = new QMenuBar(this);
+    mnuArchivo_ = new QMenu("Archivo",this);
+
+
+    menuBar_->addMenu(mnuArchivo_);
+
+    setMenuBar(menuBar_);
 
 }
 
@@ -90,6 +99,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::actualizarMapa(){
     mapa* aux;
+
     if(checkAleatorio_->isChecked()){
         aux = new mapa(spinFilas_->value(),spinColumnas_->value(),barraProgreso_,spinFactor_->value(),this);
     }else{
