@@ -101,11 +101,11 @@ void mapa::mouseMoveEvent(QMouseEvent* ){
     QPoint cursor = this->mapFromGlobal(QCursor::pos());
     cout<<"Cursor: "<<cursor.x()<<","<<cursor.y()<<endl;
     QMargins margen = layMapa_->contentsMargins();
-    if(!(cursor.x() < margen.left()) && !(cursor.x() > (this->window()->width()-margen.right())) &&
-       !(cursor.y() < margen.top() ) && !(cursor.y() > (this->window()->height()-margen.bottom()))){
+    if(!(cursor.x() < margen.left()) && !(cursor.x() > (width()-margen.right())) &&
+       !(cursor.y() < margen.top() ) && !(cursor.y() > (height()-margen.bottom()))){
+        cout<<width()<<" "<<height()<<endl;
         int c = ((cursor.x()))  / celdaSz.width();
         int f = ((cursor.y()))  / celdaSz.height();
-        cout<<"c: "<<c<<endl;
         if(f>-1 && f<f_ && c>-1 && c<c_){                                         //prevenir errores de calculo de pocos pixeles
             cout<<"Corresponde a la celda "<<f<<","<<c<<endl;
             ((celda*)layMapa_->itemAtPosition(f,c)->widget())->cambiarTipo(pintar_);
