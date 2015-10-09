@@ -79,8 +79,21 @@ MainWindow::MainWindow(QWidget *parent) :
     menuBar_ = new QMenuBar(this);
     mnuArchivo_ = new QMenu("Archivo",this);
 
+    actCargar_ = new QAction("Abrir",mnuArchivo_);
+    actGuardar_ = new QAction("Guardar",mnuArchivo_);
+    actGuardarComo_ = new QAction("Guardar como",mnuArchivo_);
 
+    dialogoAbrir_ = new QFileDialog(this);
+
+    mnuArchivo_->addAction(actCargar_);
+    mnuArchivo_->addAction(actGuardar_);
+    mnuArchivo_->addAction(actGuardarComo_);
+
+    connect(actCargar_,SIGNAL(triggered(bool)),this,SLOT(onAbrir()));
+    connect(actGuardar_,SIGNAL(triggered(bool)),this,SLOT(onGuardar()));
+    connect(actGuardarComo_,SIGNAL(triggered(bool)),this,SLOT(onGuardarComo()));
     menuBar_->addMenu(mnuArchivo_);
+
 
     setMenuBar(menuBar_);
 
@@ -96,15 +109,32 @@ MainWindow::~MainWindow()
 
 void MainWindow::actualizarMapa(){
     mapa* aux;
-
-    if(checkAleatorio_->isChecked()){
-        aux = new mapa(spinFilas_->value(),spinColumnas_->value(),barraProgreso_,spinFactor_->value(),this);
+    if((widMapa_->getFilas()==spinFilas_->value()) && (widMapa_->getColumnas()==spinColumnas_->value())){
+        cout<<"actualizando el mapa actual"<<endl;
+        //valor del spinFactor * bool check para enviar 0 si este está desactivado
+        widMapa_->actualizarEsteMapa(spinFactor_->value()*checkAleatorio_->isChecked());
     }else{
-        aux = new mapa(spinFilas_->value(),spinColumnas_->value(),barraProgreso_,0,this);
+        cout<<"Generando nuevo mapa"<<endl;
+        aux = new mapa(spinFilas_->value(),spinColumnas_->value(),barraProgreso_,spinFactor_->value()*checkAleatorio_->isChecked(),this);
+        layPrincipal_->replaceWidget(widMapa_,aux);
+        delete widMapa_;
+        widMapa_=aux;
+        connect(botonClear_, SIGNAL(clicked()), widMapa_, SLOT(limpiarMapa()));
     }
-    layPrincipal_->replaceWidget(widMapa_,aux);
-    delete widMapa_;
-    widMapa_=aux;
-    connect(botonClear_, SIGNAL(clicked()), widMapa_, SLOT(limpiarMapa()));
 }
+
+void MainWindow::onAbrir(){
+    rutaArchivo_= new QString(dialogoAbrir_->getOpenFileName());
+}
+
+void MainWindow::onGuardar(){
+    cout<<rutaArchivo_->toStdString()<<endl;
+}
+
+void MainWindow::onGuardarComo(){
+    cout<<dialogoAbrir_->getSaveFileName().toStdString()<<endl;
+}
+
+
+
 

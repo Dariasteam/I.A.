@@ -10,16 +10,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 #include <QPalette>
+#include <QRect>
 
 using namespace std;
 
-mapa::mapa(int filas, int columnas, QProgressBar* barra_,int factor, QWidget* parent) : QWidget(parent){
+mapa::mapa(int filas, int columnas, QProgressBar* barra, int factor, QWidget* parent) : QWidget(parent){
     f_=filas;
     c_=columnas;
     srand(time(NULL));
     int aleatoriedad;
+    barra_=barra;
     layMapa_ = new QGridLayout();
+    layMapa_->setMargin(0);
     if(filas<35 && columnas<35){
         pixSuelo_ = new QPixmap("../I.A./recursos/suelo.png");
         pixMuro_ = new QPixmap("../I.A./recursos/muro.png");
@@ -33,15 +37,15 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra_,int factor, QWidget* pa
         setAutoFillBackground(true);
         setPalette(fondo);
     }
-    barra_->show();
-    barra_->setMaximum(columnas*filas);
+    barra->show();
+    barra->setMaximum(columnas*filas);
     connect(this,SIGNAL(actualizarBarra(int)),barra_,SLOT(setValue(int)));
     emit actualizarBarra(0);
     int barI=1;
     for(int i=0;i<f_;i++){
         for(int j=0;j<c_;j++){
             aleatoriedad = rand()%100+ 1;
-            if(aleatoriedad<=factor || (i == 0 || j == 0 || j == f_-1 || i == c_-1)){
+            if(aleatoriedad<=factor || (i == 0 || j == 0 || i == f_-1 || j == c_-1)){
                 layMapa_->addWidget (new celda(i,j,pixSuelo_,pixMuro_,true,this),i,j);
             }else{
                 layMapa_->addWidget (new celda(i,j,pixSuelo_,pixMuro_,false,this),i,j);
@@ -50,27 +54,47 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra_,int factor, QWidget* pa
             barI++;
         }
     }
-    barra_->hide();
+    barra->hide();
     setLayout(layMapa_);
-
-
-
-
 }
 
-void mapa::CambiarCeldaEn(int i, int j, bool muro)
-{
+void mapa::cambiarCeldaEn(int i, int j, bool muro){
     ((celda*) (layMapa_->itemAtPosition(i,j)->widget()))->cambiarTipo(muro);
 }
 
 
-
-void mapa::limpiarMapa()
-{
+void mapa::limpiarMapa(){
     cout << "Entramos en limpiarMApa" << endl;
-    for(int i = 0; i < f_ ; i++)
-        for(int j = 0; j < c_ ; j++)
-            ((celda*) (layMapa_->itemAtPosition(i,j)->widget()))->cambiarTipo(false);
+    for(int i = 0; i < f_ ; i++){
+        for(int j = 0; j < c_ ; j++){
+            if((i == 0 || j == 0 || i == f_-1 || j == c_-1)){
+                ((celda*) (layMapa_->itemAtPosition(i,j)->widget()))->cambiarTipo(true);
+            }else{
+                ((celda*) (layMapa_->itemAtPosition(i,j)->widget()))->cambiarTipo(false);
+            }
+        }
+    }
+}
+
+void mapa::actualizarEsteMapa(int factor){
+    int aleatoriedad;
+    barra_->show();
+    emit actualizarBarra(0);
+    int barI=1;
+
+    for(int i=0;i<f_;i++){
+        for(int j=0;j<c_;j++){
+            aleatoriedad = rand()%100+ 1;
+            if(aleatoriedad<=factor || (i == 0 || j == 0 || i == f_-1 || j == c_-1)){
+                ((celda*)layMapa_->itemAtPosition(i,j)->widget())->cambiarTipo(true);
+            }else{
+                ((celda*)layMapa_->itemAtPosition(i,j)->widget())->cambiarTipo(false);
+            }
+            barI++;
+            emit actualizarBarra(barI);
+        }
+    }
+    barra_->hide();
 }
 
 void mapa::mousePressEvent(QMouseEvent* E){
@@ -88,21 +112,36 @@ void mapa::resizeEvent(QResizeEvent* ){
 void mapa::mouseMoveEvent(QMouseEvent* ){
     QSize celdaSz = layMapa_->itemAtPosition(0,0)->widget()->size();
     QPoint cursor = this->mapFromGlobal(QCursor::pos());
-    cout<<"Cursor: "<<cursor.x()<<","<<cursor.y()<<endl;
-    QMargins margen = layMapa_->contentsMargins();
-    if(!(cursor.x() < margen.left()) && !(cursor.x() > (width()-margen.right())) &&
-       !(cursor.y() < margen.top() ) && !(cursor.y() > (height()-margen.bottom()))){
-        cout<<width()<<" "<<height()<<endl;
-        int c = ((cursor.x()))  / celdaSz.width();
-        int f = ((cursor.y()))  / celdaSz.height();
-        if(f>-1 && f<f_ && c>-1 && c<c_){                                         //prevenir errores de calculo de pocos pixeles
-            cout<<"Corresponde a la celda "<<f<<","<<c<<endl;
-            ((celda*)layMapa_->itemAtPosition(f,c)->widget())->cambiarTipo(pintar_);
-        }else{
-            cout<<"Clic fuera del area"<<endl;
-        }
+    QRect widgetRect = this->geometry();
+
+    int anchoMapa  = widgetRect.width();
+    int altoMapa   = widgetRect.height();
+    int xFinalMapa = widgetRect.width();
+    int yFinalMapa = widgetRect.height();
+
+    int ratonX = (cursor.x());
+    int ratonY = (cursor.y());
+        if((ratonX > 0) && (cursor.x() < xFinalMapa) &&
+           (ratonY > 0)  && (cursor.y() < yFinalMapa)){
+            double  xCelda = anchoMapa / c_;
+            double yCelda = altoMapa   / f_;
+
+            cout<<"Las celdas miden "<<xCelda<<","<<yCelda<<endl;
+
+            double c = ratonX / xCelda;
+            double f = ratonY / yCelda;
+
+            int fila    = (int)(f);
+            int columna = (int)(c);
+
+            cout<<ratonX<<" "<<ratonY<<endl;
+
+            if(fila>-1 && fila<f_ && columna>-1 && columna<c_){                                         //prevenir errores de calculo de pocos pixeles
+                cout<<"Corresponde a la celda "<<fila<<","<<columna<<endl;
+                ((celda*)layMapa_->itemAtPosition(fila,columna)->widget())->cambiarTipo(pintar_);
+            }
     }else{
-        cout<<"Clic fuera del area"<<endl;
+        cout<<"Fuera"<<endl;
     }
 }
 

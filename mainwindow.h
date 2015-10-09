@@ -12,6 +12,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QAction>
+#include <QFileDialog>
 
 namespace Ui {
 class MainWindow;
@@ -35,13 +36,19 @@ private:
     QSpinBox* spinFactor_;
     QCheckBox* checkAleatorio_;
     QProgressBar* barraProgreso_;
-    QPushButton * botonClear_;
-    QMenuBar *    menuBar_;
-    QMenu *       mnuArchivo_;
-    QAction *     actGuardar_;
-    QAction *     actCargar_;
+    QPushButton* botonClear_;
+    QMenuBar*    menuBar_;
+    QMenu*       mnuArchivo_;
+    QAction*     actGuardar_;
+    QAction*     actGuardarComo_;
+    QAction*     actCargar_;
+    QFileDialog* dialogoAbrir_;
+    QString*     rutaArchivo_;
 private slots:
     void actualizarMapa();
+    void onAbrir();
+    void onGuardar();
+    void onGuardarComo();
 };
 
 #endif // MAINWINDOW_H
