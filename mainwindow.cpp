@@ -55,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
     spinFilas_->setMaximum(500);
     spinColumnas_->setMaximum(500);
     spinFactor_->setMaximum(50);
-    spinFactor_->setMinimum(0);
+    spinFactor_->setMinimum(1);
     spinFactor_->setEnabled(false);
 
 
@@ -68,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     layMenu_->addWidget(spinColumnas_,2,0);
     layMenu_->addWidget(checkAleatorio_,0,1);
     layMenu_->addWidget(textoFactor,1,1);
-    layMenu_->addWidget(spinFactor_,2,2);
+    layMenu_->addWidget(spinFactor_,2,1);
 
 }
 
@@ -78,7 +78,12 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::actualizarMapa(){
-    mapa* aux = new mapa(spinFilas_->value(),spinColumnas_->value(),barraProgreso_,spinFactor_->value(),this);
+    mapa* aux;
+    if(checkAleatorio_->isChecked()){
+        aux = new mapa(spinFilas_->value(),spinColumnas_->value(),barraProgreso_,spinFactor_->value(),this);
+    }else{
+        aux = new mapa(spinFilas_->value(),spinColumnas_->value(),barraProgreso_,0,this);
+    }
     layPrincipal_->replaceWidget(widMapa_,aux);
     delete widMapa_;
     widMapa_=aux;

@@ -30,7 +30,6 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra_,int factor, QWidget* pa
     for(int i=0;i<f_;i++){
         for(int j=0;j<c_;j++){
             aleatoriedad = rand()%100+ 1;
-            cout<<"Aleatoriedad vale "<<aleatoriedad<<" y el factor "<<factor<<endl;
             if(aleatoriedad<=factor){
                 layMapa_->addWidget (new celda(i,j,pixSuelo_,pixMuro_,true,this),i,j);
             }else{
