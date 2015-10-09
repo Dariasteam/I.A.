@@ -20,8 +20,13 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra_,int factor, QWidget* pa
     int aleatoriedad;
     layMapa_ = new QGridLayout();
     layMapa_->setSpacing(0);
-    pixSuelo_ = new QPixmap("../I.A./recursos/suelo.png");
-    pixMuro_ = new QPixmap("../I.A./recursos/muro.png");
+    if(filas<35 && columnas<35){
+        pixSuelo_ = new QPixmap("../I.A./recursos/suelo.png");
+        pixMuro_ = new QPixmap("../I.A./recursos/muro.png");
+    }else{
+        pixSuelo_ = new QPixmap("../I.A./recursos/sueloLow.png");
+        pixMuro_ = new QPixmap("../I.A./recursos/muroLow.png");
+    }
     barra_->show();
     barra_->setMaximum(columnas*filas);
     connect(this,SIGNAL(actualizarBarra(int)),barra_,SLOT(setValue(int)));

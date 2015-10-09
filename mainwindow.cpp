@@ -41,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent) :
     layMenu_->addWidget(boton_,0,0);
 
     checkAleatorio_ = new QCheckBox("Obstáculos aleatorios");
-    QLabel* textoFactor = new QLabel("Factor de aleatoriedad",this);
+    QLabel* textoFactor = new QLabel("Factor de aleatoriedad [1,50]",this);
 
 
     spinFilas_ = new QSpinBox();
