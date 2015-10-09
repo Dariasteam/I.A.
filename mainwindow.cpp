@@ -38,10 +38,11 @@ MainWindow::MainWindow(QWidget *parent) :
     layPrincipal_->addLayout(layMenu_);
 
     QPushButton* boton_ = new QPushButton("Generar");
-    QPushButton* boton_Clear = new QPushButton("Clear");
+
+    botonClear_ = new QPushButton("Clear");
 
     layMenu_->addWidget(boton_,0,0);
-    layMenu_->addWidget(boton_Clear,0,1);
+    layMenu_->addWidget(botonClear_,0,1);
 
     checkAleatorio_ = new QCheckBox("Obstáculos aleatorios");
     QLabel* textoFactor = new QLabel("Factor de aleatoriedad [1,50]",this);
@@ -65,7 +66,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(checkAleatorio_,SIGNAL(clicked(bool)),spinFactor_,SLOT(setEnabled(bool)));
     connect(boton_,SIGNAL(clicked(bool)),this,SLOT(actualizarMapa()));
-    connect(boton_Clear, SIGNAL(clicked()), widMapa_, SLOT(limpiarMapa()));
+    connect(botonClear_, SIGNAL(clicked()), widMapa_, SLOT(limpiarMapa()));
 
     spinFilas_->setAcceptDrops(true);
     layMenu_->addWidget(spinFilas_,1,0);
@@ -73,6 +74,9 @@ MainWindow::MainWindow(QWidget *parent) :
     layMenu_->addWidget(checkAleatorio_,0,3);
     layMenu_->addWidget(textoFactor,1,1);
     layMenu_->addWidget(spinFactor_,2,1);
+
+
+    //widMapa_->RellenarContorno();
 
 }
 
@@ -94,5 +98,6 @@ void MainWindow::actualizarMapa(){
     layPrincipal_->replaceWidget(widMapa_,aux);
     delete widMapa_;
     widMapa_=aux;
+    connect(botonClear_, SIGNAL(clicked()), widMapa_, SLOT(limpiarMapa()));
 }
 

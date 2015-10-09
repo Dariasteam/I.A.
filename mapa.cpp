@@ -41,7 +41,7 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra_,int factor, QWidget* pa
     for(int i=0;i<f_;i++){
         for(int j=0;j<c_;j++){
             aleatoriedad = rand()%100+ 1;
-            if(aleatoriedad<=factor){
+            if(aleatoriedad<=factor || (i == 0 || j == 0 || j == f_-1 || i == c_-1)){
                 layMapa_->addWidget (new celda(i,j,pixSuelo_,pixMuro_,true,this),i,j);
             }else{
                 layMapa_->addWidget (new celda(i,j,pixSuelo_,pixMuro_,false,this),i,j);
@@ -52,10 +52,33 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra_,int factor, QWidget* pa
     }
     barra_->hide();
     setLayout(layMapa_);
+
+
+
+
+}
+
+void mapa::CeldaEn(int i, int j, bool muro)
+{
+    ((celda*) (layMapa_->itemAtPosition(i,j)->widget()))->cambiarTipo(muro);
+}
+
+void mapa::RellenarContorno()
+{
+    for(int i = 0; i < c_; i++){
+        CeldaEn(i,0,true);
+        CeldaEn(i,f_-1,true);
+    }
+
+    for(int j = 0; j < f_; j++){
+        CeldaEn(0,j,true);
+        CeldaEn(c_-1,j,true);
+    }
 }
 
 void mapa::limpiarMapa()
 {
+    cout << "Entramos en limpiarMApa" << endl;
     for(int i = 0; i < f_ ; i++)
         for(int j = 0; j < c_ ; j++)
             ((celda*) (layMapa_->itemAtPosition(i,j)->widget()))->cambiarTipo(false);

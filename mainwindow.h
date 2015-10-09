@@ -8,6 +8,7 @@
 #include <QSpinBox>
 #include <QProgressBar>
 #include <QCheckBox>
+#include <QPushButton>
 
 namespace Ui {
 class MainWindow;
@@ -31,6 +32,8 @@ private:
     QSpinBox* spinFactor_;
     QCheckBox* checkAleatorio_;
     QProgressBar* barraProgreso_;
+
+    QPushButton * botonClear_;
 private slots:
     void actualizarMapa();
 };
