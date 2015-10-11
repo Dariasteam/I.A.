@@ -20,6 +20,7 @@ public:
     int getColumnas();
     void actualizarEsteMapa(int);
     void guardar(std::ofstream*);
+    void pintar();
 private:
     QGridLayout* layMapa_;                      //layout del mapa
     int c_;                                     //columnas de la matriz

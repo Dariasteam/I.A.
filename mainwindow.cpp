@@ -16,7 +16,8 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <fstream>
-#include <QDialog>
+#include <QMessageBox>
+#include <QSizePolicy>
 
 using namespace std;
 
@@ -24,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+
     setMouseTracking(true);
     ui->setupUi(this);
     widPrincipal_ = new QWidget(this);
@@ -71,6 +73,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(boton_,SIGNAL(clicked(bool)),this,SLOT(actualizarMapa()));
     connect(botonClear_, SIGNAL(clicked()), widMapa_, SLOT(limpiarMapa()));
 
+
+    spinFilas_->setAcceptDrops(true);
     layMenu_->addWidget(spinFilas_,1,0);
     layMenu_->addWidget(spinColumnas_,2,0);
     layMenu_->addWidget(checkAleatorio_,0,3);
@@ -94,14 +98,15 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(actGuardar_,SIGNAL(triggered(bool)),this,SLOT(onGuardar()));
     connect(actGuardarComo_,SIGNAL(triggered(bool)),this,SLOT(onGuardarComo()));
     menuBar_->addMenu(mnuArchivo_);
-
-
     setMenuBar(menuBar_);
-
+    this->setWindowTitle("I.A.[*]");
 }
 
 MainWindow::~MainWindow(){
     delete ui;
+}
+
+void MainWindow::resizeEvent(QResizeEvent *e){
 }
 
 
@@ -142,8 +147,11 @@ void MainWindow::onAbrir(){
             actualizarConnects();
             fich.close();
             actGuardar_->setEnabled(true);
+            this->setWindowTitle("I.A.[*] - "+*rutaArchivo_);
         }else{
-            QDialog* error = new QDialog(this);
+            QMessageBox* error = new QMessageBox();
+            error->setText("No se ha podido abrir el archivo");
+            error->show();
         }
     }else{
         cout<<"El fichero no es un archivo .map"<<endl;
@@ -166,10 +174,19 @@ void MainWindow::onGuardar(){
         fich.close();
         actGuardar_->setEnabled(true);
     }else{
-       cout<<"No se puede abrir el fichero"<<endl;
+        QMessageBox* error = new QMessageBox();
+        error->setText("No se ha podido abrir el archivo");
+        error->show();
     }
 }
 
+void MainWindow::actualizarTitulo(bool b){
+    if(b){
+        this->setWindowModified(true);
+    }else{
+        this->setWindowModified(false);
+    }
+}
 
 
 

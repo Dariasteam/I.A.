@@ -15,8 +15,11 @@
 #include <QRect>
 #include <QFileDialog>
 #include <fstream>
+#include "mainwindow.h"
 
 using namespace std;
+
+class MainWindow;
 
 mapa::mapa(ifstream* fich, QProgressBar* barra, QWidget* parent) : QWidget(parent){
     *fich>>f_;
@@ -140,18 +143,27 @@ void mapa::actualizarEsteMapa(int factor){
 }
 
 void mapa::mousePressEvent(QMouseEvent* E){
+    ((MainWindow*)this->parent())->actualizarTitulo(true);
     if(E->button()==Qt::LeftButton){
         pintar_=true;
     }else if(E->button()==Qt::RightButton){
         pintar_=false;
     }
+    pintar();
 }
 
 void mapa::resizeEvent(QResizeEvent* ){
    layMapa_->update();
+
 }
 
+
 void mapa::mouseMoveEvent(QMouseEvent* ){
+    pintar();
+
+}
+
+void mapa::pintar(){
     QSize celdaSz = layMapa_->itemAtPosition(0,0)->widget()->size();
     QPoint cursor = this->mapFromGlobal(QCursor::pos());
     QRect widgetRect = this->geometry();
@@ -163,27 +175,25 @@ void mapa::mouseMoveEvent(QMouseEvent* ){
 
     int ratonX = (cursor.x());
     int ratonY = (cursor.y());
-        if((ratonX > 0) && (cursor.x() < xFinalMapa) &&
-           (ratonY > 0)  && (cursor.y() < yFinalMapa)){
-            double  xCelda = anchoMapa / c_;
-            double yCelda = altoMapa   / f_;
+    if((ratonX > 0) && (cursor.x() < xFinalMapa) &&
+       (ratonY > 0)  && (cursor.y() < yFinalMapa)){
+        double  xCelda = anchoMapa / c_;
+        double yCelda = altoMapa   / f_;
 
-            cout<<"Las celdas miden "<<xCelda<<","<<yCelda<<endl;
+        cout<<"Las celdas miden "<<xCelda<<","<<yCelda<<endl;
 
-            double c = ratonX / xCelda;
-            double f = ratonY / yCelda;
+        double c = ratonX / xCelda;
+        double f = ratonY / yCelda;
 
-            int fila    = (int)(f);
-            int columna = (int)(c);
+        int fila    = (int)(f);
+        int columna = (int)(c);
 
-            cout<<ratonX<<" "<<ratonY<<endl;
+        cout<<ratonX<<" "<<ratonY<<endl;
 
-            if(fila>-1 && fila<f_ && columna>-1 && columna<c_){                                         //prevenir errores de calculo de pocos pixeles
-                cout<<"Corresponde a la celda "<<fila<<","<<columna<<endl;
-                ((celda*)layMapa_->itemAtPosition(fila,columna)->widget())->cambiarTipo(pintar_);
-            }
-    }else{
-        cout<<"Fuera"<<endl;
+        if(fila>-1 && fila<f_ && columna>-1 && columna<c_){                                         //prevenir errores de calculo de pocos pixeles
+            cout<<"Corresponde a la celda "<<fila<<","<<columna<<endl;
+            ((celda*)layMapa_->itemAtPosition(fila,columna)->widget())->cambiarTipo(pintar_);
+        }
     }
 }
 
@@ -204,6 +214,7 @@ void mapa::guardar(ofstream* fich){
         }
         *fich<<endl;
     }
+    ((MainWindow*)this->parent())->actualizarTitulo(false);
 }
 
 

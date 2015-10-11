@@ -26,6 +26,9 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void actualizarConnects();
+    void actualizarTitulo(bool);
+protected:
+    void resizeEvent(QResizeEvent *);
 private:
     Ui::MainWindow *ui;
     QWidget* widPrincipal_;                     //widget principal de la ventana
