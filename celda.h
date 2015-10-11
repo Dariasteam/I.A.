@@ -12,6 +12,7 @@ public:
     ~celda();
     void resizeEvent(QResizeEvent* );
     void cambiarTipo(bool);
+    bool atravesable();
 private:
     bool atravesable_;
     int i_;

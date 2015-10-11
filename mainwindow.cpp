@@ -15,6 +15,9 @@
 #include <QProgressBar>
 #include <QCheckBox>
 #include <QLabel>
+#include <fstream>
+#include <QMessageBox>
+#include <QSizePolicy>
 
 using namespace std;
 
@@ -22,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+
     setMouseTracking(true);
     ui->setupUi(this);
     widPrincipal_ = new QWidget(this);
@@ -38,6 +42,9 @@ MainWindow::MainWindow(QWidget *parent) :
     layPrincipal_->addLayout(layMenu_);
 
     QPushButton* boton_ = new QPushButton("Generar");
+    boton_->setShortcut(Qt::Key_Enter);
+
+    //actAyudaAcerca_->setShortcut((QKeySequence(Qt::CTRL + Qt::Key_H)));
 
     botonClear_ = new QPushButton("Clear");
 
@@ -73,13 +80,31 @@ MainWindow::MainWindow(QWidget *parent) :
     layMenu_->addWidget(spinFactor_,2,1);
 
 
-    //widMapa_->RellenarContorno();
+    menuBar_ = new QMenuBar(this);
+    mnuArchivo_ = new QMenu("Archivo",this);
 
+    actCargar_ = new QAction("Abrir",mnuArchivo_);
+    actGuardar_ = new QAction("Guardar",mnuArchivo_);
+    actGuardar_->setDisabled(true);
+    actGuardarComo_ = new QAction("Guardar como",mnuArchivo_);
+
+    mnuArchivo_->addAction(actCargar_);
+    mnuArchivo_->addAction(actGuardar_);
+    mnuArchivo_->addAction(actGuardarComo_);
+
+    connect(actCargar_,SIGNAL(triggered(bool)),this,SLOT(onAbrir()));
+    connect(actGuardar_,SIGNAL(triggered(bool)),this,SLOT(onGuardar()));
+    connect(actGuardarComo_,SIGNAL(triggered(bool)),this,SLOT(onGuardarComo()));
+    menuBar_->addMenu(mnuArchivo_);
+    setMenuBar(menuBar_);
+    this->setWindowTitle("I.A.[*]");
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow(){
     delete ui;
+}
+
+void MainWindow::resizeEvent(QResizeEvent *e){
 }
 
 
@@ -87,14 +112,80 @@ MainWindow::~MainWindow()
 
 void MainWindow::actualizarMapa(){
     mapa* aux;
-    if(checkAleatorio_->isChecked()){
-        aux = new mapa(spinFilas_->value(),spinColumnas_->value(),barraProgreso_,spinFactor_->value(),this);
+    if((widMapa_->getFilas()==spinFilas_->value()) && (widMapa_->getColumnas()==spinColumnas_->value())){
+        cout<<"actualizando el mapa actual"<<endl;
+        //valor del spinFactor * bool check para enviar 0 si este está desactivado
+        widMapa_->actualizarEsteMapa(spinFactor_->value()*checkAleatorio_->isChecked());
     }else{
-        aux = new mapa(spinFilas_->value(),spinColumnas_->value(),barraProgreso_,0,this);
+        cout<<"Generando nuevo mapa"<<endl;
+        aux = new mapa(spinFilas_->value(),spinColumnas_->value(),barraProgreso_,spinFactor_->value()*checkAleatorio_->isChecked(),this);
+        layPrincipal_->replaceWidget(widMapa_,aux);
+        delete widMapa_;
+        widMapa_=aux;
+        actualizarConnects();
     }
-    layPrincipal_->replaceWidget(widMapa_,aux);
-    delete widMapa_;
-    widMapa_=aux;
+}
+
+
+void MainWindow::actualizarConnects(){
     connect(botonClear_, SIGNAL(clicked()), widMapa_, SLOT(limpiarMapa()));
 }
+
+void MainWindow::onAbrir(){
+    rutaArchivo_= new QString(dialogoAbrir_->getOpenFileName(this,"Abrir Mapa","","*.map"));
+    ifstream fich;
+    if(rutaArchivo_->contains(".map")){
+        fich.open(rutaArchivo_->toStdString().c_str());
+        if(fich.is_open()){
+            mapa* aux;
+            aux = new mapa(&fich,barraProgreso_,this);
+            layPrincipal_->replaceWidget(widMapa_,aux);
+            delete widMapa_;
+            widMapa_=aux;
+            actualizarConnects();
+            fich.close();
+            actGuardar_->setEnabled(true);
+            this->setWindowTitle("I.A.[*] - "+*rutaArchivo_);
+        }else{
+            QMessageBox* error = new QMessageBox();
+            error->setText("No se ha podido abrir el archivo");
+            error->show();
+        }
+    }else{
+        cout<<"El fichero no es un archivo .map"<<endl;
+    }
+}
+
+void MainWindow::onGuardarComo(){
+    rutaArchivo_=new QString(dialogoAbrir_->getSaveFileName(this,"Guardar Mapa","mapa","*.map"));
+    if(!rutaArchivo_->contains(".map")){
+        rutaArchivo_ = new QString(*rutaArchivo_+".map");
+    }
+    onGuardar();
+}
+
+void MainWindow::onGuardar(){
+    ofstream fich;
+    fich.open(rutaArchivo_->toStdString().c_str(), std::fstream::out | std::fstream::trunc);
+    if(fich.is_open()){
+        widMapa_->guardar(&fich);
+        fich.close();
+        actGuardar_->setEnabled(true);
+    }else{
+        QMessageBox* error = new QMessageBox();
+        error->setText("No se ha podido abrir el archivo");
+        error->show();
+    }
+}
+
+void MainWindow::actualizarTitulo(bool b){
+    if(b){
+        this->setWindowModified(true);
+    }else{
+        this->setWindowModified(false);
+    }
+}
+
+
+
 

@@ -9,6 +9,10 @@
 #include <QProgressBar>
 #include <QCheckBox>
 #include <QPushButton>
+#include <QMenu>
+#include <QMenuBar>
+#include <QAction>
+#include <QFileDialog>
 
 namespace Ui {
 class MainWindow;
@@ -21,6 +25,10 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void actualizarConnects();
+    void actualizarTitulo(bool);
+protected:
+    void resizeEvent(QResizeEvent *);
 private:
     Ui::MainWindow *ui;
     QWidget* widPrincipal_;                     //widget principal de la ventana
@@ -32,10 +40,19 @@ private:
     QSpinBox* spinFactor_;
     QCheckBox* checkAleatorio_;
     QProgressBar* barraProgreso_;
-
-    QPushButton * botonClear_;
+    QPushButton* botonClear_;
+    QMenuBar*    menuBar_;
+    QMenu*       mnuArchivo_;
+    QAction*     actGuardar_;
+    QAction*     actGuardarComo_;
+    QAction*     actCargar_;
+    QString*     rutaArchivo_;
+    QFileDialog* dialogoAbrir_;
 private slots:
     void actualizarMapa();
+    void onAbrir();
+    void onGuardar();
+    void onGuardarComo();
 };
 
 #endif // MAINWINDOW_H
