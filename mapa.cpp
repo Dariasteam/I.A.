@@ -110,6 +110,10 @@ void mapa::cambiarCeldaEn(int i, int j, bool muro){
 
 void mapa::limpiarMapa(){
     cout << "Entramos en limpiarMApa" << endl;
+    barra_->setMaximum(c_*f_);
+    barra_->setValue(0);
+    barra_->show();
+    int barI = 1;
     for(int i = 0; i < f_ ; i++){
         for(int j = 0; j < c_ ; j++){
             if((i == 0 || j == 0 || i == f_-1 || j == c_-1)){
@@ -117,8 +121,11 @@ void mapa::limpiarMapa(){
             }else{
                 ((celda*) (layMapa_->itemAtPosition(i,j)->widget()))->cambiarTipo(false);
             }
+            barI++;
+            emit actualizarBarra(barI);
         }
     }
+    barra_->hide();
 }
 
 void mapa::actualizarEsteMapa(int factor){
