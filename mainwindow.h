@@ -25,6 +25,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void actualizarConnects();
 private:
     Ui::MainWindow *ui;
     QWidget* widPrincipal_;                     //widget principal de la ventana
@@ -42,8 +43,8 @@ private:
     QAction*     actGuardar_;
     QAction*     actGuardarComo_;
     QAction*     actCargar_;
-    QFileDialog* dialogoAbrir_;
     QString*     rutaArchivo_;
+    QFileDialog* dialogoAbrir_;
 private slots:
     void actualizarMapa();
     void onAbrir();

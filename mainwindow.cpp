@@ -15,6 +15,8 @@
 #include <QProgressBar>
 #include <QCheckBox>
 #include <QLabel>
+#include <fstream>
+#include <QDialog>
 
 using namespace std;
 
@@ -81,9 +83,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     actCargar_ = new QAction("Abrir",mnuArchivo_);
     actGuardar_ = new QAction("Guardar",mnuArchivo_);
+    actGuardar_->setDisabled(true);
     actGuardarComo_ = new QAction("Guardar como",mnuArchivo_);
-
-    dialogoAbrir_ = new QFileDialog(this);
 
     mnuArchivo_->addAction(actCargar_);
     mnuArchivo_->addAction(actGuardar_);
@@ -99,8 +100,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow(){
     delete ui;
 }
 
@@ -119,21 +119,57 @@ void MainWindow::actualizarMapa(){
         layPrincipal_->replaceWidget(widMapa_,aux);
         delete widMapa_;
         widMapa_=aux;
-        connect(botonClear_, SIGNAL(clicked()), widMapa_, SLOT(limpiarMapa()));
+        actualizarConnects();
     }
 }
 
-void MainWindow::onAbrir(){
-    rutaArchivo_= new QString(dialogoAbrir_->getOpenFileName());
+
+void MainWindow::actualizarConnects(){
+    connect(botonClear_, SIGNAL(clicked()), widMapa_, SLOT(limpiarMapa()));
 }
 
-void MainWindow::onGuardar(){
-    cout<<rutaArchivo_->toStdString()<<endl;
+void MainWindow::onAbrir(){
+    rutaArchivo_= new QString(dialogoAbrir_->getOpenFileName(this,"Abrir Mapa","","*.map"));
+    ifstream fich;
+    if(rutaArchivo_->contains(".map")){
+        fich.open(rutaArchivo_->toStdString().c_str());
+        if(fich.is_open()){
+            mapa* aux;
+            aux = new mapa(&fich,barraProgreso_,this);
+            layPrincipal_->replaceWidget(widMapa_,aux);
+            delete widMapa_;
+            widMapa_=aux;
+            actualizarConnects();
+            fich.close();
+            actGuardar_->setEnabled(true);
+        }else{
+            QDialog* error = new QDialog(this);
+        }
+    }else{
+        cout<<"El fichero no es un archivo .map"<<endl;
+    }
 }
 
 void MainWindow::onGuardarComo(){
-    cout<<dialogoAbrir_->getSaveFileName().toStdString()<<endl;
+    rutaArchivo_=new QString(dialogoAbrir_->getSaveFileName(this,"Guardar Mapa","mapa","*.map"));
+    if(!rutaArchivo_->contains(".map")){
+        rutaArchivo_ = new QString(*rutaArchivo_+".map");
+    }
+    onGuardar();
 }
+
+void MainWindow::onGuardar(){
+    ofstream fich;
+    fich.open(rutaArchivo_->toStdString().c_str(), std::fstream::out | std::fstream::trunc);
+    if(fich.is_open()){
+        widMapa_->guardar(&fich);
+        fich.close();
+        actGuardar_->setEnabled(true);
+    }else{
+       cout<<"No se puede abrir el fichero"<<endl;
+    }
+}
+
 
 
 

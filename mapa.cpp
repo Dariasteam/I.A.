@@ -13,18 +13,18 @@
 #include <math.h>
 #include <QPalette>
 #include <QRect>
+#include <QFileDialog>
+#include <fstream>
 
 using namespace std;
 
-mapa::mapa(int filas, int columnas, QProgressBar* barra, int factor, QWidget* parent) : QWidget(parent){
-    f_=filas;
-    c_=columnas;
-    srand(time(NULL));
-    int aleatoriedad;
+mapa::mapa(ifstream* fich, QProgressBar* barra, QWidget* parent) : QWidget(parent){
+    *fich>>f_;
+    *fich>>c_;
     barra_=barra;
-    layMapa_ = new QGridLayout();
+    layMapa_=new QGridLayout;
     layMapa_->setMargin(0);
-    if(filas<35 && columnas<35){
+    if(f_<35 && c_<35){
         pixSuelo_ = new QPixmap("../I.A./recursos/suelo.png");
         pixMuro_ = new QPixmap("../I.A./recursos/muro.png");
         layMapa_->setSpacing(0);
@@ -37,8 +37,50 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, int factor, QWidget* pa
         setAutoFillBackground(true);
         setPalette(fondo);
     }
-    barra->show();
-    barra->setMaximum(columnas*filas);
+    barra_->setMaximum(c_*f_);
+    barra_->show();
+    connect(this,SIGNAL(actualizarBarra(int)),barra_,SLOT(setValue(int)));
+    emit actualizarBarra(0);
+    int barI=1;
+    for(int i=0;i<f_;i++){
+        for(int j=0;j<c_;j++){
+            bool muro;
+            *fich>>muro;
+            layMapa_->addWidget(new celda(i,j,pixSuelo_,pixMuro_,muro,this),i,j);
+            emit actualizarBarra(barI);
+            barI++;
+        }
+    }
+    setLayout(layMapa_);
+    barra_->hide();
+}
+
+
+mapa::mapa(int filas, int columnas, QProgressBar* barra, int factor, QWidget* parent) : QWidget(parent){
+    f_=filas;
+    c_=columnas;
+    srand(time(NULL));
+    int aleatoriedad;
+    barra_=barra;
+    factor_=factor;
+    dialogoAbrir_ = new QFileDialog(this);
+    layMapa_ = new QGridLayout();
+    layMapa_->setMargin(0);
+    if(f_<35 && c_<35){
+        pixSuelo_ = new QPixmap("../I.A./recursos/suelo.png");
+        pixMuro_ = new QPixmap("../I.A./recursos/muro.png");
+        layMapa_->setSpacing(0);
+    }else{
+        pixSuelo_ = new QPixmap("../I.A./recursos/sueloLow.png");
+        pixMuro_ = new QPixmap("../I.A./recursos/muroLow.png");
+        layMapa_->setSpacing(1);
+        QPalette fondo(palette());
+        fondo.setColor(QPalette::Background, Qt::black);
+        setAutoFillBackground(true);
+        setPalette(fondo);
+    }
+    barra_->show();
+    barra_->setMaximum(c_*f_);
     connect(this,SIGNAL(actualizarBarra(int)),barra_,SLOT(setValue(int)));
     emit actualizarBarra(0);
     int barI=1;
@@ -54,8 +96,8 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, int factor, QWidget* pa
             barI++;
         }
     }
-    barra->hide();
     setLayout(layMapa_);
+    barra_->hide();
 }
 
 void mapa::cambiarCeldaEn(int i, int j, bool muro){
@@ -152,3 +194,16 @@ int mapa::getColumnas(){
 int mapa::getFilas(){
     return f_;
 }
+
+
+void mapa::guardar(ofstream* fich){
+    *fich<<f_<<" "<<c_<<endl;
+    for(int i=0;i<f_;i++){
+        for(int j=0;j<c_;j++){
+            *fich<<!(((celda*)layMapa_->itemAtPosition(i,j)->widget())->atravesable())<<" ";
+        }
+        *fich<<endl;
+    }
+}
+
+
