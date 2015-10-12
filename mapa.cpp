@@ -25,7 +25,7 @@ struct vectors{
     int y;
 };
 
-vectors camino[4];
+vectors camino[5];
 
 class MainWindow;
 
@@ -136,6 +136,9 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, int factor, QWidget* pa
 
     camino[3].x = 1;
     camino[3].y = 4;
+
+    camino[4].x = 8;
+    camino[4].y = 8;
 
     camino_ = 0;
 }
@@ -269,25 +272,25 @@ void mapa::guardar(ofstream* fich){
 void mapa::gestorRobot()
 {
     if(ira_ >= getFilas()-1){ ira_ = 1;jra_=1;}
-    moverRobot(camino[camino_ % 4].x,camino[camino_++ % 4].y);
+    moverRobot(camino[camino_ % 5].x,camino[camino_ % 5].y);
 
 }
 
 void mapa::moverRobot(int i, int j){
     quitarRobotDeActual();
 
-    qDebug() << "Camino actual : " << camino[camino_].x << " , " << camino[camino_].y ;
+    qDebug() << "Camino actual : " << camino[camino_ % 5].x << " , " << camino[camino_ % 5].y ;
     ponerRobotEn(i,j);
     ira_ = i;
     jra_ = j;
+    camino_++;
 }
 
 
 void mapa::quitarRobotDeActual(){ //[i,j]ra_ = i,j actual position of robot
     bool atravesable = ((celda*) (layMapa_->itemAtPosition(ira_,jra_)->widget()))->atravesable();
-    delete ((robot*) (layMapa_->itemAtPosition(ira_,jra_)->widget())); //limpiamos
+    delete ((celda*) (layMapa_->itemAtPosition(ira_,jra_))); //limpiamos
     layMapa_->addWidget (new celda(ira_,jra_,pixSuelo_,pixMuro_,!atravesable,this),ira_,jra_); //colocamos nuevo
-
 }
 
 void mapa::ponerRobotEn(int i, int j){
