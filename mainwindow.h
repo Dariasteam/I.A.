@@ -41,6 +41,7 @@ private:
     QCheckBox* checkAleatorio_;
     QProgressBar* barraProgreso_;
     QPushButton* botonClear_;
+    QPushButton* botonRobot_;
     QMenuBar*    menuBar_;
     QMenu*       mnuArchivo_;
     QAction*     actGuardar_;

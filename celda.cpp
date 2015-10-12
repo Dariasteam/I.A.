@@ -4,16 +4,20 @@
 #include <QPixmap>
 #include <QSizePolicy>
 #include <QMouseEvent>
-
+#include <QDebug>
 using namespace std;
 
-celda::celda(int i, int j, QPixmap* suelo, QPixmap* muro, bool tipo, QWidget* parent) : QLabel(parent){
+celda::celda(int i, int j, QPixmap* suelo, QPixmap* muro, bool tipo, QWidget* parent) :
+    QLabel(parent){
     i_=i;
     j_=j;
     setMinimumSize(1,1);
     pixSuelo_ = suelo;
     pixMuro_ = muro;
     cambiarTipo(tipo);
+
+    qDebug() << "Celda size : " << this->width() << " , " << this->height();
+
 }
 
 celda::~celda(){}
@@ -31,6 +35,8 @@ void celda::cambiarTipo(bool b){
         atravesable_=true;
     }
 }
+
+
 
 bool celda::atravesable(){
     return atravesable_;

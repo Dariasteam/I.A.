@@ -2,6 +2,7 @@
 #define LABEL_H
 #include <QLabel>
 #include <QGroupBox>
+#include "robot.h"
 
 class celda : public QLabel{
 
@@ -13,12 +14,15 @@ public:
     void resizeEvent(QResizeEvent* );
     void cambiarTipo(bool);
     bool atravesable();
+
+
 private:
     bool atravesable_;
     int i_;
     int j_;
     QPixmap* pixSuelo_;
     QPixmap* pixMuro_;
+
 
 };
 

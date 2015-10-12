@@ -16,8 +16,16 @@
 #include <QFileDialog>
 #include <fstream>
 #include "mainwindow.h"
+#include <QDebug>
 
 using namespace std;
+
+struct vectors{
+    int x;
+    int y;
+};
+
+vectors camino[4];
 
 class MainWindow;
 
@@ -40,6 +48,9 @@ mapa::mapa(ifstream* fich, QProgressBar* barra, QWidget* parent) : QWidget(paren
         setAutoFillBackground(true);
         setPalette(fondo);
     }
+
+    pixRobot_ = new QPixmap("../I.A./recursos/robot.gif");
+
     barra_->setMaximum(c_*f_);
     barra_->show();
     connect(this,SIGNAL(actualizarBarra(int)),barra_,SLOT(setValue(int)));
@@ -82,6 +93,9 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, int factor, QWidget* pa
         setAutoFillBackground(true);
         setPalette(fondo);
     }
+
+
+    pixRobot_ = new QPixmap("../I.A./recursos/robot32x32.gif");
     barra_->show();
     barra_->setMaximum(c_*f_);
     connect(this,SIGNAL(actualizarBarra(int)),barra_,SLOT(setValue(int)));
@@ -95,17 +109,41 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, int factor, QWidget* pa
             }else{
                 layMapa_->addWidget (new celda(i,j,pixSuelo_,pixMuro_,false,this),i,j);
             }
+
             emit actualizarBarra(barI);
             barI++;
         }
     }
     setLayout(layMapa_);
     barra_->hide();
+    qDebug() << "HolA";
+    timer_ = new QTimer(this);
+    connect(timer_, SIGNAL(timeout()), this, SLOT(gestorRobot()));
+    timer_->start(1000);
+    qDebug() << "Hola";
+
+    ira_ = jra_ = 1;
+
+
+    camino[0].x = 1;
+    camino[0].y = 1;
+
+    camino[1].x = 3;
+    camino[1].y = 1;
+
+    camino[2].x = 4;
+    camino[2].y = 4;
+
+    camino[3].x = 1;
+    camino[3].y = 4;
+
+    camino_ = 0;
 }
 
 void mapa::cambiarCeldaEn(int i, int j, bool muro){
     ((celda*) (layMapa_->itemAtPosition(i,j)->widget()))->cambiarTipo(muro);
 }
+
 
 
 void mapa::limpiarMapa(){
@@ -147,6 +185,8 @@ void mapa::actualizarEsteMapa(int factor){
         }
     }
     barra_->hide();
+
+    celdaSize_ = layMapa_->itemAtPosition(1,1)->widget()->size();
 }
 
 void mapa::mousePressEvent(QMouseEvent* E){
@@ -222,6 +262,40 @@ void mapa::guardar(ofstream* fich){
         *fich<<endl;
     }
     ((MainWindow*)this->parent())->actualizarTitulo(false);
+}
+
+
+//ROBOT MANAGEMENT
+void mapa::gestorRobot()
+{
+    if(ira_ >= getFilas()-1){ ira_ = 1;jra_=1;}
+    moverRobot(camino[camino_ % 4].x,camino[camino_++ % 4].y);
+
+}
+
+void mapa::moverRobot(int i, int j){
+    quitarRobotDeActual();
+
+    qDebug() << "Camino actual : " << camino[camino_].x << " , " << camino[camino_].y ;
+    ponerRobotEn(i,j);
+    ira_ = i;
+    jra_ = j;
+}
+
+
+void mapa::quitarRobotDeActual(){ //[i,j]ra_ = i,j actual position of robot
+    bool atravesable = ((celda*) (layMapa_->itemAtPosition(ira_,jra_)->widget()))->atravesable();
+    delete ((robot*) (layMapa_->itemAtPosition(ira_,jra_)->widget())); //limpiamos
+    layMapa_->addWidget (new celda(ira_,jra_,pixSuelo_,pixMuro_,!atravesable,this),ira_,jra_); //colocamos nuevo
+
+}
+
+void mapa::ponerRobotEn(int i, int j){
+    layMapa_->addWidget (new robot(i,j,pixRobot_,this),i,j);
+}
+
+void mapa::reiniciarRobot(){
+    moverRobot(1,1);
 }
 
 

@@ -48,8 +48,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     botonClear_ = new QPushButton("Clear");
 
+    botonRobot_ = new QPushButton("Robot");
+
     layMenu_->addWidget(boton_,0,0);
     layMenu_->addWidget(botonClear_,0,1);
+    layMenu_->addWidget(botonRobot_,0,2);
 
     checkAleatorio_ = new QCheckBox("Obstáculos aleatorios");
     QLabel* textoFactor = new QLabel("Factor de aleatoriedad [1,50]",this);
@@ -72,10 +75,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(checkAleatorio_,SIGNAL(clicked(bool)),spinFactor_,SLOT(setEnabled(bool)));
     connect(boton_,SIGNAL(clicked(bool)),this,SLOT(actualizarMapa()));
     connect(botonClear_, SIGNAL(clicked()), widMapa_, SLOT(limpiarMapa()));
+    connect(botonRobot_,SIGNAL(clicked()), widMapa_, SLOT(reiniciarRobot()));
 
     layMenu_->addWidget(spinFilas_,1,0);
     layMenu_->addWidget(spinColumnas_,2,0);
-    layMenu_->addWidget(checkAleatorio_,0,3);
+    layMenu_->addWidget(checkAleatorio_,0,4);
     layMenu_->addWidget(textoFactor,1,1);
     layMenu_->addWidget(spinFactor_,2,1);
 

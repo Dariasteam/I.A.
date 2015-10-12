@@ -15,11 +15,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
         celda.cpp \
-    mapa.cpp
+    mapa.cpp \
+    robot.cpp
 
 HEADERS  += mainwindow.h \
     celda.h \
-    mapa.h
+    mapa.h \
+    robot.h
 
 FORMS    += mainwindow.ui
 
