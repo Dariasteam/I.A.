@@ -18,11 +18,13 @@
 #include <fstream>
 #include <QMessageBox>
 #include <QSizePolicy>
+#include <QGraphicsView>
+#include <QPixmap>
+#include <QGraphicsItem>
 
 using namespace std;
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
 
@@ -36,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
     layPrincipal_->addWidget(barraProgreso_);
     widMapa_ = new mapa(10,10,barraProgreso_,0,this);
 
-    setCentralWidget(widPrincipal_);
+
     widPrincipal_->setLayout(layPrincipal_);
     layPrincipal_->addWidget(widMapa_);
     layPrincipal_->addLayout(layMenu_);
@@ -45,6 +47,11 @@ MainWindow::MainWindow(QWidget *parent) :
     boton_->setShortcut(Qt::Key_Enter);
 
     //actAyudaAcerca_->setShortcut((QKeySequence(Qt::CTRL + Qt::Key_H)));
+
+
+
+
+    setCentralWidget(widPrincipal_);
 
     botonClear_ = new QPushButton("Clear");
 
@@ -63,8 +70,8 @@ MainWindow::MainWindow(QWidget *parent) :
     spinColumnas_->setValue(10);
     spinFactor_->setValue(1);
 
-    spinFilas_->setMaximum(500);
-    spinColumnas_->setMaximum(500);
+    spinFilas_->setMaximum(1000);
+    spinColumnas_->setMaximum(1000);
     spinFactor_->setMaximum(50);
     spinFactor_->setMinimum(1);
     spinFactor_->setEnabled(false);
@@ -98,6 +105,7 @@ MainWindow::MainWindow(QWidget *parent) :
     menuBar_->addMenu(mnuArchivo_);
     setMenuBar(menuBar_);
     this->setWindowTitle("I.A.[*]");
+
 }
 
 MainWindow::~MainWindow(){
@@ -106,9 +114,6 @@ MainWindow::~MainWindow(){
 
 void MainWindow::resizeEvent(QResizeEvent *e){
 }
-
-
-
 
 void MainWindow::actualizarMapa(){
     mapa* aux;
@@ -135,7 +140,7 @@ void MainWindow::onAbrir(){
     rutaArchivo_= new QString(dialogoAbrir_->getOpenFileName(this,"Abrir Mapa","","*.map"));
     ifstream fich;
     if(rutaArchivo_->contains(".map")){
-        fich.open(rutaArchivo_->toStdString().c_str());
+        fich.open(rutaArchivo_->toStdString().c_str(), ios::in);
         if(fich.is_open()){
             mapa* aux;
             aux = new mapa(&fich,barraProgreso_,this);
@@ -166,6 +171,7 @@ void MainWindow::onGuardarComo(){
 
 void MainWindow::onGuardar(){
     ofstream fich;
+    cout<<"Voy a guardar en"<<rutaArchivo_->toStdString()<<endl;
     fich.open(rutaArchivo_->toStdString().c_str(), std::fstream::out | std::fstream::trunc);
     if(fich.is_open()){
         widMapa_->guardar(&fich);

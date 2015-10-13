@@ -14,12 +14,9 @@ public:
     void cambiarTipo(bool);
     bool atravesable();
 private:
-    bool atravesable_;
-    int i_;
-    int j_;
     QPixmap* pixSuelo_;
     QPixmap* pixMuro_;
-
+    bool atravesable_;
 };
 
 #endif // LABEL_H

@@ -13,6 +13,7 @@
 #include <QMenuBar>
 #include <QAction>
 #include <QFileDialog>
+#include <QScrollArea>
 
 namespace Ui {
 class MainWindow;
@@ -48,6 +49,7 @@ private:
     QAction*     actCargar_;
     QString*     rutaArchivo_;
     QFileDialog* dialogoAbrir_;
+    QScrollArea* areaScroll_;
 private slots:
     void actualizarMapa();
     void onAbrir();
