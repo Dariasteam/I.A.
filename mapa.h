@@ -31,22 +31,18 @@ public:
     int pos(int,int);
     void operacionesConstruccion(int,int,int,QProgressBar*);
     QGraphicsPixmapItem* pintarPixmap(double,double,QPixmap*);
-    void sustituirPixmap(double,double,QPixmap*);
-    void cargarCelda(short idPix, int fila, int columna);
+    void sustituirCelda(double,double,QPixmap*);
 private:
     Ui::mapa* ui;
-    celda* matrizMapa_;
+    celda*              matrizMapa_;
+    QPixmap*            terrenos_;
+    short               pincel_;
     QBoxLayout* layMapa_;                      //layout del mapa
     int c_;                                     //columnas de la matriz
     int f_;                                     //filas de la matriz
     bool pintar_;                               //true=añadir obstaculos, false=borrar obstaculos
-    QPixmap* pixSuelo_;
-    QPixmap* pixMuro_;
-    QPixmap* pixRojo_;
-    QPixmap* pixMetal_;
-    QPixmap* pixTierra_;
-    QPixmap* pixNuclear_;
-    QPixmap* pixRejilla_;
+
+
     QProgressBar* barra_;
     int factor_;
     QFileDialog* dialogoAbrir_;
