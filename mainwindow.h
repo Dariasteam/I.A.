@@ -14,6 +14,8 @@
 #include <QAction>
 #include <QFileDialog>
 #include <QScrollArea>
+#include <QDockWidget>
+#include <QToolBox>
 
 namespace Ui {
 class MainWindow;
@@ -41,7 +43,7 @@ private:
     QSpinBox* spinFactor_;
     QCheckBox* checkAleatorio_;
     QProgressBar* barraProgreso_;
-    QPushButton* botonClear_;
+    QPushButton* botonGenerar_;
     QMenuBar*    menuBar_;
     QMenu*       mnuArchivo_;
     QAction*     actGuardar_;
@@ -50,6 +52,8 @@ private:
     QString*     rutaArchivo_;
     QFileDialog* dialogoAbrir_;
     QScrollArea* areaScroll_;
+    QDockWidget* dockIzquierda_;
+    QToolBox*    panelDesplegable_;
 private slots:
     void actualizarMapa();
     void onAbrir();

@@ -24,9 +24,44 @@
 #include <QSizePolicy>
 #include <QBoxLayout>
 
+
 using namespace std;
 
 class MainWindow;
+
+mapa::mapa(int filas, int columnas, QProgressBar* barra, int factor, QWidget* parent) : QWidget(parent){
+    operacionesConstruccion(filas,columnas,factor,barra);
+    srand(time(NULL));
+    for(int i=0;i<f_;i++){
+        for(int j=0;j<c_;j++){
+            int aleatoriedad = rand()%100+ 1;
+            if(i==0 || j==0 || i==f_-1 || j==c_-1){
+                cargarCelda(6,i,j);
+            }else if(aleatoriedad<=factor){
+                cargarCelda(5,i,j);
+            }else{
+                aleatoriedad = rand()%4+ 1;
+                cargarCelda(aleatoriedad,i,j);
+            }
+            emit actualizarBarra(j+(i*c_));
+        }
+    }
+    barra_->hide();
+}
+
+mapa::mapa(ifstream* fich, QProgressBar* barra, QWidget* parent) : QWidget(parent){
+    *fich>>f_;
+    *fich>>c_;
+    operacionesConstruccion(f_,c_,0,barra);
+    for(int i=0;i<f_;i++){
+        for(int j=0;j<c_;j++){
+            short muro;
+            *fich>>muro;
+            cargarCelda(muro,i,j);
+        }
+    }
+    barra_->hide();
+}
 
 void mapa::operacionesConstruccion(int filas ,int columnas, int factor, QProgressBar* barra){
     f_=filas;
@@ -35,128 +70,72 @@ void mapa::operacionesConstruccion(int filas ,int columnas, int factor, QProgres
     factor_=factor;
     dialogoAbrir_ = new QFileDialog(this);
     layMapa_ = new QBoxLayout(QBoxLayout::TopToBottom,this);
-    barra_->show();
+
     barra_->setMaximum(c_*f_);
+    barra_->show();
     connect(this,SIGNAL(actualizarBarra(int)),barra_,SLOT(setValue(int)));
     emit actualizarBarra(0);
-    matrizMapa_ = new bool[c_*f_];
+    matrizMapa_ = new celda[c_*f_];
     escena_ = new QGraphicsScene(this);
     view_ = new QGraphicsView(escena_,this);
     if(f_<35 && c_<35){
         pixSuelo_ = new QPixmap("../I.A./recursos/suelo.png");
         pixMuro_ = new QPixmap("../I.A./recursos/muro.png");
-        layMapa_->setSpacing(0);
+        pixRojo_ = new QPixmap("../I.A./recursos/rojo.png");
+        pixMetal_ = new QPixmap("../I.A./recursos/metal.png");
+        pixTierra_ = new QPixmap("../I.A./recursos/tierra.png");
+        pixNuclear_ = new QPixmap("../I.A./recursos/nuclear.png");
+        pixRejilla_ = new QPixmap("../I.A./recursos/rejilla.png");
+
     }else{
-        pixSuelo_ = new QPixmap("../I.A./recursos/sueloLow.png");
+        /*pixSuelo_ = new QPixmap("../I.A./recursos/sueloLow.png");
         pixMuro_ = new QPixmap("../I.A./recursos/muroLow.png");
-        layMapa_->setSpacing(1);
-        QPalette fondo(palette());
-        fondo.setColor(QPalette::Background, Qt::black);
-        setAutoFillBackground(true);
-        setPalette(fondo);
+        layMapa_->setSpacing(0);*/
+        pixSuelo_ = new QPixmap("../I.A./recursos/suelo.png");
+        pixMuro_ = new QPixmap("../I.A./recursos/muro.png");
+        pixRojo_ = new QPixmap("../I.A./recursos/rojo.png");
+        pixMetal_ = new QPixmap("../I.A./recursos/metal.png");
+        pixTierra_ = new QPixmap("../I.A./recursos/tierra.png");
+        pixNuclear_ = new QPixmap("../I.A./recursos/nuclear.png");
+        pixRejilla_ = new QPixmap("../I.A./recursos/rejilla.png");
+        layMapa_->setSpacing(0);
     }
+    layMapa_->setSpacing(0);
     escala_ = ((this->width()*5/pixMuro_->size().width()));
     escala_ = escala_ / f_;
-}
+    view_->setBaseSize(500,500);
+    view_->setMinimumSize(500,500);
+    view_->setMaximumSize(500,500);
 
-mapa::mapa(ifstream* fich, QProgressBar* barra, QWidget* parent) : QWidget(parent){
-    *fich>>f_;
-    *fich>>c_;
-    operacionesConstruccion(f_,c_,0,barra);
-    int barI=1;
-    QGraphicsPixmapItem* auxPix;
-    for(int i=0;i<f_;i++){
-        for(int j=0;j<c_;j++){
-            bool muro;
-            *fich>>muro;
-            matrizMapa_[pos(i,j)]=muro;
-            if(muro){
-                auxPix = escena_->addPixmap(*pixMuro_);
-            }else{
-                auxPix = escena_->addPixmap(*pixSuelo_);
-            }
-            emit actualizarBarra(barI);
-            barI++;
-            auxPix->setScale(escala_);
-            auxPix->setPos(i*escala_*pixMuro_->size().height(),j*escala_*pixMuro_->size().height());
-        }
-    }
-    setLayout(layMapa_);
-    barra_->hide();
-}
+    layMapa_->setContentsMargins(0,0,0,0);
 
-
-mapa::mapa(int filas, int columnas, QProgressBar* barra, int factor, QWidget* parent) : QWidget(parent){
-    operacionesConstruccion(filas,columnas,factor,barra);
-    srand(time(NULL));
-    int aleatoriedad;
-    int barI=1;
-    QGraphicsPixmapItem* auxPix;
-    for(int i=0;i<f_;i++){
-        for(int j=0;j<c_;j++){
-            aleatoriedad = rand()%100+ 1;
-            if(aleatoriedad<=factor || (i==0 || j==0 || i==f_-1 || j==c_-1)){
-                auxPix = escena_->addPixmap(*pixMuro_);
-                matrizMapa_[pos(i,j)]=true;
-            }else{
-                auxPix = escena_->addPixmap(*pixSuelo_);
-                matrizMapa_[pos(i,j)]=false;
-            }
-            emit actualizarBarra(barI);
-            barI++;
-            auxPix->setScale(escala_);
-            auxPix->setPos(i*escala_*pixMuro_->size().height(),j*escala_*pixMuro_->size().height());
-        }
-    }
-    view_->show();
     layMapa_->addWidget(view_);
-    barra_->hide();
+    view_->show();
+
+    view_->setSizeIncrement(1,0.5);
 }
 
-void mapa::cambiarCeldaEn(int i, int j, bool muro){
-    matrizMapa_[pos(i,j)] = muro;
-}
-
-
-void mapa::limpiarMapa(){
-    cout << "Entramos en limpiarMApa" << endl;
-    barra_->setMaximum(c_*f_);
-    barra_->setValue(0);
-    barra_->show();
-    int barI = 1;
-    for(int i = 0; i < f_ ; i++){
-        for(int j = 0; j < c_ ; j++){
-            if((i == 0 || j == 0 || i == f_-1 || j == c_-1)){
-                matrizMapa_[pos(i,j)] = true;
-            }else{
-                matrizMapa_[pos(i,j)] = false;
-            }
-            barI++;
-            emit actualizarBarra(barI);
-        }
+QPixmap* mapa::cargarCelda(short npix, int i, int j){
+    switch (npix) {
+    case 1:
+        matrizMapa_[pos(i,j)]={npix,pintarPixmap(i,j,pixSuelo_)};
+        break;
+    case 2:
+        matrizMapa_[pos(i,j)]={npix,pintarPixmap(i,j,pixTierra_)};
+        break;
+    case 3:
+        matrizMapa_[pos(i,j)]={npix,pintarPixmap(i,j,pixMetal_)};
+        break;
+    case 4:
+        matrizMapa_[pos(i,j)]={npix,pintarPixmap(i,j,pixRejilla_)};
+        break;
+    case 5:
+        matrizMapa_[pos(i,j)]={npix,pintarPixmap(i,j,pixRojo_)};
+        break;
+    case 6:
+        matrizMapa_[pos(i,j)]={npix,pintarPixmap(i,j,pixMuro_)};
+        break;
     }
-    barra_->hide();
-}
-
-void mapa::actualizarEsteMapa(int factor){
-    int aleatoriedad;
-    barra_->show();
-    emit actualizarBarra(0);
-    int barI=1;
-
-    for(int i=0;i<f_;i++){
-        for(int j=0;j<c_;j++){
-            aleatoriedad = rand()%100+ 1;
-            if(aleatoriedad<=factor || (i == 0 || j == 0 || i == f_-1 || j == c_-1)){
-                matrizMapa_[pos(i,j)] = true;
-            }else{
-                matrizMapa_[pos(i,j)] = false;
-            }
-            barI++;
-            emit actualizarBarra(barI);
-        }
-    }
-    barra_->hide();
 }
 
 void mapa::mousePressEvent(QMouseEvent* E){
@@ -171,58 +150,59 @@ void mapa::mousePressEvent(QMouseEvent* E){
 
 void mapa::resizeEvent(QResizeEvent* ){
    layMapa_->update();
-
 }
 
 
 void mapa::mouseMoveEvent(QMouseEvent* ){
+    cout<<"skdjfsldjflskddjfasf"<<endl;
     pintar();
 
 }
 
+QGraphicsPixmapItem* mapa::pintarPixmap(double x, double y, QPixmap* pix){
+    QGraphicsPixmapItem* auxPix;
+    auxPix = escena_->addPixmap(*pix);
+    auxPix->setScale(escala_);
+    auxPix->setPos(x*escala_*pix->size().height(),y*escala_*pix->size().height());
+    return auxPix;
+}
+
+void mapa::sustituirPixmap(double x, double y, QPixmap* pix){
+    QGraphicsPixmapItem* auxPixBorrar = matrizMapa_[pos(x,y)].pix_;
+    QGraphicsPixmapItem* auxPix;
+    auxPix = escena_->addPixmap(*pix);
+    auxPix->setScale(escala_);
+    auxPix->setPos(x*escala_*pix->size().height(),y*escala_*pix->size().height());
+    matrizMapa_[pos(x,y)].pix_=auxPix;
+    delete auxPixBorrar;
+    matrizMapa_[pos(x,y)].tipo_=6;
+}
+
+
 void mapa::pintar(){
-    //paintEngine()->drawPixmap(10,10,10,10,*pixMuro_);
-
-
-    //paintEvent();
-    //lienzo_->
-
-
-
-    /*QSize celdaSz = layMapa_->itemAtPosition(0,0)->widget()->size();
     QPoint cursor = this->mapFromGlobal(QCursor::pos());
-    QRect widgetRect = this->geometry();
+    int anchoMapa  = view_->width();
+    int altoMapa   = view_->height();
 
-    int anchoMapa  = widgetRect.width();
-    int altoMapa   = widgetRect.height();
-    int xFinalMapa = widgetRect.width();
-    int yFinalMapa = widgetRect.height();
 
     int ratonX = (cursor.x());
     int ratonY = (cursor.y());
-    if((ratonX > 0) && (cursor.x() < xFinalMapa) &&
-       (ratonY > 0)  && (cursor.y() < yFinalMapa)){
+
+    if((ratonX > 0) && (cursor.x() < anchoMapa) &&
+       (ratonY > 0)  && (cursor.y() < altoMapa)){
         double  xCelda = anchoMapa / c_;
         double yCelda = altoMapa   / f_;
-
-        cout<<"Las celdas miden "<<xCelda<<","<<yCelda<<endl;
-
         double c = ratonX / xCelda;
         double f = ratonY / yCelda;
 
         int fila    = (int)(f);
         int columna = (int)(c);
 
-        cout<<ratonX<<" "<<ratonY<<endl;
-
-
-
-        /*if(fila>-1 && fila<f_ && columna>-1 && columna<c_){                                         //prevenir errores de calculo de pocos pixeles
-            cout<<"Corresponde a la celda "<<fila<<","<<columna<<endl;
-            //((celda*)layMapa_->itemAtPosition(fila,columna)->widget())->cambiarTipo(pintar_);
-            matrizMapa_[pos(fila,columna)]=pintar_;
+        if(fila>-1 && fila<f_ && columna>-1 && columna<c_){
+            //cargarCelda(pintar_,fila,columna);
+            sustituirPixmap(columna,fila,pixMuro_);
         }
-    }*/
+    }
 }
 
 int mapa::getColumnas(){
@@ -233,12 +213,11 @@ int mapa::getFilas(){
     return f_;
 }
 
-
 void mapa::guardar(ofstream* fich){
     *fich<<f_<<" "<<c_<<endl;
     for(int i=0;i<f_;i++){
         for(int j=0;j<c_;j++){
-            *fich<<matrizMapa_[pos(i,j)]<<" ";
+            *fich<<matrizMapa_[pos(i,j)].tipo_<<" ";
         }
         *fich<<endl;
     }

@@ -8,17 +8,17 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+CONFIG += c++11
+
 TARGET = IA
 TEMPLATE = app
 
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-        celda.cpp \
     mapa.cpp
 
 HEADERS  += mainwindow.h \
-    celda.h \
     mapa.h
 
 FORMS    += mainwindow.ui
