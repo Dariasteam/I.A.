@@ -16,20 +16,33 @@
 #include <QScrollArea>
 #include <QDockWidget>
 #include <QToolBox>
+#include <QList>
 
 namespace Ui {
-class MainWindow;
+    class MainWindow;
 }
 
-class MainWindow : public QMainWindow
-{
+struct terrenos{
+    short muro;
+    short metal;
+    short rejilla;
+    short tierra;
+};
+
+struct menuTerreno{
+    QSlider*   slider_;
+    QLabel*    label_;
+    short      valorAnterior_;
+};
+
+class MainWindow : public QMainWindow{
     Q_OBJECT
 
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void actualizarConnects();
     void actualizarTitulo(bool);
+    void crearLabelSlider(QString,int,int);
 protected:
     void resizeEvent(QResizeEvent *);
 private:
@@ -54,11 +67,17 @@ private:
     QScrollArea* areaScroll_;
     QDockWidget* dockIzquierda_;
     QToolBox*    panelDesplegable_;
+    QGridLayout* layOpcionesMapa_;
+    QGridLayout* layOpcionesAlgoritmo_;
+    menuTerreno*       editoresTerreno_;
+    //unsigned short*       valoresTerreno_;
+    //QList<QSlider*>     slidersTerreno_;
 private slots:
     void actualizarMapa();
     void onAbrir();
     void onGuardar();
     void onGuardarComo();
+    void actualizarSliders();
 };
 
 #endif // MAINWINDOW_H

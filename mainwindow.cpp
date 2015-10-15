@@ -24,8 +24,13 @@
 #include <QDockWidget>
 #include <QToolBox>
 #include <QSpacerItem>
+#include <unistd.h>
+#include <QThread>
+#include <thread>
+#include <QFrame>
 
 using namespace std;
+
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -39,7 +44,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     barraProgreso_ = new QProgressBar(this);
 
     layPrincipal_->addWidget(barraProgreso_);
-    widMapa_ = new mapa(10,10,barraProgreso_,0,this);
+    widMapa_ = new mapa(10,10,barraProgreso_,0,0,0,0,this);
+    //this->setSizePolicy();
+
     widPrincipal_->setLayout(layPrincipal_);
     layPrincipal_->addWidget(widMapa_);
     layPrincipal_->addLayout(layMenu_);
@@ -64,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     setCentralWidget(widPrincipal_);
 
-    botonGenerar_ = new QPushButton("Generar");
+
 
 
 
@@ -83,6 +90,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     spinColumnas_->setMaximum(1000);
     spinFactor_->setMaximum(50);
     spinFactor_->setMinimum(0);
+
+    botonGenerar_ = new QPushButton("Generar");
+
 
     connect(checkAleatorio_,SIGNAL(clicked(bool)),spinFactor_,SLOT(setEnabled(bool)));
     connect(botonGenerar_,SIGNAL(clicked(bool)),this,SLOT(actualizarMapa()));
@@ -103,25 +113,38 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     panelDesplegable_->addItem(opcionesMapa,"Mapa");
     panelDesplegable_->addItem(opcionesAlgoritmo,"Algoritmo");
 
-    QGridLayout* layOpcionesMapa = new QGridLayout(opcionesMapa);
-    QGridLayout* layOpcionesAlgoritmo = new QGridLayout(opcionesAlgoritmo);
+    layOpcionesMapa_ = new QGridLayout(opcionesMapa);
+    layOpcionesAlgoritmo_ = new QGridLayout(opcionesAlgoritmo);
 
-    //INICIACIÓN DEL LAYOUT DE CADA TOOLBAR
 
-    layOpcionesMapa->addWidget(new QLabel("filas",opcionesMapa),0,0);
-    layOpcionesMapa->addWidget(spinFilas_,0,1);
 
-    layOpcionesMapa->addWidget(new QLabel("columnas",opcionesMapa),1,0);
-    layOpcionesMapa->addWidget(spinColumnas_,1,1);
+    QFrame* linea  = new QFrame();
+    linea->setFrameShape(QFrame::HLine);
 
-    layOpcionesMapa->addWidget(new QLabel("aleatorio",opcionesMapa),2,0);
+    //INICIALIZACION DEL LAYOUT DE CADA TOOLBAR
 
-    layOpcionesMapa->addWidget(spinFactor_,2,1);
 
-    layOpcionesMapa->addWidget(botonGenerar_,3,0,2,0);
+
+    layOpcionesMapa_->addWidget(new QLabel("Dimensiones: ",opcionesMapa),0,0,1,0);
+    layOpcionesMapa_->addWidget(new QLabel("filas",opcionesMapa),1,0);
+    layOpcionesMapa_->addWidget(spinFilas_,1,1);
+    layOpcionesMapa_->addWidget(new QLabel("columnas",opcionesMapa),2,0);
+    layOpcionesMapa_->addWidget(spinColumnas_,2,1);
+    layOpcionesMapa_->addWidget(linea,3,0,1,0);
+    layOpcionesMapa_->addWidget(new QLabel("Terrenos: "),4,0,1,0);
+    editoresTerreno_ = new menuTerreno[4];
+    crearLabelSlider("Muro",5,0);
+    crearLabelSlider("Metal",7,1);
+    crearLabelSlider("Rejilla",9,2);
+    crearLabelSlider("Tierra",11,3);
+    layOpcionesMapa_->addWidget(linea,13,0,1,0);
+    layOpcionesMapa_->addWidget(botonGenerar_,14,0,1,2);
+
 
     dockIzquierda_->setMinimumWidth(150);
     dockIzquierda_->setMaximumWidth(150);
+
+    layOpcionesMapa_->setSizeConstraint(QLayout::SetFixedSize);
 
 
     menuBar_ = new QMenuBar(this);
@@ -142,6 +165,65 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     menuBar_->addMenu(mnuArchivo_);
     setMenuBar(menuBar_);
     this->setWindowTitle("I.A.[*]");
+    this->layout()->setSizeConstraint(QLayout::SetFixedSize);
+}
+
+
+void MainWindow::crearLabelSlider(QString nombre, int posLay, int i){
+    editoresTerreno_[i].slider_ = new QSlider(Qt::Horizontal);
+    editoresTerreno_[i].slider_->setRange(0,50);
+    editoresTerreno_[i].slider_->setValue(0);
+    editoresTerreno_[i].label_ = new QLabel("0");
+    connect(editoresTerreno_[i].slider_,SIGNAL(valueChanged(int)),this,SLOT(actualizarSliders()));
+    connect(editoresTerreno_[i].slider_,SIGNAL(valueChanged(int)),editoresTerreno_[i].label_,SLOT(setNum(int)));
+    layOpcionesMapa_->addWidget(new QLabel(nombre),posLay,0);
+    layOpcionesMapa_->addWidget(editoresTerreno_[i].label_,posLay,1);
+    layOpcionesMapa_->addWidget(editoresTerreno_[i].slider_,posLay+1,0,1,0);
+    editoresTerreno_[i].valorAnterior_ = 0;
+}
+
+void MainWindow::actualizarSliders(){
+    int i=0;
+    while(i<4 && editoresTerreno_[i].valorAnterior_==editoresTerreno_[i].slider_->value()){
+        i++;
+    }
+    if(i<4){
+        if((editoresTerreno_[0].slider_->value() +
+            editoresTerreno_[1].slider_->value() +
+            editoresTerreno_[2].slider_->value() +
+            editoresTerreno_[3].slider_->value())  > 50){
+
+            float factorReduccion =
+            50 - (editoresTerreno_[0].slider_->value()>0)*editoresTerreno_[0].slider_->value() +
+            (editoresTerreno_[1].slider_->value()>0)*editoresTerreno_[1].slider_->value() +
+            (editoresTerreno_[2].slider_->value()>0)*editoresTerreno_[2].slider_->value() +
+            (editoresTerreno_[3].slider_->value()>0)*editoresTerreno_[3].slider_->value();
+
+            factorReduccion = factorReduccion /
+            (((editoresTerreno_[0].slider_->value()>0) * (0!=i)) +
+             ((editoresTerreno_[1].slider_->value()>0) * (1!=i)) +
+             ((editoresTerreno_[2].slider_->value()>0) * (2!=i)) +
+             ((editoresTerreno_[3].slider_->value()>0) * (3!=i)));
+
+            if(factorReduccion>0 && factorReduccion<INFINITY){
+                for(int j=0;j<4;j++){
+                    if(j!=i && editoresTerreno_[j].valorAnterior_ >
+                       fabs(editoresTerreno_[j].valorAnterior_-(factorReduccion*editoresTerreno_[j].valorAnterior_>0))
+                       && editoresTerreno_[j].valorAnterior_>0){
+                            editoresTerreno_[j].valorAnterior_ = fabs(editoresTerreno_[j].valorAnterior_-
+                                                                     (factorReduccion*editoresTerreno_[j].valorAnterior_>0));
+                            editoresTerreno_[j].slider_->setValue(editoresTerreno_[j].valorAnterior_);
+                            editoresTerreno_[0].label_->setNum(editoresTerreno_[0].valorAnterior_);
+                    }
+                }
+            }
+        }
+        editoresTerreno_[i].valorAnterior_ = editoresTerreno_[i].slider_->value();
+        editoresTerreno_[0].label_->setNum(editoresTerreno_[0].valorAnterior_);
+        editoresTerreno_[1].label_->setNum(editoresTerreno_[1].valorAnterior_);
+        editoresTerreno_[2].label_->setNum(editoresTerreno_[2].valorAnterior_);
+        editoresTerreno_[3].label_->setNum(editoresTerreno_[3].valorAnterior_);
+    }
 }
 
 MainWindow::~MainWindow(){
@@ -154,16 +236,14 @@ void MainWindow::resizeEvent(QResizeEvent*){
 void MainWindow::actualizarMapa(){
     mapa* aux;
     cout<<"Generando nuevo mapa"<<endl;
-    aux = new mapa(spinFilas_->value(),spinColumnas_->value(),barraProgreso_,spinFactor_->value(),this);
+    aux = new mapa(spinFilas_->value(),spinColumnas_->value(),barraProgreso_,
+                   editoresTerreno_[0].valorAnterior_,
+                   editoresTerreno_[1].valorAnterior_,
+                   editoresTerreno_[2].valorAnterior_,
+                   editoresTerreno_[3].valorAnterior_,this);
     layPrincipal_->replaceWidget(widMapa_,aux);
     delete widMapa_;
     widMapa_=aux;
-    actualizarConnects();
-}
-
-
-void MainWindow::actualizarConnects(){
-    //connect(botonGenerar_, SIGNAL(clicked()), widMapa_, SLOT(limpiarMapa()));
 }
 
 void MainWindow::onAbrir(){
@@ -177,7 +257,6 @@ void MainWindow::onAbrir(){
             layPrincipal_->replaceWidget(widMapa_,aux);
             delete widMapa_;
             widMapa_=aux;
-            actualizarConnects();
             fich.close();
             actGuardar_->setEnabled(true);
             this->setWindowTitle("I.A.[*] - "+*rutaArchivo_);

@@ -16,10 +16,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    mapa.cpp
+    mapa.cpp \
+    graphicsmapa.cpp
 
 HEADERS  += mainwindow.h \
-    mapa.h
+    mapa.h \
+    graphicsmapa.h
 
 FORMS    += mainwindow.ui
 
