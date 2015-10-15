@@ -35,24 +35,6 @@ using namespace std;
 
 class MainWindow;
 
-void mapa::zoom(int i){
-    double restauracion = double(1/double(ultimoZoom_));
-    view_->scale(restauracion,restauracion);
-    if(i>ultimoZoom_){
-        view_->scale(double(double(i)),double(double(i)));
-    }else{
-        view_->scale(double(double(i)),double(double(i)));
-    }
-    ultimoZoom_ = i;
-}
-
-void mapa::rastro(){
-    if(robot_!=NULL){
-        robot_->moveBy(1,0);
-    }else{
-        robot_ = pintarPixmap(1,2,new QPixmap("../I.A./recursos/robot.png"));
-    }
-}
 
 mapa::mapa(int filas, int columnas, QProgressBar* barra, short a, short b,short c,short d,
            QWidget* parent) : QWidget(parent)
@@ -146,6 +128,25 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     emit actualizarBarra(0);
     layMapa_->addWidget(view_);
     view_->show();
+}
+
+void mapa::zoom(int i){
+    double restauracion = double(1/double(ultimoZoom_));
+    view_->scale(restauracion,restauracion);
+    if(i>ultimoZoom_){
+        view_->scale(double(double(i)),double(double(i)));
+    }else{
+        view_->scale(double(double(i)),double(double(i)));
+    }
+    ultimoZoom_ = i;
+}
+
+void mapa::rastro(){
+    if(robot_!=NULL){
+        robot_->moveBy(1,0);
+    }else{
+        robot_ = pintarPixmap(1,2,new QPixmap("../I.A./recursos/robot.png"));
+    }
 }
 
 QGraphicsPixmapItem* mapa::pintarPixmap(double fila, double columna, QPixmap* pix){

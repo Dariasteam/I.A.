@@ -22,13 +22,6 @@ namespace Ui {
     class MainWindow;
 }
 
-struct terrenos{
-    short muro;
-    short metal;
-    short rejilla;
-    short tierra;
-};
-
 struct menuTerreno{
     QSlider*   slider_;
     QLabel*    label_;
@@ -53,8 +46,6 @@ private:
     mapa*    widMapa_;
     QSpinBox* spinFilas_;
     QSpinBox* spinColumnas_;
-    QSpinBox* spinFactor_;
-    QCheckBox* checkAleatorio_;
     QProgressBar* barraProgreso_;
     QPushButton* botonGenerar_;
     QMenuBar*    menuBar_;
