@@ -62,6 +62,14 @@ private:
     menuTerreno*       editoresTerreno_;
     //unsigned short*       valoresTerreno_;
     //QList<QSlider*>     slidersTerreno_;
+
+    QAction * muro_;
+    QAction * rojo_;
+    QAction * suelo_;
+    QAction * metal_;
+    QAction * rejilla_;
+    QAction * tierra_;
+
 private slots:
     void actualizarMapa();
     void onAbrir();

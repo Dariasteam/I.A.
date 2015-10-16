@@ -137,38 +137,40 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     QToolBar * barra = new QToolBar("suso",this);
     this->addToolBar(barra);
 
-    QAction * muro = new QAction(QIcon(QPixmap("../I.A./recursos/muro.png")),"muro",this);
-    QAction * rojo = new QAction(QIcon(QPixmap("../I.A./recursos/rojo.png")),"rojo",this);
-    QAction * suelo = new QAction(QIcon(QPixmap("../I.A./recursos/suelo.png")),"suelo",this);
-    QAction * metal = new QAction(QIcon(QPixmap("../I.A./recursos/metal.png")),"metal",this);
-    QAction * rejilla = new QAction(QIcon(QPixmap("../I.A./recursos/rejilla.png")),"rejilla",this);
-    QAction * tierra = new QAction(QIcon(QPixmap("../I.A./recursos/tierra.png")),"Tierra",this);
+    muro_ = new QAction(QIcon(QPixmap("../I.A./recursos/muro.png")),"muro",this);
+    rojo_ = new QAction(QIcon(QPixmap("../I.A./recursos/rojo.png")),"rojo",this);
+    suelo_ = new QAction(QIcon(QPixmap("../I.A./recursos/suelo.png")),"suelo",this);
+    metal_ = new QAction(QIcon(QPixmap("../I.A./recursos/metal.png")),"metal",this);
+    rejilla_ = new QAction(QIcon(QPixmap("../I.A./recursos/rejilla.png")),"rejilla",this);
+    tierra_ = new QAction(QIcon(QPixmap("../I.A./recursos/tierra.png")),"Tierra",this);
+
+
 
    // QButtonGroup * ese = new QButtonGroup(barra);
 
    // ese->addButton(new QPushButton(QIcon(QPixmap("../I.A./recursos/muro.png")),"",this),0);
 
 
-    muro->setCheckable(true);
-    rojo->setCheckable(true);
-    suelo->setCheckable(true);
-    metal->setCheckable(true);
-    rejilla->setCheckable(true);
-    tierra->setCheckable(true);
+    muro_->setCheckable(true);
+    rojo_->setCheckable(true);
+    suelo_->setCheckable(true);
+    metal_->setCheckable(true);
+    rejilla_->setCheckable(true);
+    tierra_->setCheckable(true);
 
-    barra->addAction(muro);
-    barra->addAction(rojo);
-    barra->addAction(suelo);
-    barra->addAction(metal);
-    barra->addAction(rejilla);
-    barra->addAction(tierra);
+    barra->addAction(muro_);
+    barra->addAction(rojo_);
+    barra->addAction(suelo_);
+    barra->addAction(metal_);
+    barra->addAction(rejilla_);
+    barra->addAction(tierra_);
 
-    connect(muro,SIGNAL(triggered()),this,SLOT(cambiarPincelAMuro()));
-    connect(rojo,SIGNAL(triggered()),this,SLOT(cambiarPincelARojo()));
-    connect(suelo,SIGNAL(triggered()),this,SLOT(cambiarPincelASuelo()));
-    connect(metal,SIGNAL(triggered()),this,SLOT(cambiarPincelAMetal()));
-    connect(rejilla,SIGNAL(triggered()),this,SLOT(cambiarPincelARejilla()));
-    connect(tierra,SIGNAL(triggered()),this,SLOT(cambiarPincelATierra()));
+    connect(muro_,SIGNAL(triggered()),this,SLOT(cambiarPincelAMuro()));
+    connect(rojo_,SIGNAL(triggered()),this,SLOT(cambiarPincelARojo()));
+    connect(suelo_,SIGNAL(triggered()),this,SLOT(cambiarPincelASuelo()));
+    connect(metal_,SIGNAL(triggered()),this,SLOT(cambiarPincelAMetal()));
+    connect(rejilla_,SIGNAL(triggered()),this,SLOT(cambiarPincelARejilla()));
+    connect(tierra_,SIGNAL(triggered()),this,SLOT(cambiarPincelATierra()));
 
 
 
@@ -313,35 +315,79 @@ void MainWindow::actualizarTitulo(bool b){
 void MainWindow::cambiarPincelAMuro()
 {
     widMapa_->cambiarTipoPincel(6);
+    muro_->setChecked(true);
+    suelo_->setChecked(false);
+    tierra_->setChecked(false);
+    rojo_->setChecked(false);
+    rejilla_->setChecked(false);
+    metal_->setChecked(false);
 }
 
 
 void MainWindow::cambiarPincelARojo()
 {
     widMapa_->cambiarTipoPincel(5);
+
+    muro_->setChecked(false);
+    suelo_->setChecked(false);
+    tierra_->setChecked(false);
+    rojo_->setChecked(true);
+    rejilla_->setChecked(false);
+    metal_->setChecked(false);
 }
 
 
 void MainWindow::cambiarPincelASuelo()
 {
     widMapa_->cambiarTipoPincel(4);
+
+
+    muro_->setChecked(false);
+    suelo_->setChecked(true);
+    tierra_->setChecked(false);
+    rojo_->setChecked(false);
+    rejilla_->setChecked(false);
+    metal_->setChecked(false);
 }
 
 
 void MainWindow::cambiarPincelAMetal()
 {
     widMapa_->cambiarTipoPincel(3);
+
+    muro_->setChecked(false);
+    suelo_->setChecked(false);
+    tierra_->setChecked(false);
+    rojo_->setChecked(false);
+    rejilla_->setChecked(false);
+    metal_->setChecked(true);
 }
 
 void MainWindow::cambiarPincelATierra()
 {
     widMapa_->cambiarTipoPincel(2);
+
+
+    muro_->setChecked(false);
+    suelo_->setChecked(false);
+    tierra_->setChecked(true);
+    rojo_->setChecked(false);
+    rejilla_->setChecked(false);
+    metal_->setChecked(false);
 }
 
 
 void MainWindow::cambiarPincelARejilla()
 {
     widMapa_->cambiarTipoPincel(1);
+
+
+    muro_->setChecked(false);
+    suelo_->setChecked(false);
+    tierra_->setChecked(false);
+    rojo_->setChecked(false);
+    rejilla_->setChecked(true);
+    metal_->setChecked(false);
 }
 
 
