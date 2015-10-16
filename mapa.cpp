@@ -114,7 +114,6 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     connect(zoomSlider_,SIGNAL(valueChanged(int)),this,SLOT(zoom(int)));
     ultimoZoom_ = 1;
     if(f_>c_){
-
         escala_ = double(double((600)/f_)/terrenos_[0].size().height());
         view_->setMinimumSize((double(escala_*terrenos_[0].size().width())*c_)+2,600);
         view_->setBaseSize((double(escala_*terrenos_[0].size().width())*c_)+2,600);
@@ -190,24 +189,19 @@ void mapa::sustituirCelda(double fila, double columna, short idPix){
         QGraphicsPixmapItem* auxPixBorrar = matrizMapa_[pos(fila,columna)].pix_;
         QGraphicsPixmapItem* auxPix;
         auxPix = escena_->addPixmap(*pix);
-        cout << "Hola" << endl;
-        cout << "Hola" << auxPix << endl;
         auxPix->setScale(escala_);
         auxPix->setPos(columna*escala_*pix->size().height(),fila*escala_*pix->size().height());
-        cout << "setPos" << endl;
         if(auxPixBorrar==NULL){
             delete auxPixBorrar;
         }
         matrizMapa_[pos(fila,columna)].pix_=auxPix;
         matrizMapa_[pos(fila,columna)].tipo_=idPix;
     }
-    cout << "bye" << endl;
 }
 
 void mapa::pintar(){
-
-    int altoMapa = escena_->height();
-    int anchoMapa = escena_->width();
+    int anchoMapa  = view_->width();
+    int altoMapa   = view_->height();
 
     int ratonX = (mousePos_.x());
     int ratonY = (mousePos_.y());
