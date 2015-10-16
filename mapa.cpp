@@ -111,6 +111,7 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     ultimoZoom_ = 1;
     robot_ = NULL;
     if(f_>c_){
+
         escala_ = double(double((600)/f_)/terrenos_[0].size().height());
         view_->setMinimumSize((double(escala_*terrenos_[0].size().width())*c_)+2,600);
         view_->setBaseSize((double(escala_*terrenos_[0].size().width())*c_)+2,600);
@@ -134,13 +135,7 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
 }
 
 void mapa::zoom(int i){
-    double restauracion = double(1/double(ultimoZoom_));
-    view_->scale(restauracion,restauracion);
-    if(i>ultimoZoom_){
-        view_->scale(double(double(i)),double(double(i)));
-    }else{
-        view_->scale(double(double(i)),double(double(i)));
-    }
+    view_->scale(i*1/ultimoZoom_,i*1/ultimoZoom_);
     ultimoZoom_ = i;
 }
 
@@ -186,18 +181,22 @@ void mapa::sustituirCelda(double fila, double columna, short idPix){
         QGraphicsPixmapItem* auxPixBorrar = matrizMapa_[pos(fila,columna)].pix_;
         QGraphicsPixmapItem* auxPix;
         auxPix = escena_->addPixmap(*pix);
+        cout << "Hola" << endl;
+        cout << "Hola" << auxPix << endl;
         auxPix->setScale(escala_);
         auxPix->setPos(columna*escala_*pix->size().height(),fila*escala_*pix->size().height());
+        cout << "setPos" << endl;
         if(auxPixBorrar==NULL){
             delete auxPixBorrar;
         }
         matrizMapa_[pos(fila,columna)].pix_=auxPix;
         matrizMapa_[pos(columna,fila)].tipo_=idPix;
     }
+    cout << "bye" << endl;
 }
 
 void mapa::pintar(){
-    QPoint mousePos_ = this->mapFromGlobal(QCursor::pos());
+    //QPoint mousePos_ = this->mapFromGlobal(QCursor::pos());
     int anchoMapa  = view_->width();
     int altoMapa   = view_->height();
     int ratonX = (mousePos_.x());

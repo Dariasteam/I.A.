@@ -59,7 +59,7 @@ private:
     QGraphicsView*  view_;
     double          escala_;
     bool            tiempo_;
-    int             ultimoZoom_;
+    double          ultimoZoom_;
     QSlider*        zoomSlider_;
 public slots:
     void movioMouse(QPointF);
