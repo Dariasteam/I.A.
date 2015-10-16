@@ -65,6 +65,7 @@ private:
     int             direccionMovimiento_;           //0 Arriba, 1 Abajo, 2 Derecha, 3 Izquierda
     int             idAgente_;
     QTimer*         tiempo_;
+    int error;
 public slots:
     void movioMouse(QPointF);
     void zoom(int);

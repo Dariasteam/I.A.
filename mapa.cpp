@@ -69,6 +69,7 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, short a, short b,short 
     agentes_.push_back(new agente(2,2,pintarPixmap(2,2,new QPixmap("../I.A./recursos/robot.png")),this));
     agentes_.push_back(new agente(5,5,pintarPixmap(5,5,new QPixmap("../I.A./recursos/robot.png")),this));
     moverAgente(4,1);
+    moverAgente(1,0);
 }
 
 mapa::mapa(ifstream* fich, QProgressBar* barra, QWidget* parent) : QWidget(parent){
@@ -109,6 +110,7 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     layMapa_->addWidget(view_);
     layMapa_->addWidget(zoomSlider_);
     idAgente_ = 0;
+    error = 0;
     connect(zoomSlider_,SIGNAL(valueChanged(int)),this,SLOT(zoom(int)));
     ultimoZoom_ = 1;
     if(f_>c_){
@@ -140,10 +142,6 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
 
 void mapa::zoom(int i){
     view_->scale(i*1/ultimoZoom_,i*1/ultimoZoom_);
-
-    /*double restauracion = double(1/double(ultimoZoom_));
-    view_->scale(restauracion,restauracion);
-    view_->scale(double(double(i)),double(double(i)));*/
     ultimoZoom_ = i;
 }
 
@@ -191,18 +189,14 @@ void mapa::sustituirCelda(double fila, double columna, short idPix){
         QGraphicsPixmapItem* auxPixBorrar = matrizMapa_[pos(fila,columna)].pix_;
         QGraphicsPixmapItem* auxPix;
         auxPix = escena_->addPixmap(*pix);
-        cout << "Hola" << endl;
-        cout << "Hola" << auxPix << endl;
         auxPix->setScale(escala_);
         auxPix->setPos(columna*escala_*pix->size().height(),fila*escala_*pix->size().height());
-        cout << "setPos" << endl;
         if(auxPixBorrar==NULL){
             delete auxPixBorrar;
         }
         matrizMapa_[pos(fila,columna)].pix_=auxPix;
-        matrizMapa_[pos(columna,fila)].tipo_=idPix;
+        matrizMapa_[pos(fila,columna)].tipo_=idPix;
     }
-    cout << "bye" << endl;
 }
 
 void mapa::pintar(){
