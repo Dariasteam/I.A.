@@ -2,13 +2,17 @@
 #define AGENTE_H
 
 #include <QWidget>
+#include <QGraphicsPixmapItem>
 
-class Agente : public QWidget
-{
+class agente : public QWidget{
     Q_OBJECT
 public:
-    explicit Agente(QWidget *parent = 0);
-
+    explicit agente(int x, int y, QGraphicsPixmapItem* pix, QWidget *parent = 0);
+    QGraphicsPixmapItem* getPix();
+private:
+    QGraphicsPixmapItem*  pix_;
+    int x_;
+    int y_;
 signals:
 
 public slots:

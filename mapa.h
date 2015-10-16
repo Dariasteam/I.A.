@@ -13,6 +13,7 @@
 #include <QGraphicsView>
 #include <QSlider>
 #include "graphicsmapa.h"
+#include "agente.h"
 
 namespace Ui {
     class mapa;
@@ -37,13 +38,12 @@ public:
     void operacionesConstruccion(int,int,QProgressBar*);
     QGraphicsPixmapItem* pintarPixmap(double,double,QPixmap*);
     void sustituirCelda(double,double,short);
-    void moverPixmapItem(short dir,QGraphicsPixmapItem* pix);
+    void moverAgente(short dir,int idAgente);
 private:
     Ui::mapa* ui;
     celda*              matrizMapa_;
     QPixmap*            terrenos_;
     short               pincel_;
-    QGraphicsPixmapItem* robot_;
     QBoxLayout* layMapa_;                      //layout del mapa
     int c_;                                     //columnas de la matriz
     int f_;                                     //filas de la matriz
@@ -52,20 +52,26 @@ private:
     QPixmap* pixMuro_;
     QPointF     mousePos_;
     QProgressBar* barra_;
-    int factor_;
+    int             factor_;
     QFileDialog* dialogoAbrir_;
     QString*     rutaArchivo_;
     graphicsMapa *  escena_;
     QGraphicsView*  view_;
     double          escala_;
-    bool            tiempo_;
-    double          ultimoZoom_;
+    QList<agente*>  agentes_;
+    double             ultimoZoom_;
     QSlider*        zoomSlider_;
+    int             finMovimiento_;                 //
+    int             direccionMovimiento_;           //0 Arriba, 1 Abajo, 2 Derecha, 3 Izquierda
+    int             idAgente_;
+    QTimer*         tiempo_;
 public slots:
     void movioMouse(QPointF);
     void zoom(int);
+    void movimientoTempo();
 signals:
     void actualizarBarra(int);
+
 };
 
 
