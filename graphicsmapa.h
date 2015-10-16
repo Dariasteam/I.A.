@@ -19,6 +19,7 @@ signals:
     void sendMousePos(QPointF);
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent*);
+    void mousePressEvent(QGraphicsSceneMouseEvent*);
 
 };
 

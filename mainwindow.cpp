@@ -28,6 +28,11 @@
 #include <QThread>
 #include <thread>
 #include <QFrame>
+#include <QPixmap>
+#include <QToolBar>
+#include <QButtonGroup>
+
+#include <QPushButton>
 
 using namespace std;
 
@@ -100,6 +105,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     QFrame* linea2   = new QFrame();
     linea2->setFrameShape(QFrame::HLine);
 
+
     spinFilas_      = new QSpinBox();
     spinColumnas_   = new QSpinBox();
     spinFilas_      ->setValue(10);
@@ -125,6 +131,46 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     layOpcionesMapa_->setSizeConstraint(QLayout::SetFixedSize);
 
     connect(botonGenerar_,SIGNAL(clicked(bool)),this,SLOT(actualizarMapa()));
+
+//TOOL BAR
+
+    QToolBar * barra = new QToolBar("suso",this);
+    this->addToolBar(barra);
+
+    QAction * muro = new QAction(QIcon(QPixmap("../I.A./recursos/muro.png")),"muro",this);
+    QAction * rojo = new QAction(QIcon(QPixmap("../I.A./recursos/rojo.png")),"rojo",this);
+    QAction * suelo = new QAction(QIcon(QPixmap("../I.A./recursos/suelo.png")),"suelo",this);
+    QAction * metal = new QAction(QIcon(QPixmap("../I.A./recursos/metal.png")),"metal",this);
+    QAction * rejilla = new QAction(QIcon(QPixmap("../I.A./recursos/rejilla.png")),"rejilla",this);
+    QAction * tierra = new QAction(QIcon(QPixmap("../I.A./recursos/tierra.png")),"Tierra",this);
+
+   // QButtonGroup * ese = new QButtonGroup(barra);
+
+   // ese->addButton(new QPushButton(QIcon(QPixmap("../I.A./recursos/muro.png")),"",this),0);
+
+
+    muro->setCheckable(true);
+    rojo->setCheckable(true);
+    suelo->setCheckable(true);
+    metal->setCheckable(true);
+    rejilla->setCheckable(true);
+    tierra->setCheckable(true);
+
+    barra->addAction(muro);
+    barra->addAction(rojo);
+    barra->addAction(suelo);
+    barra->addAction(metal);
+    barra->addAction(rejilla);
+    barra->addAction(tierra);
+
+    connect(muro,SIGNAL(triggered()),this,SLOT(cambiarPincelAMuro()));
+    connect(rojo,SIGNAL(triggered()),this,SLOT(cambiarPincelARojo()));
+    connect(suelo,SIGNAL(triggered()),this,SLOT(cambiarPincelASuelo()));
+    connect(metal,SIGNAL(triggered()),this,SLOT(cambiarPincelAMetal()));
+    connect(rejilla,SIGNAL(triggered()),this,SLOT(cambiarPincelARejilla()));
+    connect(tierra,SIGNAL(triggered()),this,SLOT(cambiarPincelATierra()));
+
+
 
 //OPERACIONES FINALES
 
@@ -263,6 +309,40 @@ void MainWindow::actualizarTitulo(bool b){
     }
 }
 
+
+void MainWindow::cambiarPincelAMuro()
+{
+    widMapa_->cambiarTipoPincel(6);
+}
+
+
+void MainWindow::cambiarPincelARojo()
+{
+    widMapa_->cambiarTipoPincel(5);
+}
+
+
+void MainWindow::cambiarPincelASuelo()
+{
+    widMapa_->cambiarTipoPincel(4);
+}
+
+
+void MainWindow::cambiarPincelAMetal()
+{
+    widMapa_->cambiarTipoPincel(3);
+}
+
+void MainWindow::cambiarPincelATierra()
+{
+    widMapa_->cambiarTipoPincel(2);
+}
+
+
+void MainWindow::cambiarPincelARejilla()
+{
+    widMapa_->cambiarTipoPincel(1);
+}
 
 
 

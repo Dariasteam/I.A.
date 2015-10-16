@@ -138,6 +138,8 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     barra_->show();
     connect(this,SIGNAL(actualizarBarra(int)),barra_,SLOT(setValue(int)));
     emit actualizarBarra(0);
+
+    pincel_ = 5;
 }
 
 void mapa::zoom(int i){
@@ -178,10 +180,9 @@ QGraphicsPixmapItem* mapa::pintarPixmap(double fila, double columna, QPixmap* pi
         auxPix->setScale(escala_);
         auxPix->setPos(columna*escala_*pix->size().height(),fila*escala_*pix->size().height());
         return auxPix;
-    }else{
+    }else
         return NULL;
-    }
-}
+ }
 
 void mapa::sustituirCelda(double fila, double columna, short idPix){
     if(fila >= 0 && fila<f_ && columna >= 0 && columna < c_){
@@ -200,8 +201,10 @@ void mapa::sustituirCelda(double fila, double columna, short idPix){
 }
 
 void mapa::pintar(){
-    int anchoMapa  = view_->width();
-    int altoMapa   = view_->height();
+
+   int altoMapa = escena_->height();
+    int anchoMapa = escena_->width();
+
     int ratonX = (mousePos_.x());
     int ratonY = (mousePos_.y());
     if((ratonX > 0) && (mousePos_.x() < anchoMapa) && (ratonY > 0)  && (mousePos_.y() < altoMapa)){
@@ -212,7 +215,7 @@ void mapa::pintar(){
         int fila    = (int)(f);
         int columna = (int)(c);
         if(fila>-1 && fila<f_ && columna>-1 && columna<c_){
-            sustituirCelda(fila,columna,5);
+            sustituirCelda(fila,columna,pincel_);
         }
     }
 }
@@ -244,6 +247,12 @@ int mapa::pos(int f,int c){
 void mapa::movioMouse(QPointF mousePos){
     mousePos_ = mousePos;
     pintar();
+}
+
+
+void mapa::cambiarTipoPincel(short tipo)
+{
+    pincel_ = tipo;
 }
 
 

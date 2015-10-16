@@ -39,6 +39,7 @@ public:
     QGraphicsPixmapItem* pintarPixmap(double,double,QPixmap*);
     void sustituirCelda(double,double,short);
     void moverAgente(short dir,int idAgente);
+    void cambiarTipoPincel(short);
 private:
     Ui::mapa* ui;
     celda*              matrizMapa_;
@@ -68,6 +69,7 @@ private:
     int error;
 public slots:
     void movioMouse(QPointF);
+
     void zoom(int);
     void movimientoTempo();
 signals:
