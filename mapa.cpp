@@ -190,19 +190,23 @@ void mapa::sustituirCelda(double fila, double columna, short idPix){
         QGraphicsPixmapItem* auxPixBorrar = matrizMapa_[pos(fila,columna)].pix_;
         QGraphicsPixmapItem* auxPix;
         auxPix = escena_->addPixmap(*pix);
+        cout << "Hola" << endl;
+        cout << "Hola" << auxPix << endl;
         auxPix->setScale(escala_);
         auxPix->setPos(columna*escala_*pix->size().height(),fila*escala_*pix->size().height());
+        cout << "setPos" << endl;
         if(auxPixBorrar==NULL){
             delete auxPixBorrar;
         }
         matrizMapa_[pos(fila,columna)].pix_=auxPix;
         matrizMapa_[pos(fila,columna)].tipo_=idPix;
     }
+    cout << "bye" << endl;
 }
 
 void mapa::pintar(){
 
-   int altoMapa = escena_->height();
+    int altoMapa = escena_->height();
     int anchoMapa = escena_->width();
 
     int ratonX = (mousePos_.x());

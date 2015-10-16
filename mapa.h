@@ -60,13 +60,13 @@ private:
     QGraphicsView*  view_;
     double          escala_;
     QList<agente*>  agentes_;
-    double             ultimoZoom_;
+    double          ultimoZoom_;
     QSlider*        zoomSlider_;
     int             finMovimiento_;                 //
     int             direccionMovimiento_;           //0 Arriba, 1 Abajo, 2 Derecha, 3 Izquierda
     int             idAgente_;
     QTimer*         tiempo_;
-    int error;
+    int             error;
 public slots:
     void movioMouse(QPointF);
 
