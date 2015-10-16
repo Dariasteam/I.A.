@@ -69,7 +69,6 @@ private:
     int             error;
 public slots:
     void movioMouse(QPointF);
-
     void zoom(int);
     void movimientoTempo();
 signals:
