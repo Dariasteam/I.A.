@@ -99,6 +99,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     QFrame* linea   = new QFrame();
     linea->setFrameShape(QFrame::HLine);
+    QFrame* linea2   = new QFrame();
+    linea2->setFrameShape(QFrame::HLine);
 
     spinFilas_      = new QSpinBox();
     spinColumnas_   = new QSpinBox();
@@ -119,7 +121,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     crearLabelSlider("Metal",7,1);
     crearLabelSlider("Rejilla",9,2);
     crearLabelSlider("Tierra",11,3);
-    layOpcionesMapa_->addWidget(linea,13,0,1,0);
+    layOpcionesMapa_->addWidget(linea2,13,0,1,0);
     botonGenerar_   = new QPushButton("Generar");
     layOpcionesMapa_->addWidget(botonGenerar_,14,0,1,2);
     layOpcionesMapa_->setSizeConstraint(QLayout::SetFixedSize);

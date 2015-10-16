@@ -62,9 +62,10 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, short a, short b,short 
     }
     barra_->hide();
     layMapa_->addWidget(zoomSlider_);
-    /*QTimer* contador = new QTimer(this);
-    connect(contador,SIGNAL(timeout()),this,SLOT(rastro()));
-    contador->start(10);*/
+
+    robot_ = pintarPixmap(1,1,new QPixmap("../I.A./recursos/robot.png"));
+    //moverPixmapItem(1,robot_);
+    //moverPixmapItem(4,robot_);
 }
 
 mapa::mapa(ifstream* fich, QProgressBar* barra, QWidget* parent) : QWidget(parent){
@@ -100,8 +101,7 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     terrenos_[1] = QPixmap("../I.A./recursos/rejilla.png");
     terrenos_[0] = QPixmap("../I.A./recursos/nuclear.png");
     zoomSlider_ = new QSlider(Qt::Horizontal,this);
-    zoomSlider_->setMaximum(100);
-    zoomSlider_->setMinimum(1);
+    zoomSlider_->setRange(1,100);
     zoomSlider_->setValue(1);
     connect(zoomSlider_,SIGNAL(valueChanged(int)),this,SLOT(zoom(int)));
     ultimoZoom_ = 1;
@@ -141,11 +141,27 @@ void mapa::zoom(int i){
     ultimoZoom_ = i;
 }
 
-void mapa::rastro(){
-    if(robot_!=NULL){
-        robot_->moveBy(1,0);
-    }else{
-        robot_ = pintarPixmap(1,2,new QPixmap("../I.A./recursos/robot.png"));
+void mapa::moverPixmapItem(short dir, QGraphicsPixmapItem* pix){
+    cout<<"las celdas miden "<<double(view_->width()/f_)<<" pixeles"<<endl;
+    if(pix!=NULL){
+        double i=0;
+        while(i <= escala_*terrenos_[0].size().height()){
+            i=i+1;
+            switch (dir) {
+            case 1:
+                pix->setPos(i,2);
+                break;
+            case 2:
+                pix->setPos(60-i,2);
+                break;
+            case 3:
+                pix->setPos(2,i);
+                break;
+            default:
+                pix->setPos(2,60-i);
+                break;
+            }
+        }
     }
 }
 
@@ -184,7 +200,7 @@ void mapa::pintar(){
     int ratonX = (mousePos_.x());
     int ratonY = (mousePos_.y());
     if((ratonX > 0) && (mousePos_.x() < anchoMapa) && (ratonY > 0)  && (mousePos_.y() < altoMapa)){
-        double  xCelda = anchoMapa / c_;
+        double xCelda = anchoMapa / c_;
         double yCelda = altoMapa   / f_;
         double c = ratonX / xCelda;
         double f = ratonY / yCelda;

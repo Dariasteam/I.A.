@@ -34,6 +34,7 @@ public:
     void operacionesConstruccion(int,int,QProgressBar*);
     QGraphicsPixmapItem* pintarPixmap(double,double,QPixmap*);
     void sustituirCelda(double,double,short);
+    void moverPixmapItem(short dir,QGraphicsPixmapItem* pix);
 private:
     Ui::mapa* ui;
     celda*              matrizMapa_;
@@ -49,9 +50,7 @@ private:
     int factor_;
     QFileDialog* dialogoAbrir_;
     QString*     rutaArchivo_;
-    QPainter*     lienzo_;
-    //QGraphicsScene* escena_;
-    graphicsMapa * escena_;
+    graphicsMapa *  escena_;
     QGraphicsView*  view_;
     double          escala_;
     bool            tiempo_;
@@ -59,7 +58,6 @@ private:
     QSlider*        zoomSlider_;
 public slots:
     void movioMouse(QPointF);
-    void rastro();
     void zoom(int);
 signals:
     void actualizarBarra(int);
