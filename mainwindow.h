@@ -13,35 +13,40 @@
 #include <QMenuBar>
 #include <QAction>
 #include <QFileDialog>
+#include <QScrollArea>
+#include <QDockWidget>
+#include <QToolBox>
+#include <QList>
 
 namespace Ui {
-class MainWindow;
+    class MainWindow;
 }
 
-class MainWindow : public QMainWindow
-{
+struct menuTerreno{
+    QSlider*   slider_;
+    QLabel*    label_;
+    short      valorAnterior_;
+};
+
+class MainWindow : public QMainWindow{
     Q_OBJECT
 
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void actualizarConnects();
     void actualizarTitulo(bool);
+    void crearLabelSlider(QString,int,int);
 protected:
     void resizeEvent(QResizeEvent *);
 private:
     Ui::MainWindow *ui;
     QWidget* widPrincipal_;                     //widget principal de la ventana
     QBoxLayout*  layPrincipal_;                 //layout principal de la ventana
-    QGridLayout* layMenu_;                      //layout para los menus del mapa
     mapa*    widMapa_;
     QSpinBox* spinFilas_;
     QSpinBox* spinColumnas_;
-    QSpinBox* spinFactor_;
-    QCheckBox* checkAleatorio_;
     QProgressBar* barraProgreso_;
-    QPushButton* botonClear_;
-    QPushButton* botonRobot_;
+    QPushButton* botonGenerar_;
     QMenuBar*    menuBar_;
     QMenu*       mnuArchivo_;
     QAction*     actGuardar_;
@@ -49,11 +54,20 @@ private:
     QAction*     actCargar_;
     QString*     rutaArchivo_;
     QFileDialog* dialogoAbrir_;
+    QScrollArea* areaScroll_;
+    QDockWidget* dockIzquierda_;
+    QToolBox*    panelDesplegable_;
+    QGridLayout* layOpcionesMapa_;
+    QGridLayout* layOpcionesAlgoritmo_;
+    menuTerreno*       editoresTerreno_;
+    //unsigned short*       valoresTerreno_;
+    //QList<QSlider*>     slidersTerreno_;
 private slots:
     void actualizarMapa();
     void onAbrir();
     void onGuardar();
     void onGuardarComo();
+    void actualizarSliders();
 };
 
 #endif // MAINWINDOW_H

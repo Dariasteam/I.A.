@@ -18,135 +18,207 @@
 #include <fstream>
 #include <QMessageBox>
 #include <QSizePolicy>
+#include <QGraphicsView>
+#include <QPixmap>
+#include <QGraphicsItem>
+#include <QDockWidget>
+#include <QToolBox>
+#include <QSpacerItem>
+#include <unistd.h>
+#include <QThread>
+#include <thread>
+#include <QFrame>
 
 using namespace std;
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
+
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
 
-    setMouseTracking(true);
+//INICIALIZACION DE LA VENTANA Y SUS WIDGETS
+
     ui->setupUi(this);
-    widPrincipal_ = new QWidget(this);
-    layPrincipal_ = new QBoxLayout(QBoxLayout::TopToBottom,widPrincipal_);
-    layMenu_      = new QGridLayout();
-    barraProgreso_ = new QProgressBar(this);
-
+    widPrincipal_   = new QWidget(this);
+    layPrincipal_   = new QBoxLayout(QBoxLayout::TopToBottom,widPrincipal_);
+    barraProgreso_  = new QProgressBar(this);
     layPrincipal_->addWidget(barraProgreso_);
-    widMapa_ = new mapa(10,10,barraProgreso_,0,this);
-
-    setCentralWidget(widPrincipal_);
+    widMapa_ = new mapa(10,10,barraProgreso_,0,0,0,0,this);
     widPrincipal_->setLayout(layPrincipal_);
     layPrincipal_->addWidget(widMapa_);
-    layPrincipal_->addLayout(layMenu_);
 
-    QPushButton* boton_ = new QPushButton("Generar");
-    boton_->setShortcut(Qt::Key_Enter);
+    setWindowTitle("I.A.[*]");
+    layout()->setSizeConstraint(QLayout::SetFixedSize);
 
-    //actAyudaAcerca_->setShortcut((QKeySequence(Qt::CTRL + Qt::Key_H)));
+//INICIALIZACION DE LOS MENUS
 
-    botonClear_ = new QPushButton("Clear");
-
-    botonRobot_ = new QPushButton("Robot");
-
-    layMenu_->addWidget(boton_,0,0);
-    layMenu_->addWidget(botonClear_,0,1);
-    layMenu_->addWidget(botonRobot_,0,2);
-
-    checkAleatorio_ = new QCheckBox("Obstáculos aleatorios");
-    QLabel* textoFactor = new QLabel("Factor de aleatoriedad [1,50]",this);
-
-
-    spinFilas_ = new QSpinBox();
-    spinColumnas_ = new QSpinBox();
-    spinFactor_ = new QSpinBox();
-
-    spinFilas_->setValue(10);
-    spinColumnas_->setValue(10);
-    spinFactor_->setValue(1);
-
-    spinFilas_->setMaximum(500);
-    spinColumnas_->setMaximum(500);
-    spinFactor_->setMaximum(50);
-    spinFactor_->setMinimum(1);
-    spinFactor_->setEnabled(false);
-
-    connect(checkAleatorio_,SIGNAL(clicked(bool)),spinFactor_,SLOT(setEnabled(bool)));
-    connect(boton_,SIGNAL(clicked(bool)),this,SLOT(actualizarMapa()));
-    connect(botonClear_, SIGNAL(clicked()), widMapa_, SLOT(limpiarMapa()));
-    connect(botonRobot_,SIGNAL(clicked()), widMapa_, SLOT(reiniciarRobot()));
-
-    layMenu_->addWidget(spinFilas_,1,0);
-    layMenu_->addWidget(spinColumnas_,2,0);
-    layMenu_->addWidget(checkAleatorio_,0,4);
-    layMenu_->addWidget(textoFactor,1,1);
-    layMenu_->addWidget(spinFactor_,2,1);
-
-
-    menuBar_ = new QMenuBar(this);
-    mnuArchivo_ = new QMenu("Archivo",this);
-
-    actCargar_ = new QAction("Abrir",mnuArchivo_);
-    actGuardar_ = new QAction("Guardar",mnuArchivo_);
-    actGuardar_->setDisabled(true);
+    menuBar_        = new QMenuBar(this);
+    mnuArchivo_     = new QMenu("Archivo",this);
+    actCargar_      = new QAction("Abrir",mnuArchivo_);
+    actGuardar_     = new QAction("Guardar",mnuArchivo_);
     actGuardarComo_ = new QAction("Guardar como",mnuArchivo_);
+
+    actGuardar_->setDisabled(true);
 
     mnuArchivo_->addAction(actCargar_);
     mnuArchivo_->addAction(actGuardar_);
     mnuArchivo_->addAction(actGuardarComo_);
 
-    connect(actCargar_,SIGNAL(triggered(bool)),this,SLOT(onAbrir()));
-    connect(actGuardar_,SIGNAL(triggered(bool)),this,SLOT(onGuardar()));
+    connect(actCargar_,     SIGNAL(triggered(bool)),this,SLOT(onAbrir()));
+    connect(actGuardar_,    SIGNAL(triggered(bool)),this,SLOT(onGuardar()));
     connect(actGuardarComo_,SIGNAL(triggered(bool)),this,SLOT(onGuardarComo()));
+
     menuBar_->addMenu(mnuArchivo_);
     setMenuBar(menuBar_);
-    this->setWindowTitle("I.A.[*]");
+
+//INCIALIZACIÓN DEL DOCK Y SU CONTENIDO
+
+    dockIzquierda_      =   new QDockWidget("Herramientas",this);
+    dockIzquierda_->setAllowedAreas(Qt::AllDockWidgetAreas);
+    dockIzquierda_->setFeatures(QDockWidget::DockWidgetMovable);
+    panelDesplegable_ = new QToolBox(dockIzquierda_);
+    dockIzquierda_->setWidget(panelDesplegable_);
+
+    QWidget* opcionesMapa = new QWidget(panelDesplegable_);
+    QWidget* opcionesAlgoritmo = new QWidget(panelDesplegable_);
+
+    panelDesplegable_->addItem(opcionesMapa,"Mapa");
+    panelDesplegable_->addItem(opcionesAlgoritmo,"Algoritmo");
+
+    layOpcionesMapa_ = new QGridLayout(opcionesMapa);
+    layOpcionesAlgoritmo_ = new QGridLayout(opcionesAlgoritmo);
+
+    dockIzquierda_->setMinimumWidth(150);
+    dockIzquierda_->setMaximumWidth(150);
+
+    addDockWidget(Qt::RightDockWidgetArea,dockIzquierda_);
+
+//INCIALIZACION DEL PANEL "MAPA"
+
+    QFrame* linea   = new QFrame();
+    linea->setFrameShape(QFrame::HLine);
+    QFrame* linea2   = new QFrame();
+    linea2->setFrameShape(QFrame::HLine);
+
+    spinFilas_      = new QSpinBox();
+    spinColumnas_   = new QSpinBox();
+    spinFilas_      ->setValue(10);
+    spinColumnas_   ->setValue(10);
+    spinFilas_      ->setMaximum(1000);
+    spinColumnas_   ->setMaximum(1000);
+
+    layOpcionesMapa_->addWidget(new QLabel("Dimensiones: ",opcionesMapa),0,0,1,0);
+    layOpcionesMapa_->addWidget(new QLabel("filas",opcionesMapa),1,0);
+    layOpcionesMapa_->addWidget(spinFilas_,1,1);
+    layOpcionesMapa_->addWidget(new QLabel("columnas",opcionesMapa),2,0);
+    layOpcionesMapa_->addWidget(spinColumnas_,2,1);
+    layOpcionesMapa_->addWidget(linea,3,0,1,0);
+    layOpcionesMapa_->addWidget(new QLabel("Terrenos: "),4,0,1,0);
+    editoresTerreno_= new menuTerreno[4];
+    crearLabelSlider("Muro",5,0);
+    crearLabelSlider("Metal",7,1);
+    crearLabelSlider("Rejilla",9,2);
+    crearLabelSlider("Tierra",11,3);
+    layOpcionesMapa_->addWidget(linea2,13,0,1,0);
+    botonGenerar_   = new QPushButton("Generar");
+    layOpcionesMapa_->addWidget(botonGenerar_,14,0,1,2);
+    layOpcionesMapa_->setSizeConstraint(QLayout::SetFixedSize);
+
+    connect(botonGenerar_,SIGNAL(clicked(bool)),this,SLOT(actualizarMapa()));
+
+//OPERACIONES FINALES
+
+    setCentralWidget(widPrincipal_);
 }
 
 MainWindow::~MainWindow(){
     delete ui;
 }
 
-void MainWindow::resizeEvent(QResizeEvent *e){
+void MainWindow::crearLabelSlider(QString nombre, int posLay, int i){
+    editoresTerreno_[i].slider_ = new QSlider(Qt::Horizontal);
+    editoresTerreno_[i].slider_->setRange(0,50);
+    editoresTerreno_[i].slider_->setValue(0);
+    editoresTerreno_[i].label_ = new QLabel("0");
+    connect(editoresTerreno_[i].slider_,SIGNAL(valueChanged(int)),this,SLOT(actualizarSliders()));
+    connect(editoresTerreno_[i].slider_,SIGNAL(valueChanged(int)),editoresTerreno_[i].label_,SLOT(setNum(int)));
+    layOpcionesMapa_->addWidget(new QLabel(nombre),posLay,0);
+    layOpcionesMapa_->addWidget(editoresTerreno_[i].label_,posLay,1);
+    layOpcionesMapa_->addWidget(editoresTerreno_[i].slider_,posLay+1,0,1,0);
+    editoresTerreno_[i].valorAnterior_ = 0;
 }
 
+void MainWindow::actualizarSliders(){
+    int i=0;
+    while(i<4 && editoresTerreno_[i].valorAnterior_==editoresTerreno_[i].slider_->value()){
+        i++;
+    }
+    if(i<4){
+        if((editoresTerreno_[0].slider_->value() +
+            editoresTerreno_[1].slider_->value() +
+            editoresTerreno_[2].slider_->value() +
+            editoresTerreno_[3].slider_->value())  > 50){
 
+            float factorReduccion =
+            50 - (editoresTerreno_[0].slider_->value()>0)*editoresTerreno_[0].slider_->value() +
+            (editoresTerreno_[1].slider_->value()>0)*editoresTerreno_[1].slider_->value() +
+            (editoresTerreno_[2].slider_->value()>0)*editoresTerreno_[2].slider_->value() +
+            (editoresTerreno_[3].slider_->value()>0)*editoresTerreno_[3].slider_->value();
 
+            factorReduccion = factorReduccion /
+            (((editoresTerreno_[0].slider_->value()>0) * (0!=i)) +
+             ((editoresTerreno_[1].slider_->value()>0) * (1!=i)) +
+             ((editoresTerreno_[2].slider_->value()>0) * (2!=i)) +
+             ((editoresTerreno_[3].slider_->value()>0) * (3!=i)));
 
-void MainWindow::actualizarMapa(){
-    mapa* aux;
-    if((widMapa_->getFilas()==spinFilas_->value()) && (widMapa_->getColumnas()==spinColumnas_->value())){
-        cout<<"actualizando el mapa actual"<<endl;
-        //valor del spinFactor * bool check para enviar 0 si este está desactivado
-        widMapa_->actualizarEsteMapa(spinFactor_->value()*checkAleatorio_->isChecked());
-    }else{
-        cout<<"Generando nuevo mapa"<<endl;
-        aux = new mapa(spinFilas_->value(),spinColumnas_->value(),barraProgreso_,spinFactor_->value()*checkAleatorio_->isChecked(),this);
-        layPrincipal_->replaceWidget(widMapa_,aux);
-        delete widMapa_;
-        widMapa_=aux;
-        actualizarConnects();
+            if(factorReduccion>0 && factorReduccion<INFINITY){
+                for(int j=0;j<4;j++){
+                    if(j!=i && editoresTerreno_[j].valorAnterior_ >
+                       fabs(editoresTerreno_[j].valorAnterior_-(factorReduccion*editoresTerreno_[j].valorAnterior_>0))
+                       && editoresTerreno_[j].valorAnterior_>0){
+                            editoresTerreno_[j].valorAnterior_ = fabs(editoresTerreno_[j].valorAnterior_-
+                                                                     (factorReduccion*editoresTerreno_[j].valorAnterior_>0));
+                            editoresTerreno_[j].slider_->setValue(editoresTerreno_[j].valorAnterior_);
+                            editoresTerreno_[0].label_->setNum(editoresTerreno_[0].valorAnterior_);
+                    }
+                }
+            }
+        }
+        editoresTerreno_[i].valorAnterior_ = editoresTerreno_[i].slider_->value();
+        editoresTerreno_[0].label_->setNum(editoresTerreno_[0].valorAnterior_);
+        editoresTerreno_[1].label_->setNum(editoresTerreno_[1].valorAnterior_);
+        editoresTerreno_[2].label_->setNum(editoresTerreno_[2].valorAnterior_);
+        editoresTerreno_[3].label_->setNum(editoresTerreno_[3].valorAnterior_);
     }
 }
 
+void MainWindow::resizeEvent(QResizeEvent*){
+}
 
-void MainWindow::actualizarConnects(){
-    connect(botonClear_, SIGNAL(clicked()), widMapa_, SLOT(limpiarMapa()));
+void MainWindow::actualizarMapa(){
+    mapa* aux;
+    cout<<"Generando nuevo mapa"<<endl;
+    aux = new mapa(spinFilas_->value(),spinColumnas_->value(),barraProgreso_,
+                   editoresTerreno_[0].valorAnterior_,
+                   editoresTerreno_[1].valorAnterior_,
+                   editoresTerreno_[2].valorAnterior_,
+                   editoresTerreno_[3].valorAnterior_,this);
+    layPrincipal_->replaceWidget(widMapa_,aux);
+    delete widMapa_;
+    widMapa_=aux;
 }
 
 void MainWindow::onAbrir(){
     rutaArchivo_= new QString(dialogoAbrir_->getOpenFileName(this,"Abrir Mapa","","*.map"));
     ifstream fich;
     if(rutaArchivo_->contains(".map")){
-        fich.open(rutaArchivo_->toStdString().c_str());
+        fich.open(rutaArchivo_->toStdString().c_str(), ios::in);
         if(fich.is_open()){
             mapa* aux;
             aux = new mapa(&fich,barraProgreso_,this);
             layPrincipal_->replaceWidget(widMapa_,aux);
             delete widMapa_;
             widMapa_=aux;
-            actualizarConnects();
             fich.close();
             actGuardar_->setEnabled(true);
             this->setWindowTitle("I.A.[*] - "+*rutaArchivo_);
@@ -170,6 +242,7 @@ void MainWindow::onGuardarComo(){
 
 void MainWindow::onGuardar(){
     ofstream fich;
+    cout<<"Voy a guardar en"<<rutaArchivo_->toStdString()<<endl;
     fich.open(rutaArchivo_->toStdString().c_str(), std::fstream::out | std::fstream::trunc);
     if(fich.is_open()){
         widMapa_->guardar(&fich);
