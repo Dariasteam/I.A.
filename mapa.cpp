@@ -95,13 +95,13 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     escena_ = new graphicsMapa(this);
     view_ = new QGraphicsView(escena_,this);
     terrenos_ = new QPixmap[7];
-    terrenos_[6] = QPixmap("../I.A./recursos/muro.png");
-    terrenos_[5] = QPixmap("../I.A./recursos/rojo.png");
-    terrenos_[4] = QPixmap("../I.A./recursos/suelo.png");
-    terrenos_[3] = QPixmap("../I.A./recursos/metal.png");
-    terrenos_[2] = QPixmap("../I.A./recursos/tierra.png");
-    terrenos_[1] = QPixmap("../I.A./recursos/rejilla.png");
-    terrenos_[0] = QPixmap("../I.A./recursos/nuclear.png");
+    terrenos_[6] = QPixmap(":/recursos/muro.png");
+    terrenos_[5] = QPixmap(":/recursos/rojo.png");
+    terrenos_[4] = QPixmap(":/recursos/suelo.png");
+    terrenos_[3] = QPixmap(":/recursos/metal.png");
+    terrenos_[2] = QPixmap(":/recursos/tierra.png");
+    terrenos_[1] = QPixmap(":/recursos/rejilla.png");
+    terrenos_[0] = QPixmap(":/recursos/nuclear.png");
     zoomSlider_ = new QSlider(Qt::Horizontal,this);
     zoomSlider_->setRange(1,100);
     zoomSlider_->setValue(1);
@@ -140,7 +140,6 @@ void mapa::zoom(int i){
 }
 
 void mapa::moverPixmapItem(short dir, QGraphicsPixmapItem* pix){
-    cout<<"las celdas miden "<<double(view_->width()/f_)<<" pixeles"<<endl;
     if(pix!=NULL){
         double i=0;
         while(i <= escala_*terrenos_[0].size().height()){
@@ -181,22 +180,17 @@ void mapa::sustituirCelda(double fila, double columna, short idPix){
         QGraphicsPixmapItem* auxPixBorrar = matrizMapa_[pos(fila,columna)].pix_;
         QGraphicsPixmapItem* auxPix;
         auxPix = escena_->addPixmap(*pix);
-        cout << "Hola" << endl;
-        cout << "Hola" << auxPix << endl;
         auxPix->setScale(escala_);
         auxPix->setPos(columna*escala_*pix->size().height(),fila*escala_*pix->size().height());
-        cout << "setPos" << endl;
         if(auxPixBorrar==NULL){
             delete auxPixBorrar;
         }
         matrizMapa_[pos(fila,columna)].pix_=auxPix;
         matrizMapa_[pos(columna,fila)].tipo_=idPix;
     }
-    cout << "bye" << endl;
 }
 
 void mapa::pintar(){
-    //QPoint mousePos_ = this->mapFromGlobal(QCursor::pos());
     int anchoMapa  = view_->width();
     int altoMapa   = view_->height();
     int ratonX = (mousePos_.x());

@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include <QGridLayout>
 #include <QBoxLayout>
-#include "mapa.h"
 #include <QSpinBox>
 #include <QProgressBar>
 #include <QCheckBox>
@@ -17,6 +16,11 @@
 #include <QDockWidget>
 #include <QToolBox>
 #include <QList>
+#include <QSlider>
+#include <QLabel>
+
+#include "src/map.h"
+
 
 namespace Ui {
     class MainWindow;
@@ -42,7 +46,7 @@ private:
     Ui::MainWindow *ui;
     QWidget* widPrincipal_;                     //widget principal de la ventana
     QBoxLayout*  layPrincipal_;                 //layout principal de la ventana
-    mapa*    widMapa_;
+    Map*    widMapa_;
     QSpinBox* spinFilas_;
     QSpinBox* spinColumnas_;
     QProgressBar* barraProgreso_;

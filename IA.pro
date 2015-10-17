@@ -17,12 +17,19 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     mapa.cpp \
-    graphicsmapa.cpp
+    graphicsmapa.cpp \
+    src/map.cpp \
+    src/mapscene.cpp
 
 HEADERS  += mainwindow.h \
     mapa.h \
-    graphicsmapa.h
+    graphicsmapa.h \
+    src/map.h \
+    src/mapscene.h
 
 FORMS    += mainwindow.ui
 
 DISTFILES +=
+
+RESOURCES += \
+    tiles.qrc

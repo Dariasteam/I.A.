@@ -1,8 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
 #include <QGridLayout>
 #include <QBoxLayout>
-#include "celda.h"
 #include <QMouseEvent>
 #include <QPoint>
 #include <iostream>
@@ -10,7 +10,6 @@
 #include <QSpinBox>
 #include <QBoxLayout>
 #include <QRect>
-#include "mapa.h"
 #include <QPushButton>
 #include <QProgressBar>
 #include <QCheckBox>
@@ -39,16 +38,17 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 //INICIALIZACION DE LA VENTANA Y SUS WIDGETS
 
     ui->setupUi(this);
+    this->setMinimumSize(800,600);
     widPrincipal_   = new QWidget(this);
     layPrincipal_   = new QBoxLayout(QBoxLayout::TopToBottom,widPrincipal_);
     barraProgreso_  = new QProgressBar(this);
     layPrincipal_->addWidget(barraProgreso_);
-    widMapa_ = new mapa(10,10,barraProgreso_,0,0,0,0,this);
+    widMapa_ = new Map(10,10,0,0,0,0,this);
     widPrincipal_->setLayout(layPrincipal_);
     layPrincipal_->addWidget(widMapa_);
 
     setWindowTitle("I.A.[*]");
-    layout()->setSizeConstraint(QLayout::SetFixedSize);
+    //layout()->setSizeConstraint(QLayout::SetFixedSize);
 
 //INICIALIZACION DE LOS MENUS
 
@@ -148,34 +148,39 @@ void MainWindow::crearLabelSlider(QString nombre, int posLay, int i){
     editoresTerreno_[i].valorAnterior_ = 0;
 }
 
-void MainWindow::actualizarSliders(){
+void MainWindow::actualizarSliders(){ // TODO :: CellTile -> Void
     int i=0;
     while(i<4 && editoresTerreno_[i].valorAnterior_==editoresTerreno_[i].slider_->value()){
         i++;
     }
     if(i<4){
+        // if sum . map x.slider_->value editoresTerreno_  > 50
         if((editoresTerreno_[0].slider_->value() +
             editoresTerreno_[1].slider_->value() +
             editoresTerreno_[2].slider_->value() +
             editoresTerreno_[3].slider_->value())  > 50){
 
+            // 50 - sum . map x.slider_->value editoresTerreno_
             float factorReduccion =
-            50 - (editoresTerreno_[0].slider_->value()>0)*editoresTerreno_[0].slider_->value() +
-            (editoresTerreno_[1].slider_->value()>0)*editoresTerreno_[1].slider_->value() +
-            (editoresTerreno_[2].slider_->value()>0)*editoresTerreno_[2].slider_->value() +
-            (editoresTerreno_[3].slider_->value()>0)*editoresTerreno_[3].slider_->value();
+            editoresTerreno_[0].slider_->value() +
+            editoresTerreno_[1].slider_->value() +
+            editoresTerreno_[2].slider_->value() +
+            editoresTerreno_[3].slider_->value() - 50;
 
+            // factorReduccion / (sum . map (if x.slider_->value > 0 then 1 else 0)-1)
             factorReduccion = factorReduccion /
-            (((editoresTerreno_[0].slider_->value()>0) * (0!=i)) +
-             ((editoresTerreno_[1].slider_->value()>0) * (1!=i)) +
-             ((editoresTerreno_[2].slider_->value()>0) * (2!=i)) +
-             ((editoresTerreno_[3].slider_->value()>0) * (3!=i)));
+            (((editoresTerreno_[0].slider_->value()>0)) +
+             ((editoresTerreno_[1].slider_->value()>0)) +
+             ((editoresTerreno_[2].slider_->value()>0)) +
+             ((editoresTerreno_[3].slider_->value()>0))-1);
 
             if(factorReduccion>0 && factorReduccion<INFINITY){
+                // map ()
                 for(int j=0;j<4;j++){
                     if(j!=i && editoresTerreno_[j].valorAnterior_ >
                        fabs(editoresTerreno_[j].valorAnterior_-(factorReduccion*editoresTerreno_[j].valorAnterior_>0))
                        && editoresTerreno_[j].valorAnterior_>0){
+
                             editoresTerreno_[j].valorAnterior_ = fabs(editoresTerreno_[j].valorAnterior_-
                                                                      (factorReduccion*editoresTerreno_[j].valorAnterior_>0));
                             editoresTerreno_[j].slider_->setValue(editoresTerreno_[j].valorAnterior_);
@@ -196,13 +201,13 @@ void MainWindow::resizeEvent(QResizeEvent*){
 }
 
 void MainWindow::actualizarMapa(){
-    mapa* aux;
+    Map* aux;
     cout<<"Generando nuevo mapa"<<endl;
-    aux = new mapa(spinFilas_->value(),spinColumnas_->value(),barraProgreso_,
+    aux = new Map(spinFilas_->value(),spinColumnas_->value(),
                    editoresTerreno_[0].valorAnterior_,
                    editoresTerreno_[1].valorAnterior_,
                    editoresTerreno_[2].valorAnterior_,
-                   editoresTerreno_[3].valorAnterior_,this);
+                   editoresTerreno_[3].valorAnterior_, this);
     layPrincipal_->replaceWidget(widMapa_,aux);
     delete widMapa_;
     widMapa_=aux;
@@ -214,8 +219,8 @@ void MainWindow::onAbrir(){
     if(rutaArchivo_->contains(".map")){
         fich.open(rutaArchivo_->toStdString().c_str(), ios::in);
         if(fich.is_open()){
-            mapa* aux;
-            aux = new mapa(&fich,barraProgreso_,this);
+            Map* aux;
+            aux = new Map(&fich,this);
             layPrincipal_->replaceWidget(widMapa_,aux);
             delete widMapa_;
             widMapa_=aux;
@@ -245,7 +250,7 @@ void MainWindow::onGuardar(){
     cout<<"Voy a guardar en"<<rutaArchivo_->toStdString()<<endl;
     fich.open(rutaArchivo_->toStdString().c_str(), std::fstream::out | std::fstream::trunc);
     if(fich.is_open()){
-        widMapa_->guardar(&fich);
+        //widMapa_->guardar(&fich);
         fich.close();
         actGuardar_->setEnabled(true);
     }else{
