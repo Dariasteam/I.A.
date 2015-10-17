@@ -200,8 +200,8 @@ void mapa::sustituirCelda(double fila, double columna, short idPix){
 }
 
 void mapa::pintar(){
-    int anchoMapa  = view_->width();
-    int altoMapa   = view_->height();
+    double anchoMapa  = view_->width();
+    double altoMapa   = view_->height();
 
     int ratonX = (mousePos_.x());
     int ratonY = (mousePos_.y());

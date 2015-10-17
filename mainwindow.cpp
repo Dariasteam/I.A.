@@ -136,6 +136,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     QToolBar * barra = new QToolBar("suso",this);
     barra->setFloatable(false);
+    barra->setAllowedAreas(Qt::AllToolBarAreas);
     this->addToolBar(barra);
 
     muro_ = new QAction(QIcon(QPixmap("../I.A./recursos/muro.png")),"muro",this);
