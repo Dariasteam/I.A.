@@ -114,17 +114,17 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     connect(zoomSlider_,SIGNAL(valueChanged(int)),this,SLOT(zoom(int)));
     ultimoZoom_ = 1;
     if(f_>c_){
-        escala_ = double(double((600)/f_)/terrenos_[0].size().height());
+        escala_ = (double(600)/f_)/double(terrenos_[0].size().height());
         view_->setMinimumSize((double(escala_*terrenos_[0].size().width())*c_)+2,600);
         view_->setBaseSize((double(escala_*terrenos_[0].size().width())*c_)+2,600);
         view_->setMaximumSize((double(escala_*terrenos_[0].size().width())*c_)+2,600);
     }else if(c_>f_){
-        escala_ = double(double((600)/c_)/terrenos_[0].size().width());
+        escala_ = (double(600)/c_)/double(terrenos_[0].size().width());
         view_->setMinimumSize(600,(double(escala_*terrenos_[0].size().height())*f_)+2);
         view_->setBaseSize(600,(double(escala_*terrenos_[0].size().height())*f_)+2);
         view_->setMaximumSize(600,(double(escala_*terrenos_[0].size().height())*f_)+2);
     }else{
-        escala_ = double(double((600)/c_)/terrenos_[0].size().width());
+        escala_ = (double(600)/f_)/double(terrenos_[0].size().width());
         view_->setMinimumSize(602,602);
         view_->setBaseSize(602,602);
         view_->setMaximumSize(602,602);
