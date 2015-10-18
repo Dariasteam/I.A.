@@ -74,6 +74,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 //INCIALIZACIÓN DEL DOCK Y SU CONTENIDO
 
     dockIzquierda_      =   new QDockWidget("Herramientas",this);
+    dockIzquierda_->setTitleBarWidget();
     dockIzquierda_->setAllowedAreas(Qt::AllDockWidgetAreas);
     dockIzquierda_->setFeatures(QDockWidget::DockWidgetMovable);
     panelDesplegable_ = new QToolBox(dockIzquierda_);
@@ -250,7 +251,8 @@ void MainWindow::onGuardar(){
     cout<<"Voy a guardar en"<<rutaArchivo_->toStdString()<<endl;
     fich.open(rutaArchivo_->toStdString().c_str(), std::fstream::out | std::fstream::trunc);
     if(fich.is_open()){
-        //widMapa_->guardar(&fich);
+        if (widMapa_->save(&fich))
+            setWindowModified(false);
         fich.close();
         actGuardar_->setEnabled(true);
     }else{

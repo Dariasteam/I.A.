@@ -58,13 +58,14 @@ public:
         return row*cols_ + col;
     }
 
+    bool save(ofstream * file);
+
 signals:
 
 public slots:
     void drawOnMouse(QPointF mousePos);
 
     void makeZoom(int factor);
-
 
 protected:
     void resizeEvent(QResizeEvent * e);

@@ -2,7 +2,7 @@
 
 
 Map::Map(int columns, int rows
-         , short wall, short ground, short network, short metal, QWidget *parent):
+         , short wall, short land, short network, short metal, QWidget *parent):
     QGraphicsView(parent),
     map_(columns*rows),
     terrain_(7),
@@ -12,9 +12,22 @@ Map::Map(int columns, int rows
     lastZoom_(1)
 {
     buildMap();
-    for (int i = 0; i < rows_; i++) {
-        for (int j = 0; j <cols_; j++) {
-            exchangeCell(j, i, Metal);
+    for (int j = 0; j < rows_; j++) {
+        for (int i = 0; i <cols_; i++) {
+            int aleatoriedad = rand()%100+ 1;
+            if(i==0 || j==0 || j==rows_-1 || i==cols_-1){
+                exchangeCell(i,j,Wall);
+            }else if(aleatoriedad<=wall){
+                exchangeCell(i,j,RedTile);
+            }else if(aleatoriedad<=wall+metal){
+                exchangeCell(i,j,Metal);
+            }else if(aleatoriedad<=wall+metal+network){
+                exchangeCell(i,j,Network);
+            }else if(aleatoriedad<=wall+metal+network+land){
+                exchangeCell(i,j,Land);
+            }else{
+                exchangeCell(i,j,Ground);
+            }
         }
     }
 }
@@ -53,7 +66,6 @@ void Map::buildMap(void) {
     terrain_[Nuclear] = QPixmap(":/recursos/nuclear.png");
     double sizeTile_x = this->width()/cols_;
     double sizeTile_y = this->height()/rows_;
-    cout << "w h" <<this->size().width() << " " << this->size().height() << endl;
     sizeTile_ = sizeTile_x < sizeTile_y ? sizeTile_x : sizeTile_y;
 }
 
@@ -105,4 +117,15 @@ void Map::resizeEvent(QResizeEvent * e){
     double sizeTile_y = e->size().height()/rows_;
     sizeTile_ = sizeTile_x < sizeTile_y ? sizeTile_x : sizeTile_y;
     redraw();
+}
+
+bool Map::save(ofstream* fich){
+    *fich<<rows_<<" "<<cols_<<endl;
+    for(int i=0;i<rows_;i++){
+        for(int j=0;j<cols_;j++){
+            *fich<<(short)map_[pos(j,i)].type_<<" ";
+        }
+        *fich<<endl;
+    }
+    return true;
 }
