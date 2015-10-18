@@ -1,5 +1,6 @@
 #include "sensors.hpp"
-#include "../cell/cell.hpp"
+
+namespace Model {
 
 Sensors::Sensors(Map * map, int * x, int *y):
   map_(map),
@@ -8,7 +9,7 @@ Sensors::Sensors(Map * map, int * x, int *y):
 
 
 Sensors::Info Sensors::getInfoFromCell(Cell cell) {
-  return (cell.walkable() ? Free:Block);
+  return (cell.walkable_ ? Free:Block);
 }
 
 
@@ -29,4 +30,5 @@ Sensors::Info Sensors::up(void) {
 
 Sensors::Info Sensors::down(void) {
   return getInfoFromCell((*map_)(*x_-1,*y_));
+}
 }

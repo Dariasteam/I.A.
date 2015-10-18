@@ -1,5 +1,7 @@
 #include "agent.hpp"
 
+using namespace Model;
+
 Agent::Agent(int x, int y, Map & map):
   x_(x),
   y_(y),

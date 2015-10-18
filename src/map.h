@@ -26,6 +26,8 @@ enum CellTile {
 struct Cell {
     short type_;
     QGraphicsPixmapItem * pix_;
+    float weight_;
+    bool walkable_;
 };
 
 
@@ -59,6 +61,10 @@ public:
     }
 
     bool save(ofstream * file);
+
+    Cell operator()(int col, int row) {
+        return map_[pos(col,row)];
+    }
 
 signals:
 

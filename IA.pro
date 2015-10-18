@@ -20,8 +20,7 @@ SOURCES += main.cpp\
     src/mainwindow.cpp \
     src/mapoptions.cpp \
     src/agent/agent.cpp \
-    src/agent/sensors.cpp \
-    src/map/map.cpp
+    src/agent/sensors.cpp
 
 HEADERS  += src/map.h \
     src/mapscene.h \
@@ -30,8 +29,7 @@ HEADERS  += src/map.h \
     src/agent/agent.hpp \
     src/agent/lrta.hpp \
     src/agent/output.hpp \
-    src/agent/sensors.hpp \
-    src/map/map.hpp
+    src/agent/sensors.hpp
 
 #FORMS    += mainwindow.ui
 

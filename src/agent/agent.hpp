@@ -1,8 +1,10 @@
 #pragma once
 
-#include "../map/map.hpp"
+#include "../map.h"
 #include "output.hpp"
 #include "sensors.hpp"
+
+namespace Model {
 
 class Agent {
 private:
@@ -16,3 +18,4 @@ public:
   Sensors & getSensors(void);
   Output operator()(void);
 };
+}

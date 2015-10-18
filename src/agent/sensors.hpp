@@ -1,5 +1,7 @@
 #pragma once
-#include "../map/map.hpp"
+#include "../map.h"
+
+namespace Model {
 
 class Sensors {
 private:
@@ -27,3 +29,4 @@ public:
   // | What are there?
   Info down(void);
 };
+}
