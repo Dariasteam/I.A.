@@ -4,7 +4,10 @@
 #include <QMainWindow>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QToolBox>
+
 #include "ui_mainwindow.h"
+#include "mapoptions.h"
 #include "map.h"
 
 namespace Ui {
@@ -16,7 +19,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = 0);
-
+    ~MainWindow();
 signals:
 
 public slots:
@@ -24,10 +27,10 @@ public slots:
     void onSaveAs(void);
     void onSave(void);
     void onUpdateMap(void);
-    void onSliderUpdate(CellTile);
 private:
     Ui::MainWindow *ui;
     Map * widMap_;
+    MapOptions * mapOptions_;
     QString * rutaArchivo_;
     QFileDialog * dialogoAbrir_;
 };

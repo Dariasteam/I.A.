@@ -17,11 +17,21 @@ TEMPLATE = app
 SOURCES += main.cpp\
     src/map.cpp \
     src/mapscene.cpp \
-    src/mainwindow.cpp
+    src/mainwindow.cpp \
+    src/mapoptions.cpp \
+    src/agent/agent.cpp \
+    src/agent/sensors.cpp \
+    src/map/map.cpp
 
 HEADERS  += src/map.h \
     src/mapscene.h \
-    src/mainwindow.h
+    src/mainwindow.h \
+    src/mapoptions.h \
+    src/agent/agent.hpp \
+    src/agent/lrta.hpp \
+    src/agent/output.hpp \
+    src/agent/sensors.hpp \
+    src/map/map.hpp
 
 #FORMS    += mainwindow.ui
 
@@ -31,4 +41,5 @@ RESOURCES += \
     tiles.qrc
 
 FORMS += \
-    src/mainwindow.ui
+    src/mainwindow.ui \
+    src/mapoptions.ui

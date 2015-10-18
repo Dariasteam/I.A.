@@ -11,7 +11,7 @@ Map::Map(int columns, int rows
     cols_(columns),
     lastZoom_(1)
 {
-    buildMap();
+    initMap();
     for (int j = 0; j < rows_; j++) {
         for (int i = 0; i <cols_; i++) {
             int aleatoriedad = rand()%100+ 1;
@@ -44,7 +44,8 @@ Map::Map(ifstream* fich, QWidget *parent):
 {
     *fich>>rows_;
     *fich>>cols_;
-    buildMap();
+    map_ = vector<Cell>(rows_*cols_);
+    initMap();
     for(int i=0;i<rows_;i++){
         for(int j=0;j<cols_;j++){
             short pixId;
@@ -54,7 +55,7 @@ Map::Map(ifstream* fich, QWidget *parent):
     }
 }
 
-void Map::buildMap(void) {
+void Map::initMap(void) {
     this->setScene(new MapScene(this));
     connect(this->scene(),SIGNAL(mousePos(QPointF)),this,SLOT(drawOnMouse(QPointF)));
     terrain_[Wall]    = QPixmap(":/recursos/muro.png");
@@ -87,14 +88,15 @@ void Map::exchangeCell(int column, int row, CellTile cell) {
     QPixmap* pix = &terrain_[cell];
     QGraphicsPixmapItem* auxPixRemove = map_[pos(column,row)].pix_;
     QGraphicsPixmapItem* auxPix = this->scene()->addPixmap(*pix);
+
     auxPix->setScale(sizeTile_/pix->size().height());
     auxPix->setPos(sizeTile_*column, sizeTile_*row);
+
     if(auxPixRemove==NULL){
         delete auxPixRemove;
         auxPixRemove == NULL;
     }
-    map_[pos(column,row)].pix_=auxPix;
-    map_[pos(column,row)].type_=cell;
+    map_[pos(column,row)] = { cell, auxPix };
 }
 
 void Map::redraw(void) {

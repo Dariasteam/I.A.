@@ -46,7 +46,7 @@ public:
                  , short wall=0, short ground=0, short network=0, short metal=0, QWidget *parent = 0);
     explicit Map(ifstream* fich, QWidget *parent=0);
 
-    void buildMap(void);
+    void initMap(void);
 
     QGraphicsPixmapItem* drawPixmap(int column, int row, CellTile cell);
 
