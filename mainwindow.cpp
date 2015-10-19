@@ -110,8 +110,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     spinColumnas_   = new QSpinBox();
     spinFilas_      ->setValue(10);
     spinColumnas_   ->setValue(10);
-    spinFilas_      ->setMaximum(1000);
-    spinColumnas_   ->setMaximum(1000);
+    spinFilas_      ->setMaximum(10000);
+    spinColumnas_   ->setMaximum(10000);
 
     layOpcionesMapa_->addWidget(new QLabel("Dimensiones: ",opcionesMapa),0,0,1,0);
     layOpcionesMapa_->addWidget(new QLabel("filas",opcionesMapa),1,0);
@@ -134,6 +134,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
 //TOOL BAR
 
+
+
     QToolBar * barra = new QToolBar("suso",this);
     barra->setFloatable(false);
     barra->setAllowedAreas(Qt::AllToolBarAreas);
@@ -147,7 +149,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     tierra_ = new QAction(QIcon(QPixmap("../I.A./recursos/tierra.png")),"Tierra",this);
 
 
-
+    QLabel* pincelesTool = new QLabel("Terrenos: ",this);
+    barra->addWidget(pincelesTool);
    // QButtonGroup * ese = new QButtonGroup(barra);
 
    // ese->addButton(new QPushButton(QIcon(QPixmap("../I.A./recursos/muro.png")),"",this),0);

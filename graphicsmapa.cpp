@@ -15,8 +15,9 @@ QPointF graphicsMapa::GetMousePos()
 
 void graphicsMapa::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
 {
-    mousePos_ = e->scenePos();
-    emit sendMousePos(e->scenePos());
+
+        mousePos_ = e->scenePos();
+        emit sendMousePos(e->scenePos());
 }
 
 

@@ -27,6 +27,7 @@
 #include <QDebug>
 #include <unistd.h>
 #include <thread>
+#include <QThread>
 #include <QTimer>
 #include <chrono>
 #include <QSlider>
@@ -64,12 +65,8 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, short a, short b,short 
     }
     barra_->hide();
     layMapa_->addWidget(zoomSlider_);
-
-    agentes_.push_back(new agente(0,0,pintarPixmap(0,0,new QPixmap("../I.A./recursos/robot.png")),this));
-    agentes_.push_back(new agente(2,2,pintarPixmap(2,2,new QPixmap("../I.A./recursos/robot.png")),this));
-    agentes_.push_back(new agente(5,5,pintarPixmap(5,5,new QPixmap("../I.A./recursos/robot.png")),this));
-    moverAgente(4,1);
-    moverAgente(1,0);
+    agentes_.push_back(new agente(5,5,0,pintarPixmap(5,5,new QPixmap("../I.A./recursos/robot.png")),this));
+    agentes_.push_back(new agente(3,3,1,pintarPixmap(3,3,new QPixmap("../I.A./recursos/robot.png")),this));
 }
 
 mapa::mapa(ifstream* fich, QProgressBar* barra, QWidget* parent) : QWidget(parent){
@@ -129,15 +126,15 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
         view_->setBaseSize(602,602);
         view_->setMaximumSize(602,602);
     }
-    tiempo_ = new QTimer(this);
-    connect(tiempo_,SIGNAL(timeout()),this,SLOT(movimientoTempo()));
-    tiempo_->start(10);
     barra_->show();
     barra_->setMaximum(c_*f_);
     barra_->show();
     connect(this,SIGNAL(actualizarBarra(int)),barra_,SLOT(setValue(int)));
     emit actualizarBarra(0);
-
+    tiempo_ = new QTimer(this);
+    connect(tiempo_,SIGNAL(timeout()),this,SLOT(movimientoTempo()));
+    tiempo_->start(5);
+    agentesActivos_ = 0;
     pincel_ = 5;
 }
 
@@ -147,30 +144,35 @@ void mapa::zoom(int i){
 }
 
 void mapa::movimientoTempo(){
-    if(finMovimiento_>0){
-        switch (direccionMovimiento_) { //0 Arriba, 1 Abajo, 2 Derecha, 3 Izquierda
-        case 0:
-            agentes_.at(idAgente_)->getPix()->moveBy(0,-1);
-            break;
-        case 1:
-            agentes_.at(idAgente_)->getPix()->moveBy(0,1);
-            break;
-        case 2:
-            agentes_.at(idAgente_)->getPix()->moveBy(1,0);
-            break;
-        default:
-            agentes_.at(idAgente_)->getPix()->moveBy(-1,0);
-            break;
+    if(agentesActivos_ > 0){
+        for(int i=0;i<agentes_.size();i++){
+            if(agentes_.at(i)->finCalculo_==true){
+                if(agentes_.at(i)->tiempoMov_>0){
+                    switch (agentes_.at(i)->direccion_){ //0 Arriba, 1 Abajo, 2 Derecha, 3 Izquierda
+                    case 0:
+                        agentes_.at(i)->getPix()->moveBy(0,-1);
+                        break;
+                    case 1:
+                        agentes_.at(i)->getPix()->moveBy(0,1);
+                        break;
+                    case 2:
+                        agentes_.at(i)->getPix()->moveBy(1,0);
+                        break;
+                    default:
+                        agentes_.at(i)->getPix()->moveBy(-1,0);
+                        break;
+                    }
+                    agentes_.at(i)->tiempoMov_--;
+                }else{
+                    agentes_.at(i)->finCalculo_=false;
+                    agentes_.at(i)->finMovimiento();
+                    agentesActivos_--;
+                }
+            }
         }
-        finMovimiento_--;
     }
 }
 
-void mapa::moverAgente(short dir, int idAgente){
-    direccionMovimiento_ = dir;
-    finMovimiento_ = 32*escala_;
-    idAgente_ = idAgente;
-}
 
 QGraphicsPixmapItem* mapa::pintarPixmap(double fila, double columna, QPixmap* pix){
     if(fila >= 0 && fila<f_ && columna >= 0 && columna < c_){
@@ -248,9 +250,13 @@ void mapa::movioMouse(QPointF mousePos){
 }
 
 
-void mapa::cambiarTipoPincel(short tipo)
-{
+void mapa::cambiarTipoPincel(short tipo){
     pincel_ = tipo;
+}
+
+void mapa::agenteFin(int id){
+    cout<<"El agente "<<id<<" ha finalizado sus cálculos"<<endl;
+    agentesActivos_++;
 }
 
 
