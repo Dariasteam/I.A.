@@ -66,6 +66,8 @@ public:
         return map_[pos(col,row)];
     }
 
+    void setPencil(CellTile);
+
 signals:
 
 public slots:

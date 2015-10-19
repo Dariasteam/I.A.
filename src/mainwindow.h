@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QButtonGroup>
+#include <QPushButton>
 #include <QToolBox>
 
 #include "ui_mainwindow.h"
@@ -27,6 +29,7 @@ public slots:
     void onSaveAs(void);
     void onSave(void);
     void onUpdateMap(void);
+    void changePencil(QAbstractButton *);
 private:
     Ui::MainWindow *ui;
     Map * widMap_;

@@ -131,3 +131,7 @@ bool Map::save(ofstream* fich){
     }
     return true;
 }
+
+void Map::setPencil(CellTile pencil) {
+    pencil_=pencil;
+}
