@@ -31,6 +31,15 @@ void agente::movimiento(){
     tiempoMov_ = movimiento_;
     finCalculo_ = true;
     direccion_ = rand()%4 + 1;;
+    if(direccion_==1){                                                  //1 Arriba, 2 Abajo, 3 Derecha, 4 Izquierda
+        pix_->setPixmap(QPixmap("../I.A./recursos/robotArriba.png"));
+    }else if(direccion_==2){
+        pix_->setPixmap(QPixmap("../I.A./recursos/robotAbajo.png"));
+    }else if(direccion_==3){
+        pix_->setPixmap(QPixmap("../I.A./recursos/robotDerecha.png"));
+    }else{
+        pix_->setPixmap(QPixmap("../I.A./recursos/robotIzquierda.png"));
+    }
     ((mapa*)padre_)->agenteFin(id_);
 }
 

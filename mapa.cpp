@@ -65,8 +65,8 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, short a, short b,short 
     }
     barra_->hide();
     layMapa_->addWidget(zoomSlider_);
-    for(int i=0;i<10;i++){
-        agente* aux = new agente(f_/2,c_/2,i,pintarPixmap(f_/2,c_/2,new QPixmap("../I.A./recursos/robot.png")),this);
+    for(int i=0;i<1;i++){
+        agente* aux = new agente(f_/2,c_/2,i,pintarPixmap(f_/2,c_/2,new QPixmap("../I.A./recursos/robotAbajo.png")),this);
         aux->movimiento_ = escala_*32;
         agentes_.push_back(aux);
     }
@@ -151,14 +151,14 @@ void mapa::movimientoTempo(){
         for(int i=0;i<agentes_.size();i++){
             if(agentes_.at(i)->finCalculo_==true){
                 if(agentes_.at(i)->tiempoMov_>0){
-                    switch (agentes_.at(i)->direccion_){ //0 Arriba, 1 Abajo, 2 Derecha, 3 Izquierda
-                    case 0:
+                    switch (agentes_.at(i)->direccion_){ //1 Arriba, 2 Abajo, 3 Derecha, 4 Izquierda
+                    case 1:
                         agentes_.at(i)->getPix()->moveBy(0,-1);
                         break;
-                    case 1:
+                    case 2:
                         agentes_.at(i)->getPix()->moveBy(0,1);
                         break;
-                    case 2:
+                    case 3:
                         agentes_.at(i)->getPix()->moveBy(1,0);
                         break;
                     default:
