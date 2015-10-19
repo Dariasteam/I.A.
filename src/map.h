@@ -38,6 +38,7 @@ private:
     vector<Cell>    map_;
     vector<QPixmap> terrain_;
     CellTile        pencil_;
+
     int             rows_;
     int             cols_;
     double          lastZoom_;
@@ -67,6 +68,9 @@ public:
     }
 
     void setPencil(CellTile);
+
+    void tick(void) {};
+
 
 signals:
 
