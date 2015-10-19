@@ -65,8 +65,11 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, short a, short b,short 
     }
     barra_->hide();
     layMapa_->addWidget(zoomSlider_);
-    agentes_.push_back(new agente(5,5,0,pintarPixmap(5,5,new QPixmap("../I.A./recursos/robot.png")),this));
-    agentes_.push_back(new agente(3,3,1,pintarPixmap(3,3,new QPixmap("../I.A./recursos/robot.png")),this));
+    for(int i=0;i<10;i++){
+        agente* aux = new agente(f_/2,c_/2,i,pintarPixmap(f_/2,c_/2,new QPixmap("../I.A./recursos/robot.png")),this);
+        aux->movimiento_ = escala_*32;
+        agentes_.push_back(aux);
+    }
 }
 
 mapa::mapa(ifstream* fich, QProgressBar* barra, QWidget* parent) : QWidget(parent){
@@ -133,7 +136,7 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     emit actualizarBarra(0);
     tiempo_ = new QTimer(this);
     connect(tiempo_,SIGNAL(timeout()),this,SLOT(movimientoTempo()));
-    tiempo_->start(5);
+    tiempo_->start(15);
     agentesActivos_ = 0;
     pincel_ = 5;
 }
@@ -164,7 +167,6 @@ void mapa::movimientoTempo(){
                     }
                     agentes_.at(i)->tiempoMov_--;
                 }else{
-                    agentes_.at(i)->finCalculo_=false;
                     agentes_.at(i)->finMovimiento();
                     agentesActivos_--;
                 }
@@ -193,6 +195,7 @@ void mapa::sustituirCelda(double fila, double columna, short idPix){
         auxPix = escena_->addPixmap(*pix);
         auxPix->setScale(escala_);
         auxPix->setPos(columna*escala_*pix->size().height(),fila*escala_*pix->size().height());
+        auxPix->setZValue(-1);
         if(auxPixBorrar==NULL){
             delete auxPixBorrar;
         }
@@ -255,7 +258,6 @@ void mapa::cambiarTipoPincel(short tipo){
 }
 
 void mapa::agenteFin(int id){
-    cout<<"El agente "<<id<<" ha finalizado sus cálculos"<<endl;
     agentesActivos_++;
 }
 

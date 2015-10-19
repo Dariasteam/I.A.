@@ -15,6 +15,7 @@ public:
     bool        finCalculo_;
     int         direccion_;
     int         tiempoMov_;
+    int         movimiento_;
 private:
     int id_;
     QGraphicsPixmapItem*  pix_;
