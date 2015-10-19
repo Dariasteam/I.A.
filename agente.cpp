@@ -6,8 +6,6 @@
 #include "mapa.h"
 #include <QTimer>
 
-class mapa;
-
 using namespace std;
 
 agente::agente(int x, int y, int id, QGraphicsPixmapItem *pix, QWidget* parent){
@@ -30,15 +28,25 @@ void agente::finMovimiento(){
 void agente::movimiento(){
     tiempoMov_ = movimiento_;
     finCalculo_ = true;
-    direccion_ = rand()%4 + 1;;
-    if(direccion_==1){                                                  //1 Arriba, 2 Abajo, 3 Derecha, 4 Izquierda
-        pix_->setPixmap(QPixmap("../I.A./recursos/robotArriba.png"));
-    }else if(direccion_==2){
-        pix_->setPixmap(QPixmap("../I.A./recursos/robotAbajo.png"));
-    }else if(direccion_==3){
-        pix_->setPixmap(QPixmap("../I.A./recursos/robotDerecha.png"));
-    }else{
-        pix_->setPixmap(QPixmap("../I.A./recursos/robotIzquierda.png"));
+    bool caminoAdecuado = false;
+    while(!caminoAdecuado){
+        dir_ = rand()%4 + 1;                                //1 Arriba, 2 Abajo, 3 Derecha, 4 Izquierda
+        caminoAdecuado = ((((mapa*)padre_)->escanearEntorno(x_,y_).direccion_[dir_-1])!=-1);
+    }
+    cout<<"Iré a un terreno de tipo "<<(((mapa*)padre_)->escanearEntorno(x_,y_).direccion_[dir_-1])<<endl;
+    switch (dir_) {
+    case 1:
+        y_--;
+        break;
+    case 2:
+        y_++;
+        break;
+    case 3:
+        x_++;
+        break;
+    default:
+        x_--;
+        break;
     }
     ((mapa*)padre_)->agenteFin(id_);
 }

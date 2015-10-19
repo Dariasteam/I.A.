@@ -1,27 +1,30 @@
 #ifndef MAPA_H
 #define MAPA_H
+
+#include "graphicsmapa.h"
+#include "agente.h"
+#include "celda.h"
+
 #include <QWidget>
 #include <QBoxLayout>
-#include "celda.h"
 #include <QProgressBar>
 #include <QPixmap>
 #include <QFileDialog>
 #include <fstream>
-#include <QSize>
 #include <QTimer>
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QSlider>
-#include "graphicsmapa.h"
-#include "agente.h"
 
-namespace Ui {
-    class mapa;
-}
+class agente;
 
 struct celda{
-    short tipo_;
-    QGraphicsPixmapItem* pix_;
+    short                                   tipo_;
+    QGraphicsPixmapItem*                    pix_;
+};
+
+struct dirYPesos{
+    short                                   direccion_[4];  //0 Arriba, 1 Abajo, 2 Derecha, 3 Izquierda
 };
 
 class mapa : public QWidget{
@@ -40,17 +43,15 @@ public:
     void sustituirCelda(double,double,short);
     void cambiarTipoPincel(short);
     void agenteFin(int);
+    dirYPesos escanearEntorno(int x, int y);
 private:
-    Ui::mapa*                               ui;
     celda*                                  matrizMapa_;
-    QPixmap*                                terrenos_;
+    QPixmap*                                graficosTerrenos_;
+    QPixmap*                                graficosAgente_;
     short                                   pincel_;
-    QBoxLayout*                             layMapa_;                      //layout del mapa
-    int                                     c_;                            //columnas de la matriz
-    int                                     f_;                            //filas de la matriz
-    bool                                    pintar_;                       //true=añadir obstaculos, false=borrar obstaculos
-    QPixmap*                                pixSuelo_;
-    QPixmap*                                pixMuro_;
+    QBoxLayout*                             layMapa_;
+    int                                     c_;
+    int                                     f_;
     QPointF                                 mousePos_;
     QProgressBar*                           barra_;
     int                                     factor_;
@@ -61,8 +62,8 @@ private:
     double                                  escala_;
     QList<agente*>                          agentes_;
     double                                  ultimoZoom_;
-    QSlider*                                zoomSlider_;                //
-    int                                     direccionMovimiento_;           //0 Arriba, 1 Abajo, 2 Derecha, 3 Izquierda
+    QSlider*                                zoomSlider_;
+    int                                     direccionMovimiento_;    //0 Arriba, 1 Abajo, 2 Derecha, 3 Izquierda
     int                                     idAgente_;
     int                                     error;
     QTimer*                                 tiempo_;

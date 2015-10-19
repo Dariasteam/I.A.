@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QGraphicsPixmapItem>
 #include <thread>
+#include <QPixmap>
 
 class agente{
 public:
@@ -12,17 +13,17 @@ public:
     QGraphicsPixmapItem* getPix();
     void movimiento();
     void finMovimiento();
-    bool        finCalculo_;
-    int         direccion_;
-    int         tiempoMov_;
-    int         movimiento_;
+    bool                            finCalculo_;
+    int                             dir_;
+    int                             movimiento_;
+    int                             tiempoMov_;
 private:
-    int id_;
-    QGraphicsPixmapItem*  pix_;
-    int x_;
-    int y_;
-    std::thread hilo_;
-    QWidget*    padre_; 
+    int                             id_;
+    QGraphicsPixmapItem*            pix_;
+    int                             x_;
+    int                             y_;
+    std::thread                     hilo_;
+    QWidget*                        padre_;
 };
 
 #endif // AGENTE_H

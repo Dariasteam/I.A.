@@ -1,37 +1,11 @@
 #include "mapa.h"
-#include <iostream>
-#include <QMouseEvent>
-#include <QResizeEvent>
-#include <QProgressBar>
-#include <QList>
-#include <QBoxLayout>
-#include <QApplication>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <math.h>
-#include <QPalette>
-#include <QRect>
-#include <QFileDialog>
-#include <fstream>
 #include "mainwindow.h"
-#include <QDebug>
-#include <QPainter>
-#include <QRect>
-#include <QPaintEvent>
-#include <QPaintEngine>
-#include <QGraphicsView>
-#include <QGraphicsPixmapItem>
-#include <QSizePolicy>
-#include <QBoxLayout>
-#include <QDebug>
-#include <unistd.h>
-#include <thread>
-#include <QThread>
-#include <QTimer>
-#include <chrono>
-#include <QSlider>
 #include "graphicsmapa.h"
+
+#include <iostream>
+#include <math.h>
+#include <fstream>
+
 
 
 using namespace std;
@@ -66,7 +40,7 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, short a, short b,short 
     barra_->hide();
     layMapa_->addWidget(zoomSlider_);
     for(int i=0;i<1;i++){
-        agente* aux = new agente(f_/2,c_/2,i,pintarPixmap(f_/2,c_/2,new QPixmap("../I.A./recursos/robotAbajo.png")),this);
+        agente* aux = new agente(f_/2,c_/2,i,pintarPixmap(f_/2,c_/2,&graficosAgente_[0]),this);
         aux->movimiento_ = escala_*32;
         agentes_.push_back(aux);
     }
@@ -96,14 +70,19 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     matrizMapa_ = new celda[c_*f_];
     escena_ = new graphicsMapa(this);
     view_ = new QGraphicsView(escena_,this);
-    terrenos_ = new QPixmap[7];
-    terrenos_[6] = QPixmap("../I.A./recursos/muro.png");
-    terrenos_[5] = QPixmap("../I.A./recursos/rojo.png");
-    terrenos_[4] = QPixmap("../I.A./recursos/suelo.png");
-    terrenos_[3] = QPixmap("../I.A./recursos/metal.png");
-    terrenos_[2] = QPixmap("../I.A./recursos/tierra.png");
-    terrenos_[1] = QPixmap("../I.A./recursos/rejilla.png");
-    terrenos_[0] = QPixmap("../I.A./recursos/nuclear.png");
+    graficosTerrenos_ = new QPixmap[7];
+    graficosTerrenos_[6] = QPixmap("../I.A./recursos/muro.png");
+    graficosTerrenos_[5] = QPixmap("../I.A./recursos/rojo.png");
+    graficosTerrenos_[4] = QPixmap("../I.A./recursos/suelo.png");
+    graficosTerrenos_[3] = QPixmap("../I.A./recursos/metal.png");
+    graficosTerrenos_[2] = QPixmap("../I.A./recursos/tierra.png");
+    graficosTerrenos_[1] = QPixmap("../I.A./recursos/rejilla.png");
+    graficosTerrenos_[0] = QPixmap("../I.A./recursos/nuclear.png");
+    graficosAgente_ = new QPixmap[4];
+    graficosAgente_[0] = QPixmap("../I.A./recursos/robotArriba.png");
+    graficosAgente_[1] = QPixmap("../I.A./recursos/robotAbajo.png");
+    graficosAgente_[2] = QPixmap("../I.A./recursos/robotDerecha.png");
+    graficosAgente_[3] = QPixmap("../I.A./recursos/robotIzquierda.png");
     zoomSlider_ = new QSlider(Qt::Horizontal,this);
     zoomSlider_->setRange(1,100);
     zoomSlider_->setValue(1);
@@ -114,26 +93,25 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     connect(zoomSlider_,SIGNAL(valueChanged(int)),this,SLOT(zoom(int)));
     ultimoZoom_ = 1;
     if(f_>c_){
-        escala_ = (double(600)/f_)/double(terrenos_[0].size().height());
-        view_->setMinimumSize((double(escala_*terrenos_[0].size().width())*c_)+2,600);
-        view_->setBaseSize((double(escala_*terrenos_[0].size().width())*c_)+2,600);
-        view_->setMaximumSize((double(escala_*terrenos_[0].size().width())*c_)+2,600);
+        escala_ = (double(600)/f_)/double(graficosTerrenos_[0].size().height());
+        view_->setMinimumSize((double(escala_*graficosTerrenos_[0].size().width())*c_)+2,600);
+        view_->setBaseSize((double(escala_*graficosTerrenos_[0].size().width())*c_)+2,600);
+        view_->setMaximumSize((double(escala_*graficosTerrenos_[0].size().width())*c_)+2,600);
     }else if(c_>f_){
-        escala_ = (double(600)/c_)/double(terrenos_[0].size().width());
-        view_->setMinimumSize(600,(double(escala_*terrenos_[0].size().height())*f_)+2);
-        view_->setBaseSize(600,(double(escala_*terrenos_[0].size().height())*f_)+2);
-        view_->setMaximumSize(600,(double(escala_*terrenos_[0].size().height())*f_)+2);
+        escala_ = (double(600)/c_)/double(graficosTerrenos_[0].size().width());
+        view_->setMinimumSize(600,(double(escala_*graficosTerrenos_[0].size().height())*f_)+2);
+        view_->setBaseSize(600,(double(escala_*graficosTerrenos_[0].size().height())*f_)+2);
+        view_->setMaximumSize(600,(double(escala_*graficosTerrenos_[0].size().height())*f_)+2);
     }else{
-        escala_ = (double(600)/f_)/double(terrenos_[0].size().width());
+        escala_ = (double(600)/f_)/double(graficosTerrenos_[0].size().width());
         view_->setMinimumSize(602,602);
         view_->setBaseSize(602,602);
         view_->setMaximumSize(602,602);
     }
-    barra_->show();
+    emit actualizarBarra(0);
     barra_->setMaximum(c_*f_);
     barra_->show();
     connect(this,SIGNAL(actualizarBarra(int)),barra_,SLOT(setValue(int)));
-    emit actualizarBarra(0);
     tiempo_ = new QTimer(this);
     connect(tiempo_,SIGNAL(timeout()),this,SLOT(movimientoTempo()));
     tiempo_->start(15);
@@ -151,7 +129,7 @@ void mapa::movimientoTempo(){
         for(int i=0;i<agentes_.size();i++){
             if(agentes_.at(i)->finCalculo_==true){
                 if(agentes_.at(i)->tiempoMov_>0){
-                    switch (agentes_.at(i)->direccion_){ //1 Arriba, 2 Abajo, 3 Derecha, 4 Izquierda
+                    switch (agentes_.at(i)->dir_){ //1 Arriba, 2 Abajo, 3 Derecha, 4 Izquierda
                     case 1:
                         agentes_.at(i)->getPix()->moveBy(0,-1);
                         break;
@@ -189,7 +167,7 @@ QGraphicsPixmapItem* mapa::pintarPixmap(double fila, double columna, QPixmap* pi
 
 void mapa::sustituirCelda(double fila, double columna, short idPix){
     if(fila >= 0 && fila<f_ && columna >= 0 && columna < c_){
-        QPixmap* pix = &terrenos_[idPix];
+        QPixmap* pix = &graficosTerrenos_[idPix];
         QGraphicsPixmapItem* auxPixBorrar = matrizMapa_[pos(fila,columna)].pix_;
         QGraphicsPixmapItem* auxPix;
         auxPix = escena_->addPixmap(*pix);
@@ -207,7 +185,6 @@ void mapa::sustituirCelda(double fila, double columna, short idPix){
 void mapa::pintar(){
     double anchoMapa  = view_->width();
     double altoMapa   = view_->height();
-
     int ratonX = (mousePos_.x());
     int ratonY = (mousePos_.y());
     if((ratonX > 0) && (mousePos_.x() < anchoMapa) && (ratonY > 0)  && (mousePos_.y() < altoMapa)){
@@ -243,8 +220,11 @@ void mapa::guardar(ofstream* fich){
 }
 
 int mapa::pos(int f,int c){
-    int aux = f*c_;
-    return aux + c;
+    if(f<f_ && f>=0 && c<c_ && c>=0){
+        return (f*c_) + c;
+    }else{
+        return 0;
+    }
 }
 
 void mapa::movioMouse(QPointF mousePos){
@@ -258,7 +238,17 @@ void mapa::cambiarTipoPincel(short tipo){
 }
 
 void mapa::agenteFin(int id){
+    agentes_.at(id)->getPix()->setPixmap(graficosAgente_[(agentes_.at(id)->dir_)-1]);
     agentesActivos_++;
+}
+
+dirYPesos mapa::escanearEntorno(int x, int y){          //0 Arriba, 1 Abajo, 2 Derecha, 3 Izquierda
+    dirYPesos S;
+    S.direccion_[0] = (!(y<=1)   )*matrizMapa_[pos(y-1,x)].tipo_ +(y<=1)   *(-1);
+    S.direccion_[1] = (!(y>=f_-2))*matrizMapa_[pos(y+1,x)].tipo_ +(y>=f_-2)*(-1);
+    S.direccion_[2] = (!(x>=c_-2))*matrizMapa_[pos(y,x+1)].tipo_ +(x>=c_-2)*(-1);
+    S.direccion_[3] = (!(x<=1)   )*matrizMapa_[pos(y,x-1)].tipo_ +(x<=1)   *(-1);
+    return S;
 }
 
 

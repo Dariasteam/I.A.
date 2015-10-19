@@ -1,38 +1,15 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QGridLayout>
-#include <QBoxLayout>
 #include "celda.h"
-#include <QMouseEvent>
-#include <QPoint>
-#include <iostream>
-#include <QMargins>
-#include <QSpinBox>
-#include <QBoxLayout>
-#include <QRect>
 #include "mapa.h"
-#include <QPushButton>
-#include <QProgressBar>
-#include <QCheckBox>
+
+#include <iostream>
 #include <QLabel>
 #include <fstream>
 #include <QMessageBox>
-#include <QSizePolicy>
-#include <QGraphicsView>
-#include <QPixmap>
-#include <QGraphicsItem>
-#include <QDockWidget>
-#include <QToolBox>
-#include <QSpacerItem>
-#include <unistd.h>
-#include <QThread>
-#include <thread>
 #include <QFrame>
 #include <QPixmap>
 #include <QToolBar>
-#include <QButtonGroup>
-
-#include <QPushButton>
 
 using namespace std;
 

@@ -1,15 +1,15 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "mapa.h"
+
 #include <QMainWindow>
 #include <QGridLayout>
 #include <QBoxLayout>
-#include "mapa.h"
 #include <QSpinBox>
 #include <QProgressBar>
 #include <QCheckBox>
 #include <QPushButton>
-#include <QMenu>
 #include <QMenuBar>
 #include <QAction>
 #include <QFileDialog>
@@ -23,9 +23,9 @@ namespace Ui {
 }
 
 struct menuTerreno{
-    QSlider*   slider_;
-    QLabel*    label_;
-    short      valorAnterior_;
+    QSlider*                            slider_;
+    QLabel*                             label_;
+    short                               valorAnterior_;
 };
 
 class MainWindow : public QMainWindow{
@@ -39,37 +39,33 @@ public:
 protected:
     void resizeEvent(QResizeEvent *);
 private:
-    Ui::MainWindow *ui;
-    QWidget* widPrincipal_;                     //widget principal de la ventana
-    QBoxLayout*  layPrincipal_;                 //layout principal de la ventana
-    mapa*    widMapa_;
-    QSpinBox* spinFilas_;
-    QSpinBox* spinColumnas_;
-    QProgressBar* barraProgreso_;
-    QPushButton* botonGenerar_;
-    QMenuBar*    menuBar_;
-    QMenu*       mnuArchivo_;
-    QAction*     actGuardar_;
-    QAction*     actGuardarComo_;
-    QAction*     actCargar_;
-    QString*     rutaArchivo_;
-    QFileDialog* dialogoAbrir_;
-    QScrollArea* areaScroll_;
-    QDockWidget* dockIzquierda_;
-    QToolBox*    panelDesplegable_;
-    QGridLayout* layOpcionesMapa_;
-    QGridLayout* layOpcionesAlgoritmo_;
-    menuTerreno*       editoresTerreno_;
-    //unsigned short*       valoresTerreno_;
-    //QList<QSlider*>     slidersTerreno_;
-
-    QAction * muro_;
-    QAction * rojo_;
-    QAction * suelo_;
-    QAction * metal_;
-    QAction * rejilla_;
-    QAction * tierra_;
-
+    Ui::MainWindow*                     ui;
+    QWidget*                            widPrincipal_;
+    QBoxLayout*                         layPrincipal_;
+    mapa*                               widMapa_;
+    QSpinBox*                           spinFilas_;
+    QSpinBox*                           spinColumnas_;
+    QProgressBar*                       barraProgreso_;
+    QPushButton*                        botonGenerar_;
+    QMenuBar*                           menuBar_;
+    QMenu*                              mnuArchivo_;
+    QAction*                            actGuardar_;
+    QAction*                            actGuardarComo_;
+    QAction*                            actCargar_;
+    QString*                            rutaArchivo_;
+    QFileDialog*                        dialogoAbrir_;
+    QScrollArea*                        areaScroll_;
+    QDockWidget*                        dockIzquierda_;
+    QToolBox*                           panelDesplegable_;
+    QGridLayout*                        layOpcionesMapa_;
+    QGridLayout*                        layOpcionesAlgoritmo_;
+    menuTerreno*                        editoresTerreno_;
+    QAction*                            muro_;
+    QAction*                            rojo_;
+    QAction*                            suelo_;
+    QAction*                            metal_;
+    QAction*                            rejilla_;
+    QAction*                            tierra_;
 private slots:
     void actualizarMapa();
     void onAbrir();
