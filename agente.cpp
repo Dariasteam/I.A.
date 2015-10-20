@@ -15,11 +15,13 @@ agente::agente(int x, int y, QGraphicsPixmapItem *pix, QWidget* parent){
     padre_ = parent;
     finCalculo_ = false;
     srand(time(NULL));
+    hilo_ = std::thread(&agente::movimiento,this);
+    hilo_.detach();
 }
 
 void agente::start(){
-    hilo_ = std::thread(&agente::movimiento,this);
-    hilo_.detach();
+    //hilo_ = std::thread(&agente::movimiento,this);
+    //hilo_.detach();
 }
 
 void agente::finMovimiento(){
@@ -56,4 +58,8 @@ void agente::movimiento(){
 
 QGraphicsPixmapItem* agente::getPix(){
     return pix_;
+}
+
+void agente::setColor(QColor color){
+    color_ = color;
 }

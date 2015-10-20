@@ -6,6 +6,7 @@
 #include <QGraphicsPixmapItem>
 #include <thread>
 #include <QPixmap>
+#include <QColor>
 
 class agente{
 public:
@@ -14,6 +15,7 @@ public:
     void movimiento();
     void start();
     void finMovimiento();
+    void setColor(QColor);
     bool                            finCalculo_;
     int                             dir_;
     int                             movimiento_;
@@ -25,6 +27,7 @@ private:
     int                             y_;
     std::thread                     hilo_;
     QWidget*                        padre_;
+    QColor                          color_;
 };
 
 #endif // AGENTE_H

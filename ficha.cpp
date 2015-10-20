@@ -1,19 +1,25 @@
 #include "ficha.h"
-#include "mapa.h"
+#include "mainwindow.h"
 
 #include <QColor>
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QColorDialog>
+#include <QDrag>
+#include <QMimeData>
 
-ficha::ficha(QString texto, QWidget* parent) : QGroupBox(parent){
+class MainWindow;
+
+ficha::ficha(QString texto, QWidget* parent) : QGroupBox(){
+    parent_ = parent;
     lay_ = new QBoxLayout(QBoxLayout::LeftToRight,this);
     lay_->setSizeConstraint(QLayout::SetFixedSize);
     labelBot_;
     labelBot_.setPixmap(QPixmap("../I.A./recursos/robotAbajo.png"));
     labelColor_;
     QPixmap P("../I.A./recursos/testigo.png");
-    P.fill(QColor(40,40,40,255));
+    color_ = QColor(rand()%255+1,rand()%255+1,rand()%255+1);
+    P.fill(color_);
     labelColor_.setPixmap(P);
     lay_->addWidget(&labelBot_);
     labelText_.setText(texto);
@@ -33,20 +39,28 @@ void ficha::mouseDoubleClickEvent(QMouseEvent* E){
             labelText_.setEnabled(true);
             setCheckable(true);
             activo_=true;
-            ((mapa*)parent());
+            ((MainWindow*)parent_)->addAgente();
         }else if(isChecked()){
             QColorDialog* d = new QColorDialog(this);
             QPixmap P("../I.A./recursos/testigo.png");
-            P.fill(d->getColor());
+            color_ = d->getColor();
+            P.fill(color_);
             labelColor_.setPixmap(P);
         }
     }
 }
 
-void ficha::keyPressEvent(QKeyEvent* E){
-    printf("WWWW");
-    if(E->key()==Qt::Key_Delete){
-        printf("dsadasdasd");
+void ficha::mousePressEvent(QMouseEvent* E){
+    if(E->button()==Qt::LeftButton && this->geometry().contains(E->pos()) && this->isChecked()){
+        QDrag* drag = new QDrag(this);
+        QMimeData* mime = new QMimeData;
+        mime->setText("mimeBot");
+        drag->setMimeData(mime);
+        drag->setPixmap(*(labelBot_.pixmap()));
+        Qt::DropAction dropAction = drag->exec();
     }
 }
 
+QColor ficha::getColor(){
+    return color_;
+}

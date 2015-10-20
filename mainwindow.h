@@ -36,6 +36,7 @@ public:
     ~MainWindow();
     void actualizarTitulo(bool);
     void crearLabelSlider(QString,int,int);
+    void addAgente();
 protected:
     void resizeEvent(QResizeEvent *);
 private:

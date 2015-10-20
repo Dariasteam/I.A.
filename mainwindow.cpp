@@ -3,6 +3,7 @@
 #include "celda.h"
 #include "mapa.h"
 #include "ficha.h"
+#include "agente.h"
 
 #include <iostream>
 #include <QLabel>
@@ -15,6 +16,7 @@
 
 using namespace std;
 
+class agente;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -75,7 +77,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     //dockIzquierda_->setMinimumWidth(150);
     //dockIzquierda_->setMaximumWidth(150);
 
-    dockIzquierda_->layout()->setSizeConstraint(QLayout::SetFixedSize);
+    dockIzquierda_->layout()->setSizeConstraint(QLayout::SetMaximumSize);
     addDockWidget(Qt::RightDockWidgetArea,dockIzquierda_);
 
 //INCIALIZACION DEL PANEL "MAPA"
@@ -114,17 +116,24 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
 //INICIALIZACION DEL PANEL "AGENTE"
 
-    scrollAgentes_ = new QScrollArea(this);
-    layScrollAgentes_ = new QBoxLayout(QBoxLayout::TopToBottom,scrollAgentes_);
-    layScrollAgentes_->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    QWidget* contenedor = new QWidget(this);
+    layScrollAgentes_ = new QBoxLayout(QBoxLayout::TopToBottom,contenedor);
+
     botonSimular_ = new QPushButton("Simular",this);
+
     layOpcionesAlgoritmo_->addWidget(new QLabel("Arrastra y suelta\npara añadir\nun agente"));
-    layOpcionesAlgoritmo_->addWidget(scrollAgentes_);
-    layOpcionesAlgoritmo_->addWidget(botonSimular_);
-    layOpcionesAlgoritmo_->setSizeConstraint(QLayout::SetFixedSize);
+    layOpcionesAlgoritmo_->setSizeConstraint(QLayout::SetMaximumSize);
 
     ficha* base = new ficha("Agente 0",this);
     layScrollAgentes_->addWidget(base);
+
+    scrollAgentes_ = new QScrollArea(this);
+    scrollAgentes_->setWidget(contenedor);
+    scrollAgentes_->setWidgetResizable(true);
+    layScrollAgentes_->setSizeConstraint(QLayout::SetMaximumSize);
+
+    layOpcionesAlgoritmo_->addWidget(scrollAgentes_);
+    layOpcionesAlgoritmo_->addWidget(botonSimular_);
 
 
 //TOOL BAR
@@ -145,10 +154,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     QLabel* pincelesTool = new QLabel("Terrenos: ",this);
     barra->addWidget(pincelesTool);
-   // QButtonGroup * ese = new QButtonGroup(barra);
-
-   // ese->addButton(new QPushButton(QIcon(QPixmap("../I.A./recursos/muro.png")),"",this),0);
-
 
     muro_->setCheckable(true);
     rojo_->setCheckable(true);
@@ -311,51 +316,50 @@ void MainWindow::actualizarTitulo(bool b){
 }
 
 
-void MainWindow::cambiarPincelAMuro()
-{
+void MainWindow::cambiarPincelAMuro(){
     ultimoAction_->setChecked(false);
     widMapa_->cambiarTipoPincel(6);
     ultimoAction_ = muro_;
 }
 
 
-void MainWindow::cambiarPincelARojo()
-{
+void MainWindow::cambiarPincelARojo(){
     ultimoAction_->setChecked(false);
     widMapa_->cambiarTipoPincel(5);
     ultimoAction_=rojo_;
 }
 
 
-void MainWindow::cambiarPincelASuelo()
-{
+void MainWindow::cambiarPincelASuelo(){
     ultimoAction_->setChecked(false);
     widMapa_->cambiarTipoPincel(4);
     ultimoAction_=suelo_;
 }
 
 
-void MainWindow::cambiarPincelAMetal()
-{
+void MainWindow::cambiarPincelAMetal(){
     ultimoAction_->setChecked(false);
     widMapa_->cambiarTipoPincel(3);
     ultimoAction_=metal_;
 }
 
-void MainWindow::cambiarPincelATierra()
-{
+void MainWindow::cambiarPincelATierra(){
     ultimoAction_->setChecked(false);
     widMapa_->cambiarTipoPincel(2);
     ultimoAction_=tierra_;
 }
 
 
-void MainWindow::cambiarPincelARejilla()
-{
+void MainWindow::cambiarPincelARejilla(){
     ultimoAction_->setChecked(false);
     widMapa_->cambiarTipoPincel(1);
     ultimoAction_=rejilla_;
 }
 
+void MainWindow::addAgente(){
+    ficha* aux = new ficha("Agente x",this);
+    layScrollAgentes_->addWidget(aux);
+    //widMapa_->addAgente(aux->getColor());
+}
 
 

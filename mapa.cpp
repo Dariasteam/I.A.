@@ -3,7 +3,6 @@
 #include "graphicsmapa.h"
 
 #include <iostream>
-#include <math.h>
 #include <fstream>
 
 
@@ -45,7 +44,6 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, short a, short b,short 
         agentes_.push_back(aux);
         agentes_.at(i)->start();
     }
-
 }
 
 mapa::mapa(ifstream* fich, QProgressBar* barra, QWidget* parent) : QWidget(parent){
@@ -250,4 +248,14 @@ dirYPesos mapa::escanearEntorno(int x, int y){          //0 Arriba, 1 Abajo, 2 D
     return S;
 }
 
+void mapa::addAgente(QPointF pos){
+    int columna = int(int(pos.x())/(32*escala_));
+    int fila    = int(int(pos.y())/(32*escala_));
+    //agentes_.push_back(new agente());
+    agente* aux = new agente(fila,columna,pintarPixmap(fila,columna,&graficosAgente_[0]),this);
+    aux->movimiento_ = escala_*32;
+    //agentes_.push_back(aux);
+    //agentes_.at(2)->start();
+    //coloresAgente_.push_back(c);
+}
 
