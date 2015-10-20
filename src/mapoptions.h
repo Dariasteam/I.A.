@@ -4,8 +4,14 @@
 #include <QWidget>
 #include <QSlider>
 #include <vector>
+#include <functional>
 
 using namespace std;
+
+struct TerrainSlider {
+    QSlider * slider_;
+    short oldValue_;
+};
 
 namespace Ui {
 class MapOptions;
@@ -27,9 +33,10 @@ public:
 signals:
     void onSpawn(void);
 public slots:
-    void onSliderUpdate();
+    void onSliderUpdate(int);
 private:
     Ui::MapOptions *ui;
+    vector<TerrainSlider> terrainSliders_;
 };
 
 #endif // MAPOPTIONS_H

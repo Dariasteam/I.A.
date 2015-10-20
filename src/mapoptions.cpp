@@ -1,16 +1,18 @@
 #include "mapoptions.h"
 #include "ui_mapoptions.h"
+#include <iostream>
 
 MapOptions::MapOptions(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MapOptions)
 {
     ui->setupUi(this);
-    connect(ui->generar_Boton,SIGNAL(clicked(bool)),this,SIGNAL(onSpawn()));
-    connect(ui->muro_slider,SIGNAL(valueChanged(int)),this,SLOT(onSliderUpdate()));
-    connect(ui->tierra_slider,SIGNAL(valueChanged(int)),this,SLOT(onSliderUpdate()));
-    connect(ui->metal_slider,SIGNAL(valueChanged(int)),this,SLOT(onSliderUpdate()));
-    connect(ui->rejilla_slider,SIGNAL(valueChanged(int)),this,SLOT(onSliderUpdate()));
+    connect(ui->generar_Boton,&QPushButton::clicked,this,&MapOptions::onSpawn);
+    connect(ui->muro_slider,&QSlider::valueChanged,this,([=] (int) { onSliderUpdate(0);}));
+    connect(ui->tierra_slider,&QSlider::valueChanged,this,([=] (int) { onSliderUpdate(1);}));
+    connect(ui->metal_slider,&QSlider::valueChanged,this,([=] (int) { onSliderUpdate(2);}));
+    connect(ui->rejilla_slider,&QSlider::valueChanged,this,([=] (int) { onSliderUpdate(3);}));
+    terrainSliders_ = {{ui->muro_slider, 0}, {ui->tierra_slider, 0}, {ui->metal_slider, 0}, {ui->rejilla_slider, 0}};
 }
 
 MapOptions::~MapOptions()
@@ -18,56 +20,39 @@ MapOptions::~MapOptions()
     delete ui;
 }
 
-void MapOptions::onSliderUpdate() {
-    vector<QSlider *> sliders = {ui->muro_slider, ui->tierra_slider, ui->metal_slider, ui->rejilla_slider};
+void MapOptions::onSliderUpdate(int i) {
 
-    //    int i=0;
-    //    while(i<4 && editoresTerreno_[i].valorAnterior_==editoresTerreno_[i].slider_->value()){
-    //        i++;
-    //    }
-    //    if(i<4){
-    //        // if sum . map x.slider_->value editoresTerreno_  > 50
-    //        if((editoresTerreno_[0].slider_->value() +
-    //            editoresTerreno_[1].slider_->value() +
-    //            editoresTerreno_[2].slider_->value() +
-    //            editoresTerreno_[3].slider_->value())  > 50){
+    auto map = [=] (function<void (TerrainSlider*)> fn) {
+        for (int i = 0; i < terrainSliders_.size(); i++) {
+            fn(&terrainSliders_[i]);
+        }
+    };
 
-    //            // 50 - sum . map x.slider_->value editoresTerreno_
-    //            float factorReduccion =
-    //            editoresTerreno_[0].slider_->value() +
-    //            editoresTerreno_[1].slider_->value() +
-    //            editoresTerreno_[2].slider_->value() +
-    //            editoresTerreno_[3].slider_->value() - 50;
+    terrainSliders_[i].oldValue_ = terrainSliders_[i].slider_->value();
+    int sum = 0;
+    map([&sum](TerrainSlider* tSlider) {
+        sum += tSlider->slider_->value();
+    });
 
-    //            // factorReduccion / (sum . map (if x.slider_->value > 0 then 1 else 0)-1)
-    //            factorReduccion = factorReduccion /
-    //            (((editoresTerreno_[0].slider_->value()>0)) +
-    //             ((editoresTerreno_[1].slider_->value()>0)) +
-    //             ((editoresTerreno_[2].slider_->value()>0)) +
-    //             ((editoresTerreno_[3].slider_->value()>0))-1);
+    if (sum > 50) {
+        float factorReduction =sum-50;
+        int total = 0;
+        map([&total] (TerrainSlider* tSlider) {
+            total += tSlider->slider_->value()>0;
+        });
+        factorReduction = factorReduction / (total - 1);
 
-    //            if(factorReduccion>0 && factorReduccion<INFINITY){
-    //                // map ()
-    //                for(int j=0;j<4;j++){
-    //                    if(j!=i && editoresTerreno_[j].valorAnterior_ >
-    //                       fabs(editoresTerreno_[j].valorAnterior_-(factorReduccion*editoresTerreno_[j].valorAnterior_>0))
-    //                       && editoresTerreno_[j].valorAnterior_>0){
-
-    //                            editoresTerreno_[j].valorAnterior_ = fabs(editoresTerreno_[j].valorAnterior_-
-    //                                                                     (factorReduccion*editoresTerreno_[j].valorAnterior_>0));
-    //                            editoresTerreno_[j].slider_->setValue(editoresTerreno_[j].valorAnterior_);
-    //                            editoresTerreno_[0].label_->setNum(editoresTerreno_[0].valorAnterior_);
-    //                    }
-    //                }
-    //            }
-    //        }
-    //        editoresTerreno_[i].valorAnterior_ = editoresTerreno_[i].slider_->value();
-    //        editoresTerreno_[0].label_->setNum(editoresTerreno_[0].valorAnterior_);
-    //        editoresTerreno_[1].label_->setNum(editoresTerreno_[1].valorAnterior_);
-    //        editoresTerreno_[2].label_->setNum(editoresTerreno_[2].valorAnterior_);
-    //        editoresTerreno_[3].label_->setNum(editoresTerreno_[3].valorAnterior_);
-    //    }
-
+        if (factorReduction < INFINITY) {
+            map([=] (TerrainSlider* tSlider) {
+                if ((tSlider != &terrainSliders_[i])
+                        && tSlider->oldValue_ > fabs(tSlider->oldValue_ - (factorReduction*tSlider->oldValue_>0))
+                        && tSlider->oldValue_ > 0) {
+                    tSlider->oldValue_ = fabs(tSlider->oldValue_ - (factorReduction*tSlider->oldValue_>0));
+                    tSlider->slider_->setValue(tSlider->oldValue_);
+                }
+            });
+        }
+    }
 }
 
 int MapOptions::cols() {
