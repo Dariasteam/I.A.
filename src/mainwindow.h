@@ -29,13 +29,14 @@ public slots:
     void onSaveAs(void);
     void onSave(void);
     void onUpdateMap(void);
-    void changePencil(QAbstractButton *);
 private:
     Ui::MainWindow *ui;
     Map * widMap_;
     MapOptions * mapOptions_;
     QString * rutaArchivo_;
     QFileDialog * dialogoAbrir_;
+    QAction * active_;
+
 };
 
 #endif // MAINWINDOW_H

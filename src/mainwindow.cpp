@@ -8,14 +8,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this);
     ui->map_layout->addWidget(widMap_);
 
-    QButtonGroup * buttonGroup = new QButtonGroup(this);
-    QPushButton * muro_ = new QPushButton(QIcon(QPixmap(":/recursos/muro.png")),"Muro",this);
-    QPushButton * rojo_ = new QPushButton(QIcon(QPixmap(":/recursos/rojo.png")),"Rojo",this);
-    QPushButton * suelo_ = new QPushButton(QIcon(QPixmap(":/recursos/suelo.png")),"Suelo",this);
-    QPushButton * metal_ = new QPushButton(QIcon(QPixmap(":/recursos/metal.png")),"Metal",this);
-    QPushButton * rejilla_ = new QPushButton(QIcon(QPixmap(":/recursos/rejilla.png")),"Rejilla",this);
-    QPushButton * tierra_ = new QPushButton(QIcon(QPixmap(":/recursos/tierra.png")),"Tierra",this);
+    QAction * muro_ = new QAction(QIcon(QPixmap(":/recursos/muro.png")),"Muro",this);
+    QAction * rojo_ = new QAction(QIcon(QPixmap(":/recursos/rojo.png")),"Rojo",this);
+    QAction * suelo_ = new QAction(QIcon(QPixmap(":/recursos/suelo.png")),"Suelo",this);
+    QAction * metal_ = new QAction(QIcon(QPixmap(":/recursos/metal.png")),"Metal",this);
+    QAction * rejilla_ = new QAction(QIcon(QPixmap(":/recursos/rejilla.png")),"Rejilla",this);
+    QAction * tierra_ = new QAction(QIcon(QPixmap(":/recursos/tierra.png")),"Tierra",this);
 
+    active_ = muro_;
     muro_->setCheckable(true);
     rojo_->setCheckable(true);
     suelo_->setCheckable(true);
@@ -23,21 +23,24 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     rejilla_->setCheckable(true);
     tierra_->setCheckable(true);
 
-    buttonGroup->addButton(muro_);
-    buttonGroup->addButton(rojo_);
-    buttonGroup->addButton(suelo_);
-    buttonGroup->addButton(metal_);
-    buttonGroup->addButton(rejilla_);
-    buttonGroup->addButton(tierra_);
+    auto changeActive = [&] (QAction * action) {
+        active_->setChecked(false);
+        active_ = action;
+        active_->setChecked(true);
+    };
+    connect(muro_, &QAction::triggered, this, ([=] (void) { changeActive(muro_); widMap_->setPencil(Wall);}));
+    connect(rojo_, &QAction::triggered, this, ([=] (void) { changeActive(rojo_); widMap_->setPencil(RedTile);}));
+    connect(suelo_, &QAction::triggered, this, ([=] (void) { changeActive(suelo_); widMap_->setPencil(Ground);}));
+    connect(metal_, &QAction::triggered, this, ([=] (void) { changeActive(metal_); widMap_->setPencil(Metal);}));
+    connect(rejilla_, &QAction::triggered, this, ([=] (void) { changeActive(rejilla_); widMap_->setPencil(Network);}));
+    connect(tierra_, &QAction::triggered, this, ([=] (void) { changeActive(tierra_); widMap_->setPencil(Land);}));
 
-    connect(buttonGroup,SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(changePencil(QAbstractButton*)));
-
-    ui->toolBar->addWidget(muro_);
-    ui->toolBar->addWidget(rojo_);
-    ui->toolBar->addWidget(suelo_);
-    ui->toolBar->addWidget(metal_);
-    ui->toolBar->addWidget(rejilla_);
-    ui->toolBar->addWidget(tierra_);
+    ui->toolBar->addAction(muro_);
+    ui->toolBar->addAction(rojo_);
+    ui->toolBar->addAction(suelo_);
+    ui->toolBar->addAction(metal_);
+    ui->toolBar->addAction(rejilla_);
+    ui->toolBar->addAction(tierra_);
 
     ui->progressBar->hide();
     ui->actionGuardar->setDisabled(true);
@@ -120,26 +123,5 @@ void MainWindow::onSave(){
         QMessageBox* error = new QMessageBox();
         error->setText("No se ha podido abrir el archivo");
         error->show();
-    }
-}
-
-void MainWindow::changePencil(QAbstractButton * button) {
-    if (button->text() == "Muro") {
-        widMap_->setPencil(Wall);
-    }
-    else if (button->text() == "Rojo") {
-        widMap_->setPencil(RedTile);
-    }
-    else if (button->text() == "Suelo") {
-        widMap_->setPencil(Ground);
-    }
-    else if (button->text() == "Metal") {
-        widMap_->setPencil(Metal);
-    }
-    else if (button->text() == "Rejilla") {
-        widMap_->setPencil(Network);
-    }
-    else if (button->text() == "Tierra") {
-        widMap_->setPencil(Land);
     }
 }
