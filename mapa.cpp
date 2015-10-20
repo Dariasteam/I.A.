@@ -39,11 +39,13 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, short a, short b,short 
     }
     barra_->hide();
     layMapa_->addWidget(zoomSlider_);
-    for(int i=0;i<1;i++){
-        agente* aux = new agente(f_/2,c_/2,i,pintarPixmap(f_/2,c_/2,&graficosAgente_[0]),this);
+    for(int i=0;i<2;i++){
+        agente* aux = new agente(f_/2,c_/2,pintarPixmap(f_/2,c_/2,&graficosAgente_[0]),this);
         aux->movimiento_ = escala_*32;
         agentes_.push_back(aux);
+        agentes_.at(i)->start();
     }
+
 }
 
 mapa::mapa(ifstream* fich, QProgressBar* barra, QWidget* parent) : QWidget(parent){
@@ -115,7 +117,6 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     tiempo_ = new QTimer(this);
     connect(tiempo_,SIGNAL(timeout()),this,SLOT(movimientoTempo()));
     tiempo_->start(15);
-    agentesActivos_ = 0;
     pincel_ = 5;
 }
 
@@ -125,29 +126,27 @@ void mapa::zoom(int i){
 }
 
 void mapa::movimientoTempo(){
-    if(agentesActivos_ > 0){
-        for(int i=0;i<agentes_.size();i++){
-            if(agentes_.at(i)->finCalculo_==true){
-                if(agentes_.at(i)->tiempoMov_>0){
-                    switch (agentes_.at(i)->dir_){ //1 Arriba, 2 Abajo, 3 Derecha, 4 Izquierda
-                    case 1:
-                        agentes_.at(i)->getPix()->moveBy(0,-1);
-                        break;
-                    case 2:
-                        agentes_.at(i)->getPix()->moveBy(0,1);
-                        break;
-                    case 3:
-                        agentes_.at(i)->getPix()->moveBy(1,0);
-                        break;
-                    default:
-                        agentes_.at(i)->getPix()->moveBy(-1,0);
-                        break;
-                    }
-                    agentes_.at(i)->tiempoMov_--;
-                }else{
-                    agentes_.at(i)->finMovimiento();
-                    agentesActivos_--;
+    for(int i=0;i<movimientosActuales_.size();i++){
+        if(movimientosActuales_.at(i)->finCalculo_==true){
+            if(movimientosActuales_.at(i)->tiempoMov_>0){
+                switch (movimientosActuales_.at(i)->dir_){ //1 Arriba, 2 Abajo, 3 Derecha, 4 Izquierda
+                case 1:
+                    movimientosActuales_.at(i)->getPix()->moveBy(0,-1);
+                    break;
+                case 2:
+                    movimientosActuales_.at(i)->getPix()->moveBy(0,1);
+                    break;
+                case 3:
+                    movimientosActuales_.at(i)->getPix()->moveBy(1,0);
+                    break;
+                default:
+                    movimientosActuales_.at(i)->getPix()->moveBy(-1,0);
+                    break;
                 }
+                movimientosActuales_.at(i)->tiempoMov_--;
+            }else{
+                movimientosActuales_.at(i)->finMovimiento();
+                movimientosActuales_.removeAt(i);
             }
         }
     }
@@ -237,9 +236,9 @@ void mapa::cambiarTipoPincel(short tipo){
     pincel_ = tipo;
 }
 
-void mapa::agenteFin(int id){
-    agentes_.at(id)->getPix()->setPixmap(graficosAgente_[(agentes_.at(id)->dir_)-1]);
-    agentesActivos_++;
+void mapa::agentePideMovimiento(agente* A){
+    movimientosActuales_.push_back(A);
+    A->getPix()->setPixmap(graficosAgente_[A->dir_-1]);
 }
 
 dirYPesos mapa::escanearEntorno(int x, int y){          //0 Arriba, 1 Abajo, 2 Derecha, 3 Izquierda

@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "celda.h"
 #include "mapa.h"
+#include "ficha.h"
 
 #include <iostream>
 #include <QLabel>
@@ -10,6 +11,7 @@
 #include <QFrame>
 #include <QPixmap>
 #include <QToolBar>
+#include <QGroupBox>
 
 using namespace std;
 
@@ -65,14 +67,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     QWidget* opcionesAlgoritmo = new QWidget(panelDesplegable_);
 
     panelDesplegable_->addItem(opcionesMapa,"Mapa");
-    panelDesplegable_->addItem(opcionesAlgoritmo,"Algoritmo");
+    panelDesplegable_->addItem(opcionesAlgoritmo,"Agente");
 
     layOpcionesMapa_ = new QGridLayout(opcionesMapa);
     layOpcionesAlgoritmo_ = new QGridLayout(opcionesAlgoritmo);
 
-    dockIzquierda_->setMinimumWidth(150);
-    dockIzquierda_->setMaximumWidth(150);
+    //dockIzquierda_->setMinimumWidth(150);
+    //dockIzquierda_->setMaximumWidth(150);
 
+    dockIzquierda_->layout()->setSizeConstraint(QLayout::SetFixedSize);
     addDockWidget(Qt::RightDockWidgetArea,dockIzquierda_);
 
 //INCIALIZACION DEL PANEL "MAPA"
@@ -109,11 +112,24 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     connect(botonGenerar_,SIGNAL(clicked(bool)),this,SLOT(actualizarMapa()));
 
+//INICIALIZACION DEL PANEL "AGENTE"
+
+    scrollAgentes_ = new QScrollArea(this);
+    layScrollAgentes_ = new QBoxLayout(QBoxLayout::TopToBottom,scrollAgentes_);
+    layScrollAgentes_->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    botonSimular_ = new QPushButton("Simular",this);
+    layOpcionesAlgoritmo_->addWidget(new QLabel("Arrastra y suelta\npara añadir\nun agente"));
+    layOpcionesAlgoritmo_->addWidget(scrollAgentes_);
+    layOpcionesAlgoritmo_->addWidget(botonSimular_);
+    layOpcionesAlgoritmo_->setSizeConstraint(QLayout::SetFixedSize);
+
+    ficha* base = new ficha("Agente 0",this);
+    layScrollAgentes_->addWidget(base);
+
+
 //TOOL BAR
 
-
-
-    QToolBar * barra = new QToolBar("suso",this);
+    QToolBar * barra = new QToolBar("ToolBar",this);
     barra->setFloatable(false);
     barra->setAllowedAreas(Qt::AllToolBarAreas);
     this->addToolBar(barra);
@@ -124,6 +140,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     metal_ = new QAction(QIcon(QPixmap("../I.A./recursos/metal.png")),"metal",this);
     rejilla_ = new QAction(QIcon(QPixmap("../I.A./recursos/rejilla.png")),"rejilla",this);
     tierra_ = new QAction(QIcon(QPixmap("../I.A./recursos/tierra.png")),"Tierra",this);
+    ultimoAction_ = suelo_;
 
 
     QLabel* pincelesTool = new QLabel("Terrenos: ",this);
@@ -296,80 +313,48 @@ void MainWindow::actualizarTitulo(bool b){
 
 void MainWindow::cambiarPincelAMuro()
 {
+    ultimoAction_->setChecked(false);
     widMapa_->cambiarTipoPincel(6);
-    muro_->setChecked(true);
-    suelo_->setChecked(false);
-    tierra_->setChecked(false);
-    rojo_->setChecked(false);
-    rejilla_->setChecked(false);
-    metal_->setChecked(false);
+    ultimoAction_ = muro_;
 }
 
 
 void MainWindow::cambiarPincelARojo()
 {
+    ultimoAction_->setChecked(false);
     widMapa_->cambiarTipoPincel(5);
-
-    muro_->setChecked(false);
-    suelo_->setChecked(false);
-    tierra_->setChecked(false);
-    rojo_->setChecked(true);
-    rejilla_->setChecked(false);
-    metal_->setChecked(false);
+    ultimoAction_=rojo_;
 }
 
 
 void MainWindow::cambiarPincelASuelo()
 {
+    ultimoAction_->setChecked(false);
     widMapa_->cambiarTipoPincel(4);
-
-
-    muro_->setChecked(false);
-    suelo_->setChecked(true);
-    tierra_->setChecked(false);
-    rojo_->setChecked(false);
-    rejilla_->setChecked(false);
-    metal_->setChecked(false);
+    ultimoAction_=suelo_;
 }
 
 
 void MainWindow::cambiarPincelAMetal()
 {
+    ultimoAction_->setChecked(false);
     widMapa_->cambiarTipoPincel(3);
-
-    muro_->setChecked(false);
-    suelo_->setChecked(false);
-    tierra_->setChecked(false);
-    rojo_->setChecked(false);
-    rejilla_->setChecked(false);
-    metal_->setChecked(true);
+    ultimoAction_=metal_;
 }
 
 void MainWindow::cambiarPincelATierra()
 {
+    ultimoAction_->setChecked(false);
     widMapa_->cambiarTipoPincel(2);
-
-
-    muro_->setChecked(false);
-    suelo_->setChecked(false);
-    tierra_->setChecked(true);
-    rojo_->setChecked(false);
-    rejilla_->setChecked(false);
-    metal_->setChecked(false);
+    ultimoAction_=tierra_;
 }
 
 
 void MainWindow::cambiarPincelARejilla()
 {
+    ultimoAction_->setChecked(false);
     widMapa_->cambiarTipoPincel(1);
-
-
-    muro_->setChecked(false);
-    suelo_->setChecked(false);
-    tierra_->setChecked(false);
-    rojo_->setChecked(false);
-    rejilla_->setChecked(true);
-    metal_->setChecked(false);
+    ultimoAction_=rejilla_;
 }
 
 

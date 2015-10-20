@@ -42,7 +42,7 @@ public:
     QGraphicsPixmapItem* pintarPixmap(double,double,QPixmap*);
     void sustituirCelda(double,double,short);
     void cambiarTipoPincel(short);
-    void agenteFin(int);
+    void agentePideMovimiento(agente*);
     dirYPesos escanearEntorno(int x, int y);
 private:
     celda*                                  matrizMapa_;
@@ -61,13 +61,13 @@ private:
     QGraphicsView*                          view_;
     double                                  escala_;
     QList<agente*>                          agentes_;
+    QList<agente*>                          movimientosActuales_;
     double                                  ultimoZoom_;
     QSlider*                                zoomSlider_;
     int                                     direccionMovimiento_;    //0 Arriba, 1 Abajo, 2 Derecha, 3 Izquierda
     int                                     idAgente_;
     int                                     error;
     QTimer*                                 tiempo_;
-    int                                     agentesActivos_;
 public slots:
     void movioMouse(QPointF);
     void zoom(int);

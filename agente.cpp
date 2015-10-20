@@ -8,14 +8,16 @@
 
 using namespace std;
 
-agente::agente(int x, int y, int id, QGraphicsPixmapItem *pix, QWidget* parent){
-    id_ = id;
+agente::agente(int x, int y, QGraphicsPixmapItem *pix, QWidget* parent){
     x_ = x;
     y_ = y;
     pix_ = pix;
     padre_ = parent;
     finCalculo_ = false;
     srand(time(NULL));
+}
+
+void agente::start(){
     hilo_ = std::thread(&agente::movimiento,this);
     hilo_.detach();
 }
@@ -31,9 +33,9 @@ void agente::movimiento(){
     bool caminoAdecuado = false;
     while(!caminoAdecuado){
         dir_ = rand()%4 + 1;                                //1 Arriba, 2 Abajo, 3 Derecha, 4 Izquierda
-        caminoAdecuado = ((((mapa*)padre_)->escanearEntorno(x_,y_).direccion_[dir_-1])!=-1);
+        caminoAdecuado = ((((mapa*)padre_)->escanearEntorno(x_,y_).direccion_[dir_-1])!=-1 &&
+                          (((mapa*)padre_)->escanearEntorno(x_,y_).direccion_[dir_-1])<5);
     }
-    cout<<"Iré a un terreno de tipo "<<(((mapa*)padre_)->escanearEntorno(x_,y_).direccion_[dir_-1])<<endl;
     switch (dir_) {
     case 1:
         y_--;
@@ -48,7 +50,7 @@ void agente::movimiento(){
         x_--;
         break;
     }
-    ((mapa*)padre_)->agenteFin(id_);
+    ((mapa*)padre_)->agentePideMovimiento(this);
 }
 
 

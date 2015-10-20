@@ -18,12 +18,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     mapa.cpp \
     graphicsmapa.cpp \
-    agente.cpp
+    agente.cpp \
+    ficha.cpp
 
 HEADERS  += mainwindow.h \
     mapa.h \
     graphicsmapa.h \
-    agente.h
+    agente.h \
+    ficha.h
 
 FORMS    += mainwindow.ui
 

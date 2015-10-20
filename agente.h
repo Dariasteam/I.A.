@@ -9,9 +9,10 @@
 
 class agente{
 public:
-    explicit agente(int x, int y, int id, QGraphicsPixmapItem* pix, QWidget *parent = 0);
+    explicit agente(int x, int y, QGraphicsPixmapItem* pix, QWidget *parent = 0);
     QGraphicsPixmapItem* getPix();
     void movimiento();
+    void start();
     void finMovimiento();
     bool                            finCalculo_;
     int                             dir_;

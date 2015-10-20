@@ -47,6 +47,7 @@ private:
     QSpinBox*                           spinColumnas_;
     QProgressBar*                       barraProgreso_;
     QPushButton*                        botonGenerar_;
+    QPushButton*                        botonSimular_;
     QMenuBar*                           menuBar_;
     QMenu*                              mnuArchivo_;
     QAction*                            actGuardar_;
@@ -54,7 +55,8 @@ private:
     QAction*                            actCargar_;
     QString*                            rutaArchivo_;
     QFileDialog*                        dialogoAbrir_;
-    QScrollArea*                        areaScroll_;
+    QBoxLayout*                         layScrollAgentes_;
+    QScrollArea*                        scrollAgentes_;
     QDockWidget*                        dockIzquierda_;
     QToolBox*                           panelDesplegable_;
     QGridLayout*                        layOpcionesMapa_;
@@ -66,6 +68,7 @@ private:
     QAction*                            metal_;
     QAction*                            rejilla_;
     QAction*                            tierra_;
+    QAction*                            ultimoAction_;
 private slots:
     void actualizarMapa();
     void onAbrir();
