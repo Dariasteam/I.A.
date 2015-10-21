@@ -21,6 +21,8 @@ public:
     int getDir();
     void reducirMov();
     int getId();
+    bool getActivo();
+    QColor getColor();
     void pause();
 private:
     int                             tiempoMov_;

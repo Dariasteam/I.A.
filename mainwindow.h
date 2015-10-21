@@ -40,8 +40,8 @@ public:
     ~MainWindow();
     void actualizarTitulo(bool);
     void crearLabelSlider(QString,int,int);
-    QBoxLayout*                         layScrollAgentes_;
     void addAgente(agente*);
+    void actualizarAgentes();
 protected:
     void resizeEvent(QResizeEvent *);
 private:
@@ -61,7 +61,7 @@ private:
     QAction*                            actCargar_;
     QString*                            rutaArchivo_;
     QFileDialog*                        dialogoAbrir_;
-
+    QBoxLayout*                         layScrollAgentes_;
     QScrollArea*                        scrollAgentes_;
     QDockWidget*                        dockIzquierda_;
     QToolBox*                           panelDesplegable_;
@@ -87,6 +87,7 @@ private slots:
     void cambiarPincelARejilla();
     void cambiarPincelAMetal();
     void cambiarPincelATierra();
+    void onSimular();
 public slots:
 };
 

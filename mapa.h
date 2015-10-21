@@ -72,7 +72,6 @@ private:
     int                                     idAgente_;
     QTimer*                                 tiempo_;
     bool                                    simulando_;
-    QBoxLayout*                             layFichas_;
     QWidget*                                parent_;
 public slots:
     void movioMouse(QPointF);

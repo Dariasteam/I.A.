@@ -87,7 +87,6 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     layMapa_->addWidget(zoomSlider_);
     idAgente_ = 0;
     simulando_ = false;
-    layFichas_ = ((MainWindow*)parent())->layScrollAgentes_;
     connect(zoomSlider_,SIGNAL(valueChanged(int)),this,SLOT(zoom(int)));
     ultimoZoom_ = 1;
     if(f_>c_){
@@ -113,8 +112,7 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     pincel_ = 5;
     tiempo_ = new QTimer(this);
     connect(tiempo_,SIGNAL(timeout()),this,SLOT(movimientoTempo()));
-    tiempo_->start(50);
-    escena_->layFichas_ = layFichas_;
+    tiempo_->start(15);
 }
 
 void mapa::zoom(int i){
@@ -160,6 +158,7 @@ QGraphicsPixmapItem* mapa::pintarPixmap(double fila, double columna, QPixmap* pi
         auxPix = escena_->addPixmap(*pix);
         auxPix->setScale(escala_);
         auxPix->setPos(columna*escala_*pix->size().height(),fila*escala_*pix->size().height());
+        auxPix->setZValue(2);
         return auxPix;
     }else
         return NULL;
@@ -237,8 +236,15 @@ void mapa::cambiarTipoPincel(short tipo){
     pincel_ = tipo;
 }
 
-void mapa::agentePideMovimiento(agente* A,int id, int dir){
+void mapa::agentePideMovimiento(agente* A, int id, int dir){
     movimientosActuales_.push_back(A);
+    int columna = int(int(pixAgentes_.at(id)->x())/(32*escala_));
+    int fila    = int(int(pixAgentes_.at(id)->y())/(32*escala_));
+    QPixmap* pix = new QPixmap(graficosTerrenos_[0]);
+    pix->fill(A->getColor());
+    QGraphicsPixmapItem* aux = pintarPixmap(fila,columna,pix);
+    aux->setZValue(1);
+    aux->setOpacity(0.2);
 }
 
 dirYPesos mapa::escanearEntorno(int x, int y){          //0 Arriba, 1 Abajo, 2 Derecha, 3 Izquierda
@@ -268,10 +274,9 @@ void mapa::startSimulacion(){
         }
         simulando_=true;
     }else{
-        /*while(movimientosActuales_.size()>0){
-
-        }*/
-        //tiempo_->disconnect();
+        for(int i=0;i<agentes_.size();i++){
+            agentes_.at(i)->pause();
+        }
         simulando_=false;
     }
 }

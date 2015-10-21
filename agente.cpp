@@ -5,8 +5,6 @@
 #include <unistd.h>
 #include "mapa.h"
 #include <QTimer>
-#include <math.h>
-#include <stdio.h>
 
 using namespace std;
 
@@ -19,12 +17,15 @@ agente::agente(int x, int y, int tiempoMov, int id, QWidget* parent){
     padre_ = parent;
     tiempoMov_ = tiempoMov;
     movimientoRestante_ = tiempoMov_;
+    activo_ = true;
+    srand(time(NULL));
+    hilo_ = std::thread(&agente::getDir,this);
+    hilo_.detach();
 }
 
 void agente::start(){
     activo_ = true;
-    hilo_ = std::thread(&agente::movimiento,this);
-    hilo_.detach();
+    movimiento();
 }
 
 void agente::finMovimiento(){
@@ -33,11 +34,19 @@ void agente::finMovimiento(){
 
 void agente::movimiento(){
     if(activo_){
-        srand(time(NULL));
         movimientoRestante_ = tiempoMov_;
         dirYPesos d = ((mapa*)padre_)->escanearEntorno(x_,y_);
         dir_ = rand()%4 + 1;
-        while (d.direccion_[dir_-1]<0 || d.direccion_[dir_-1]>5) {
+        bool pausar = true;
+        for(int i=0;i<4;i++){
+            if(d.direccion_[i]>=0 && d.direccion_[i]<=5){
+                pausar=false;
+            }
+        }
+        if(pausar){
+            pause();
+        }
+        while (d.direccion_[dir_-1]<0 || d.direccion_[dir_-1]>4) {
             dir_ = rand()%4 + 1;
             //1 Arriba, 2 Abajo, 3 Derecha, 4 Izquierda
         }
@@ -83,3 +92,10 @@ void agente::pause(){
     activo_ = false;
 }
 
+bool agente::getActivo(){
+    return activo_;
+}
+
+QColor agente::getColor(){
+    return color_;
+}

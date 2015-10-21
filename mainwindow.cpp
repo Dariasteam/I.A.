@@ -141,7 +141,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     layOpcionesAlgoritmo_->addWidget(scrollAgentes_);
     layOpcionesAlgoritmo_->addWidget(botonSimular_);
 
-    connect(botonSimular_,SIGNAL(clicked(bool)),widMapa_,SLOT(startSimulacion()));
+    connect(botonSimular_,SIGNAL(clicked(bool)),this,SLOT(onSimular()));
 
 //TOOL BAR
 
@@ -254,6 +254,14 @@ void MainWindow::actualizarSliders(){
 void MainWindow::resizeEvent(QResizeEvent*){
 }
 
+void MainWindow::actualizarAgentes(){
+    while(!layScrollAgentes_->isEmpty()){
+        delete layScrollAgentes_->takeAt(0);
+    }
+    botonSimular_->setText("Simular");
+    layScrollAgentes_->update();
+}
+
 void MainWindow::actualizarMapa(){
     mapa* aux;
     cout<<"Generando nuevo mapa"<<endl;
@@ -280,6 +288,7 @@ void MainWindow::onAbrir(){
             widMapa_=aux;
             fich.close();
             actGuardar_->setEnabled(true);
+            actualizarAgentes();
             this->setWindowTitle("I.A.[*] - "+*rutaArchivo_);
         }else{
             QMessageBox* error = new QMessageBox();
@@ -366,4 +375,13 @@ void MainWindow::cambiarPincelARejilla(){
 void MainWindow::addAgente(agente* a){
     ficha* aux = new ficha("Agente x",a,NULL);
     layScrollAgentes_ ->addWidget(aux);
+}
+
+void MainWindow::onSimular(){
+    if(botonSimular_->text()=="Simular"){
+        botonSimular_->setText("Pausa");
+    }else{
+        botonSimular_->setText("Simular");
+    }
+    widMapa_->startSimulacion();
 }

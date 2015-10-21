@@ -15,7 +15,6 @@ ficha::ficha(QString texto, agente* a, QWidget* parent) : QGroupBox(){
     lay_ = new QBoxLayout(QBoxLayout::LeftToRight,this);
     lay_->setSizeConstraint(QLayout::SetFixedSize);
     labelBot_.setPixmap(QPixmap("../I.A./recursos/robotAbajo.png"));
-    labelColor_;
     QPixmap P("../I.A./recursos/testigo.png");
     color_ = QColor(rand()%255+1,rand()%255+1,rand()%255+1);
     P.fill(color_);
@@ -24,6 +23,7 @@ ficha::ficha(QString texto, agente* a, QWidget* parent) : QGroupBox(){
     labelText_.setText(texto);
     lay_->addWidget(&labelText_);
     lay_->addWidget(&labelColor_);
+    agente_->setColor(color_);
     setCheckable(true);
     connect(this,&QGroupBox::clicked,this,&ficha::check);
 }
@@ -36,6 +36,7 @@ void ficha::mouseDoubleClickEvent(QMouseEvent* E){
             color_ = d->getColor();
             P.fill(color_);
             labelColor_.setPixmap(P);
+            agente_->setColor(color_);
         }
     }
 }
