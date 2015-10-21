@@ -75,10 +75,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     layOpcionesMapa_ = new QGridLayout(opcionesMapa);
     layOpcionesAlgoritmo_ = new QBoxLayout(QBoxLayout::TopToBottom,opcionesAlgoritmo);
 
-    //dockIzquierda_->setMinimumWidth(150);
-    //dockIzquierda_->setMaximumWidth(150);
-
-    dockIzquierda_->layout()->setSizeConstraint(QLayout::SetMaximumSize);
+    dockIzquierda_->layout()->setSizeConstraint(QLayout::SetMinAndMaxSize);
     addDockWidget(Qt::RightDockWidgetArea,dockIzquierda_);
 
 //INCIALIZACION DEL PANEL "MAPA"
@@ -183,8 +180,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     connect(rejilla_,SIGNAL(triggered()),this,SLOT(cambiarPincelARejilla()));
     connect(tierra_,SIGNAL(triggered()),this,SLOT(cambiarPincelATierra()));
 
-
-
 //OPERACIONES FINALES
 
     setCentralWidget(widPrincipal_);
@@ -271,6 +266,7 @@ void MainWindow::actualizarMapa(){
                    editoresTerreno_[2].valorAnterior_,
                    editoresTerreno_[3].valorAnterior_,this);
     layPrincipal_->replaceWidget(widMapa_,aux);
+    actualizarAgentes();
     delete widMapa_;
     widMapa_=aux;
 }

@@ -15,7 +15,6 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QSlider>
-#include <QColor>
 
 class agente;
 
@@ -65,7 +64,6 @@ private:
     QList<agente*>                          agentes_;
     QList<agente*>                          movimientosActuales_;
     QList<QGraphicsPixmapItem*>             pixAgentes_;
-    QList<QColor>                           coloresAgente_;
     double                                  ultimoZoom_;
     QSlider*                                zoomSlider_;
     int                                     direccionMovimiento_;    //0 Arriba, 1 Abajo, 2 Derecha, 3 Izquierda

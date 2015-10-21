@@ -236,10 +236,11 @@ void mapa::cambiarTipoPincel(short tipo){
     pincel_ = tipo;
 }
 
-void mapa::agentePideMovimiento(agente* A, int id, int dir){
+void mapa::agentePideMovimiento(agente* A, int id, int dir){   //1 Arriba, 2 Abajo, 3 Derecha, 4 Izquierda
     movimientosActuales_.push_back(A);
     int columna = int(int(pixAgentes_.at(id)->x())/(32*escala_));
     int fila    = int(int(pixAgentes_.at(id)->y())/(32*escala_));
+    matrizMapa_[mapa::pos(fila,columna)].agente_ = NULL;
     QPixmap* pix = new QPixmap(graficosTerrenos_[0]);
     pix->fill(A->getColor());
     QGraphicsPixmapItem* aux = pintarPixmap(fila,columna,pix);
@@ -261,14 +262,13 @@ void mapa::addAgente(QPointF pos){
     int fila    = int(int(pos.y())/(32*escala_));
     pixAgentes_.push_back(pintarPixmap(fila,columna,&graficosAgente_[1]));
     agente* aux = new agente(columna,fila,escala_*32,agentes_.size(),this);
+    matrizMapa_[mapa::pos(fila,columna)].agente_ = aux;
     agentes_.push_back(aux);
     ((MainWindow*)parent_)->addAgente(aux);
-
-    //coloresAgente_.push_back(c);
 }
 
 void mapa::startSimulacion(){
-    if(!simulando_){
+    if(!simulando_ && movimientosActuales_.size()==0){
         for(int i=0;i<agentes_.size();i++){
             agentes_.at(i)->start();
         }
