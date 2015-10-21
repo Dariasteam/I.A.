@@ -17,6 +17,7 @@
 using namespace std;
 
 class agente;
+class ficha;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -72,7 +73,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     panelDesplegable_->addItem(opcionesAlgoritmo,"Agente");
 
     layOpcionesMapa_ = new QGridLayout(opcionesMapa);
-    layOpcionesAlgoritmo_ = new QGridLayout(opcionesAlgoritmo);
+    layOpcionesAlgoritmo_ = new QBoxLayout(QBoxLayout::TopToBottom,opcionesAlgoritmo);
 
     //dockIzquierda_->setMinimumWidth(150);
     //dockIzquierda_->setMaximumWidth(150);
@@ -121,20 +122,26 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     botonSimular_ = new QPushButton("Simular",this);
 
-    layOpcionesAlgoritmo_->addWidget(new QLabel("Arrastra y suelta\npara añadir\nun agente"));
-    layOpcionesAlgoritmo_->setSizeConstraint(QLayout::SetMaximumSize);
+    QBoxLayout* layDropBot = new QBoxLayout(QBoxLayout::LeftToRight,NULL);
 
-    ficha* base = new ficha("Agente 0",this);
-    layScrollAgentes_->addWidget(base);
+    layOpcionesAlgoritmo_->addLayout(layDropBot);
+
+    dropbot* drop = new dropbot(this);
+    drop->setPixmap(QPixmap("../I.A./recursos/robotAbajo.png"));
+
+    layDropBot->addWidget(drop);
+    layDropBot->addWidget(new QLabel("Arrastra y suelta\npara añadir\nun agente"));
+    layOpcionesAlgoritmo_->setSizeConstraint(QLayout::SetMaximumSize);
 
     scrollAgentes_ = new QScrollArea(this);
     scrollAgentes_->setWidget(contenedor);
     scrollAgentes_->setWidgetResizable(true);
-    layScrollAgentes_->setSizeConstraint(QLayout::SetMaximumSize);
+    layScrollAgentes_->setSizeConstraint(QLayout::SetFixedSize);
 
     layOpcionesAlgoritmo_->addWidget(scrollAgentes_);
     layOpcionesAlgoritmo_->addWidget(botonSimular_);
 
+    connect(botonSimular_,SIGNAL(clicked(bool)),widMapa_,SLOT(startSimulacion()));
 
 //TOOL BAR
 
@@ -307,7 +314,7 @@ void MainWindow::onGuardar(){
     }
 }
 
-void MainWindow::actualizarTitulo(bool b){
+void MainWindow::actualizarTitulo(bool b){this->setWindowModified(true);
     if(b){
         this->setWindowModified(true);
     }else{
@@ -356,10 +363,7 @@ void MainWindow::cambiarPincelARejilla(){
     ultimoAction_=rejilla_;
 }
 
-void MainWindow::addAgente(){
-    ficha* aux = new ficha("Agente x",this);
-    layScrollAgentes_->addWidget(aux);
-    //widMapa_->addAgente(aux->getColor());
+void MainWindow::addAgente(agente* a){
+    ficha* aux = new ficha("Agente x",a,NULL);
+    layScrollAgentes_ ->addWidget(aux);
 }
-
-

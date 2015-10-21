@@ -16,6 +16,7 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, short a, short b,short 
            QWidget* parent) : QWidget(parent)
     {
     operacionesConstruccion(filas,columnas,barra);
+    parent_ = parent;
     srand(time(NULL));
     for(int i=0;i<f_;i++){
         for(int j=0;j<c_;j++){
@@ -33,20 +34,16 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, short a, short b,short 
             }else{
                 sustituirCelda(i,j,4);
             }
+            matrizMapa_[pos(i,j)].agente_ = NULL;
             emit actualizarBarra(j+(i*c_));
         }
     }
     barra_->hide();
     layMapa_->addWidget(zoomSlider_);
-    for(int i=0;i<2;i++){
-        agente* aux = new agente(f_/2,c_/2,pintarPixmap(f_/2,c_/2,&graficosAgente_[0]),this);
-        aux->movimiento_ = escala_*32;
-        agentes_.push_back(aux);
-        agentes_.at(i)->start();
-    }
 }
 
 mapa::mapa(ifstream* fich, QProgressBar* barra, QWidget* parent) : QWidget(parent){
+    parent_ = parent;
     *fich>>f_;
     *fich>>c_;
     operacionesConstruccion(f_,c_,barra);
@@ -89,7 +86,8 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     layMapa_->addWidget(view_);
     layMapa_->addWidget(zoomSlider_);
     idAgente_ = 0;
-    error = 0;
+    simulando_ = false;
+    layFichas_ = ((MainWindow*)parent())->layScrollAgentes_;
     connect(zoomSlider_,SIGNAL(valueChanged(int)),this,SLOT(zoom(int)));
     ultimoZoom_ = 1;
     if(f_>c_){
@@ -112,10 +110,11 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     barra_->setMaximum(c_*f_);
     barra_->show();
     connect(this,SIGNAL(actualizarBarra(int)),barra_,SLOT(setValue(int)));
+    pincel_ = 5;
     tiempo_ = new QTimer(this);
     connect(tiempo_,SIGNAL(timeout()),this,SLOT(movimientoTempo()));
-    tiempo_->start(15);
-    pincel_ = 5;
+    tiempo_->start(50);
+    escena_->layFichas_ = layFichas_;
 }
 
 void mapa::zoom(int i){
@@ -125,27 +124,31 @@ void mapa::zoom(int i){
 
 void mapa::movimientoTempo(){
     for(int i=0;i<movimientosActuales_.size();i++){
-        if(movimientosActuales_.at(i)->finCalculo_==true){
-            if(movimientosActuales_.at(i)->tiempoMov_>0){
-                switch (movimientosActuales_.at(i)->dir_){ //1 Arriba, 2 Abajo, 3 Derecha, 4 Izquierda
-                case 1:
-                    movimientosActuales_.at(i)->getPix()->moveBy(0,-1);
-                    break;
-                case 2:
-                    movimientosActuales_.at(i)->getPix()->moveBy(0,1);
-                    break;
-                case 3:
-                    movimientosActuales_.at(i)->getPix()->moveBy(1,0);
-                    break;
-                default:
-                    movimientosActuales_.at(i)->getPix()->moveBy(-1,0);
-                    break;
-                }
-                movimientosActuales_.at(i)->tiempoMov_--;
-            }else{
-                movimientosActuales_.at(i)->finMovimiento();
-                movimientosActuales_.removeAt(i);
+        agente* aux = movimientosActuales_.at(i);
+        int id = aux->getId();
+        if(movimientosActuales_.at(i)->getMovRestante()>0){
+            switch (aux->getDir()){ //1 Arriba, 2 Abajo, 3 Derecha, 4 Izquierda
+            case 1:
+                pixAgentes_.at(id)->setPixmap(graficosAgente_[0]);
+                pixAgentes_.at(id)->moveBy(0,-1);
+                break;
+            case 2:
+                pixAgentes_.at(id)->setPixmap(graficosAgente_[1]);
+                pixAgentes_.at(id)->moveBy(0,1);
+                break;
+            case 3:
+                pixAgentes_.at(id)->setPixmap(graficosAgente_[2]);
+                pixAgentes_.at(id)->moveBy(1,0);
+                break;
+            default:
+                pixAgentes_.at(id)->setPixmap(graficosAgente_[3]);
+                pixAgentes_.at(id)->moveBy(-1,0);
+                break;
             }
+            aux->reducirMov();
+        }else{
+            aux->finMovimiento();
+            movimientosActuales_.removeAt(i);
         }
     }
 }
@@ -185,7 +188,7 @@ void mapa::pintar(){
     int ratonX = (mousePos_.x());
     int ratonY = (mousePos_.y());
     if((ratonX > 0) && (mousePos_.x() < anchoMapa) && (ratonY > 0)  && (mousePos_.y() < altoMapa)){
-        double xCelda = anchoMapa / c_;
+        double xCelda = anchoMapa  / c_;
         double yCelda = altoMapa   / f_;
         double c = ratonX / xCelda;
         double f = ratonY / yCelda;
@@ -234,9 +237,8 @@ void mapa::cambiarTipoPincel(short tipo){
     pincel_ = tipo;
 }
 
-void mapa::agentePideMovimiento(agente* A){
+void mapa::agentePideMovimiento(agente* A,int id, int dir){
     movimientosActuales_.push_back(A);
-    A->getPix()->setPixmap(graficosAgente_[A->dir_-1]);
 }
 
 dirYPesos mapa::escanearEntorno(int x, int y){          //0 Arriba, 1 Abajo, 2 Derecha, 3 Izquierda
@@ -251,11 +253,28 @@ dirYPesos mapa::escanearEntorno(int x, int y){          //0 Arriba, 1 Abajo, 2 D
 void mapa::addAgente(QPointF pos){
     int columna = int(int(pos.x())/(32*escala_));
     int fila    = int(int(pos.y())/(32*escala_));
-    //agentes_.push_back(new agente());
-    agente* aux = new agente(fila,columna,pintarPixmap(fila,columna,&graficosAgente_[0]),this);
-    aux->movimiento_ = escala_*32;
-    //agentes_.push_back(aux);
-    //agentes_.at(2)->start();
+    pixAgentes_.push_back(pintarPixmap(fila,columna,&graficosAgente_[1]));
+    agente* aux = new agente(columna,fila,escala_*32,agentes_.size(),this);
+    agentes_.push_back(aux);
+    ((MainWindow*)parent_)->addAgente(aux);
+
     //coloresAgente_.push_back(c);
 }
+
+void mapa::startSimulacion(){
+    if(!simulando_){
+        for(int i=0;i<agentes_.size();i++){
+            agentes_.at(i)->start();
+        }
+        simulando_=true;
+    }else{
+        /*while(movimientosActuales_.size()>0){
+
+        }*/
+        //tiempo_->disconnect();
+        simulando_=false;
+    }
+}
+
+
 

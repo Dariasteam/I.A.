@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include "mapa.h"
+#include "dropbot.h"
+#include "agente.h"
 
 #include <QMainWindow>
 #include <QGridLayout>
@@ -28,6 +30,8 @@ struct menuTerreno{
     short                               valorAnterior_;
 };
 
+class agente;
+
 class MainWindow : public QMainWindow{
     Q_OBJECT
 
@@ -36,7 +40,8 @@ public:
     ~MainWindow();
     void actualizarTitulo(bool);
     void crearLabelSlider(QString,int,int);
-    void addAgente();
+    QBoxLayout*                         layScrollAgentes_;
+    void addAgente(agente*);
 protected:
     void resizeEvent(QResizeEvent *);
 private:
@@ -56,12 +61,12 @@ private:
     QAction*                            actCargar_;
     QString*                            rutaArchivo_;
     QFileDialog*                        dialogoAbrir_;
-    QBoxLayout*                         layScrollAgentes_;
+
     QScrollArea*                        scrollAgentes_;
     QDockWidget*                        dockIzquierda_;
     QToolBox*                           panelDesplegable_;
     QGridLayout*                        layOpcionesMapa_;
-    QGridLayout*                        layOpcionesAlgoritmo_;
+    QBoxLayout*                         layOpcionesAlgoritmo_;
     menuTerreno*                        editoresTerreno_;
     QAction*                            muro_;
     QAction*                            rojo_;
@@ -82,6 +87,7 @@ private slots:
     void cambiarPincelARejilla();
     void cambiarPincelAMetal();
     void cambiarPincelATierra();
+public slots:
 };
 
 #endif // MAINWINDOW_H

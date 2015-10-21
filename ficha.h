@@ -9,12 +9,14 @@
 #include <QString>
 #include <QColorDialog>
 #include <QColor>
+#include "agente.h"
+
+class agente;
 
 class ficha : public QGroupBox{
 public:
-    ficha(QString texto, QWidget* parent);
+    ficha(QString texto, agente*, QWidget* parent);
     void mouseDoubleClickEvent(QMouseEvent* );
-    void mousePressEvent(QMouseEvent* );
     QColor getColor();
 private:
     QLabel          labelBot_;
@@ -24,9 +26,11 @@ private:
     bool            activo_;
     QWidget*        parent_;
     QColor          color_;
+    agente*         agente_;
 signals:
 
 public slots:
+    void check(bool);
 };
 
 #endif // FICHA_H

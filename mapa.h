@@ -22,6 +22,7 @@ class agente;
 struct celda{
     short                                   tipo_;
     QGraphicsPixmapItem*                    pix_;
+    agente*                                 agente_;
 };
 
 struct dirYPesos{
@@ -43,7 +44,6 @@ public:
     QGraphicsPixmapItem* pintarPixmap(double,double,QPixmap*);
     void sustituirCelda(double,double,short);
     void cambiarTipoPincel(short);
-    void agentePideMovimiento(agente*);
     dirYPesos escanearEntorno(int x, int y);
     void addAgente(QPointF);
 private:
@@ -64,20 +64,24 @@ private:
     double                                  escala_;
     QList<agente*>                          agentes_;
     QList<agente*>                          movimientosActuales_;
+    QList<QGraphicsPixmapItem*>             pixAgentes_;
     QList<QColor>                           coloresAgente_;
     double                                  ultimoZoom_;
     QSlider*                                zoomSlider_;
     int                                     direccionMovimiento_;    //0 Arriba, 1 Abajo, 2 Derecha, 3 Izquierda
     int                                     idAgente_;
-    int                                     error;
     QTimer*                                 tiempo_;
+    bool                                    simulando_;
+    QBoxLayout*                             layFichas_;
+    QWidget*                                parent_;
 public slots:
     void movioMouse(QPointF);
     void zoom(int);
     void movimientoTempo();
+    void startSimulacion();
+    void agentePideMovimiento(agente*,int,int);
 signals:
     void actualizarBarra(int);
-
 };
 
 

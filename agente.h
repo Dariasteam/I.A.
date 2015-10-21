@@ -9,25 +9,31 @@
 #include <QColor>
 
 class agente{
+
+
 public:
-    explicit agente(int x, int y, QGraphicsPixmapItem* pix, QWidget *parent = 0);
-    QGraphicsPixmapItem* getPix();
+    explicit agente(int x, int y, int tiempoMov_, int id, QWidget *parent = 0);
     void movimiento();
     void start();
     void finMovimiento();
     void setColor(QColor);
-    bool                            finCalculo_;
-    int                             dir_;
-    int                             movimiento_;
-    int                             tiempoMov_;
+    int getMovRestante();
+    int getDir();
+    void reducirMov();
+    int getId();
+    void pause();
 private:
+    int                             tiempoMov_;
+    int                             movimientoRestante_;
     int                             id_;
-    QGraphicsPixmapItem*            pix_;
     int                             x_;
     int                             y_;
     std::thread                     hilo_;
     QWidget*                        padre_;
     QColor                          color_;
+    int                             dir_;
+    QGraphicsPixmapItem*            gPix_;
+    bool                            activo_;
 };
 
 #endif // AGENTE_H

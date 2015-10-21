@@ -19,13 +19,15 @@ SOURCES += main.cpp\
     mapa.cpp \
     graphicsmapa.cpp \
     agente.cpp \
-    ficha.cpp
+    ficha.cpp \
+    dropbot.cpp
 
 HEADERS  += mainwindow.h \
     mapa.h \
     graphicsmapa.h \
     agente.h \
-    ficha.h
+    ficha.h \
+    dropbot.h
 
 FORMS    += mainwindow.ui
 
