@@ -42,6 +42,7 @@ public:
     void crearLabelSlider(QString,int,int);
     void addAgente(agente*,int);
     void actualizarAgentes();
+    void actualizarSeguir(int);
 protected:
     void resizeEvent(QResizeEvent *);
 private:

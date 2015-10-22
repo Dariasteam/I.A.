@@ -385,7 +385,7 @@ void MainWindow::cambiarPincelARejilla(){
 }
 
 void MainWindow::addAgente(agente* a, int id){
-    ficha* aux = new ficha(QString("Agente ")+QString::fromStdString(std::to_string(id)),a,NULL);
+    ficha* aux = new ficha(QString("Agente ")+QString::fromStdString(std::to_string(id)),a,this);
     layScrollAgentes_ ->addWidget(aux);
 }
 
@@ -396,4 +396,11 @@ void MainWindow::onSimular(){
         botonSimular_->setText("Simular");
     }
     widMapa_->startSimulacion();
+}
+
+void MainWindow::actualizarSeguir(int id){
+    int i=0;
+    while(!layScrollAgentes_->isEmpty()){
+        ((ficha*)layScrollAgentes_->itemAt(i))->desactivarSegir();
+    }
 }

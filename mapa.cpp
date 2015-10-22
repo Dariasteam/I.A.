@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <QScrollBar>
 
 
 
@@ -124,6 +125,14 @@ void mapa::movimientoTempo(){
         agente* aux = movimientosActuales_.at(i);
         int id = aux->getId();
         if(movimientosActuales_.at(i)->getMovRestante()>0){
+            if(aux->getSeguir()){
+                float szHorizontal = view_->horizontalScrollBar()->width();
+                float szVertical = view_->verticalScrollBar()->height();
+                szHorizontal = (szHorizontal*pixAgentes_.at(i)->x())/view_->width()*ultimoZoom_;
+                szVertical = (szVertical*pixAgentes_.at(i)->y())/view_->height()*ultimoZoom_;
+                view_->horizontalScrollBar()->setValue(szHorizontal);
+                view_->verticalScrollBar()->setValue(szVertical);
+            }
             switch (aux->getDir()){
             case arriba:
                 pixAgentes_.at(id)->moveBy(0,-1);

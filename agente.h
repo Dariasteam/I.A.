@@ -25,6 +25,7 @@ public:
     QColor getColor();
     void pause();
     bool getRastro();
+    bool getSeguir();
 private:
     int                             tiempoMov_;
     int                             movimientoRestante_;
@@ -38,8 +39,10 @@ private:
     QGraphicsPixmapItem*            gPix_;
     bool                            activo_;
     bool                            rastro_;
+    bool                            seguir_;
 public slots:
     void setRastro(bool);
+    void setSeguir(bool);
 };
 
 #endif // AGENTE_H

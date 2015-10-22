@@ -19,6 +19,7 @@ agente::agente(int x, int y, int tiempoMov, int id, QWidget* parent) : QWidget(p
     movimientoRestante_ = tiempoMov_;
     activo_ = true;
     rastro_ = false;
+    seguir_=false;
     srand(time(NULL));
     hilo_ = std::thread(&agente::getDir,this);
     hilo_.detach();
@@ -47,7 +48,6 @@ void agente::movimiento(){
                 pausar=false;
             }
         }
-        cout<<"Pausar vale "<<pausar<<endl;
         if(pausar || encontrado){
             pause();
         }else{
@@ -112,5 +112,13 @@ void agente::setRastro(bool b){
 
 bool agente::getRastro(){
     return rastro_;
+}
+
+void agente::setSeguir(bool b){
+    seguir_ = b;
+}
+
+bool agente::getSeguir(){
+    return seguir_;
 }
 

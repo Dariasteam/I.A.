@@ -1,11 +1,14 @@
 #include "ficha.h"
+#include "mainwindow.h"
+
+class MainWindow;
 
 #include <QColor>
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QColorDialog>
 
-ficha::ficha(QString texto, agente* a, QWidget* parent) : QGroupBox(){
+ficha::ficha(QString texto, agente* a, QWidget* parent) : QGroupBox(parent){
     parent_ = parent;
     agente_= a;
     lay_ = new QGridLayout(this);
@@ -22,10 +25,15 @@ ficha::ficha(QString texto, agente* a, QWidget* parent) : QGroupBox(){
     agente_->setColor(color_);
     checkRastro_ = new QCheckBox("Rastro",this);
     checkRastro_->setChecked(false);
+    checkSeguir_ = new QCheckBox("Seguir",this);
+    checkSeguir_->setChecked(false);
     connect(checkRastro_,&QAbstractButton::clicked,agente_,&agente::setRastro);
-    lay_->addWidget(checkRastro_,1,0,3,0);
+    lay_->addWidget(checkRastro_,1,0);
+    lay_->addWidget(checkSeguir_,1,1);
     setCheckable(true);
     connect(this,&QGroupBox::clicked,this,&ficha::check);
+    connect(checkSeguir_,&QAbstractButton::clicked,this,&ficha::checkSeguir);
+    connect(checkSeguir_,&QAbstractButton::clicked,agente_,&agente::setSeguir);
 }
 
 void ficha::mouseDoubleClickEvent(QMouseEvent* E){
@@ -51,4 +59,13 @@ void ficha::check(bool b){
     }else{
         agente_->pause();
     }
+}
+
+void ficha::checkSeguir(bool){
+    //((MainWindow*)parent())->actualizarSeguir(agente_->getId());
+}
+
+void ficha::desactivarSegir(){
+    checkSeguir_->setChecked(false);
+    agente_->setSeguir(false);
 }

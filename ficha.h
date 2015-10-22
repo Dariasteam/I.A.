@@ -21,6 +21,7 @@ public:
     ficha(QString texto, agente*, QWidget* parent);
     void mouseDoubleClickEvent(QMouseEvent* );
     QColor getColor();
+    void desactivarSegir();
 private:
     QLabel          labelBot_;
     QLabel          labelText_;
@@ -31,11 +32,12 @@ private:
     QColor          color_;
     agente*         agente_;
     QCheckBox*      checkRastro_;
-    //QCheckBox*      checkMem_;
+    QCheckBox*      checkSeguir_;
 signals:
 
 public slots:
     void check(bool);
+    void checkSeguir(bool);
 };
 
 #endif // FICHA_H
