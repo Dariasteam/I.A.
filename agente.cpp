@@ -10,7 +10,7 @@ using namespace std;
 
 struct dirYPesos;
 
-agente::agente(int x, int y, int tiempoMov, int id, QWidget* parent){
+agente::agente(int x, int y, int tiempoMov, int id, QWidget* parent) : QWidget(parent){
     x_ = x;
     y_ = y;
     id_ = id;
@@ -18,6 +18,7 @@ agente::agente(int x, int y, int tiempoMov, int id, QWidget* parent){
     tiempoMov_ = tiempoMov;
     movimientoRestante_ = tiempoMov_;
     activo_ = true;
+    rastro_ = false;
     srand(time(NULL));
     hilo_ = std::thread(&agente::getDir,this);
     hilo_.detach();
@@ -38,33 +39,38 @@ void agente::movimiento(){
         dirYPesos d = ((mapa*)padre_)->escanearEntorno(x_,y_);
         dir_ = rand()%4 + 1;
         bool pausar = true;
+        bool encontrado = false;
         for(int i=0;i<4;i++){
-            if(d.direccion_[i]>=0 && d.direccion_[i]<=5){
+            if(d.direccion_[i]==0){
+                encontrado=true;
+            }else if(d.direccion_[i]<5){
                 pausar=false;
             }
         }
-        if(pausar){
+        cout<<"Pausar vale "<<pausar<<endl;
+        if(pausar || encontrado){
             pause();
+        }else{
+            while (d.direccion_[dir_-1]<1 || d.direccion_[dir_-1]>4) {
+                dir_ = rand()%4 + 1;
+            }
+            dir_--;
+            switch (dir_) {
+            case arriba:
+                y_--;
+                break;
+            case abajo:
+                y_++;
+                break;
+            case derecha:
+                x_++;
+                break;
+            default:
+                x_--;
+                break;
+            }
+            ((mapa*)padre_)->agentePideMovimiento(this,id_,dir_);
         }
-        while (d.direccion_[dir_-1]<0 || d.direccion_[dir_-1]>4) {
-            dir_ = rand()%4 + 1;
-            //1 Arriba, 2 Abajo, 3 Derecha, 4 Izquierda
-        }
-        switch (dir_) {
-        case 1:
-            y_--;
-            break;
-        case 2:
-            y_++;
-            break;
-        case 3:
-            x_++;
-            break;
-        default:
-            x_--;
-            break;
-        }
-        ((mapa*)padre_)->agentePideMovimiento(this,id_,dir_);
     }
 }
 
@@ -99,3 +105,12 @@ bool agente::getActivo(){
 QColor agente::getColor(){
     return color_;
 }
+
+void agente::setRastro(bool b){
+    rastro_ = b;
+}
+
+bool agente::getRastro(){
+    return rastro_;
+}
+

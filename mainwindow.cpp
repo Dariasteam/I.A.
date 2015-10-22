@@ -68,12 +68,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     QWidget* opcionesMapa = new QWidget(panelDesplegable_);
     QWidget* opcionesAlgoritmo = new QWidget(panelDesplegable_);
+    QWidget* opcionesEstadistica = new QWidget(panelDesplegable_);
 
     panelDesplegable_->addItem(opcionesMapa,"Mapa");
     panelDesplegable_->addItem(opcionesAlgoritmo,"Agente");
+    panelDesplegable_->addItem(opcionesEstadistica,"Estadística");
 
     layOpcionesMapa_ = new QGridLayout(opcionesMapa);
     layOpcionesAlgoritmo_ = new QBoxLayout(QBoxLayout::TopToBottom,opcionesAlgoritmo);
+    layOpcionesEstadistica_ = new QBoxLayout(QBoxLayout::TopToBottom,opcionesEstadistica);
 
     dockIzquierda_->layout()->setSizeConstraint(QLayout::SetMinAndMaxSize);
     addDockWidget(Qt::RightDockWidgetArea,dockIzquierda_);
@@ -140,6 +143,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     connect(botonSimular_,SIGNAL(clicked(bool)),this,SLOT(onSimular()));
 
+//INICIALIZACION DEL PANEL "ESTADISTICA"
+
+
+
 //TOOL BAR
 
     QToolBar * barra = new QToolBar("ToolBar",this);
@@ -153,8 +160,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     metal_ = new QAction(QIcon(QPixmap("../I.A./recursos/metal.png")),"metal",this);
     rejilla_ = new QAction(QIcon(QPixmap("../I.A./recursos/rejilla.png")),"rejilla",this);
     tierra_ = new QAction(QIcon(QPixmap("../I.A./recursos/tierra.png")),"Tierra",this);
+    nuclear_ = new QAction(QIcon(QPixmap("../I.A./recursos/nuclear.png")),"Nuclear",this);
     ultimoAction_ = suelo_;
-
 
     QLabel* pincelesTool = new QLabel("Terrenos: ",this);
     barra->addWidget(pincelesTool);
@@ -165,6 +172,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     metal_->setCheckable(true);
     rejilla_->setCheckable(true);
     tierra_->setCheckable(true);
+    nuclear_->setCheckable(true);
 
     barra->addAction(muro_);
     barra->addAction(rojo_);
@@ -172,6 +180,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     barra->addAction(metal_);
     barra->addAction(rejilla_);
     barra->addAction(tierra_);
+    barra->addSeparator();
+    barra->addAction(nuclear_);
 
     connect(muro_,SIGNAL(triggered()),this,SLOT(cambiarPincelAMuro()));
     connect(rojo_,SIGNAL(triggered()),this,SLOT(cambiarPincelARojo()));
@@ -179,6 +189,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     connect(metal_,SIGNAL(triggered()),this,SLOT(cambiarPincelAMetal()));
     connect(rejilla_,SIGNAL(triggered()),this,SLOT(cambiarPincelARejilla()));
     connect(tierra_,SIGNAL(triggered()),this,SLOT(cambiarPincelATierra()));
+    connect(nuclear_,SIGNAL(triggered(bool)),SLOT(cambiarPincelANuclear()));
 
 //OPERACIONES FINALES
 
@@ -348,6 +359,11 @@ void MainWindow::cambiarPincelASuelo(){
     ultimoAction_=suelo_;
 }
 
+void MainWindow::cambiarPincelANuclear(){
+    ultimoAction_->setCheckable(false);
+    widMapa_->cambiarTipoPincel(0);
+    ultimoAction_=suelo_;
+}
 
 void MainWindow::cambiarPincelAMetal(){
     ultimoAction_->setChecked(false);
@@ -368,8 +384,8 @@ void MainWindow::cambiarPincelARejilla(){
     ultimoAction_=rejilla_;
 }
 
-void MainWindow::addAgente(agente* a){
-    ficha* aux = new ficha("Agente x",a,NULL);
+void MainWindow::addAgente(agente* a, int id){
+    ficha* aux = new ficha(QString("Agente ")+QString::fromStdString(std::to_string(id)),a,NULL);
     layScrollAgentes_ ->addWidget(aux);
 }
 

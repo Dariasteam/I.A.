@@ -1,15 +1,18 @@
 #ifndef FICHA_H
 #define FICHA_H
 
+#include "agente.h"
+
 #include <QGroupBox>
 #include <QWidget>
 #include <QPixmap>
 #include <QLabel>
-#include <QBoxLayout>
+#include <QGridLayout>
 #include <QString>
 #include <QColorDialog>
 #include <QColor>
-#include "agente.h"
+#include <QCheckBox>
+
 
 class agente;
 
@@ -22,11 +25,13 @@ private:
     QLabel          labelBot_;
     QLabel          labelText_;
     QLabel          labelColor_;
-    QBoxLayout*     lay_;
+    QGridLayout*    lay_;
     bool            activo_;
     QWidget*        parent_;
     QColor          color_;
     agente*         agente_;
+    QCheckBox*      checkRastro_;
+    //QCheckBox*      checkMem_;
 signals:
 
 public slots:

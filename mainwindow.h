@@ -40,7 +40,7 @@ public:
     ~MainWindow();
     void actualizarTitulo(bool);
     void crearLabelSlider(QString,int,int);
-    void addAgente(agente*);
+    void addAgente(agente*,int);
     void actualizarAgentes();
 protected:
     void resizeEvent(QResizeEvent *);
@@ -67,6 +67,7 @@ private:
     QToolBox*                           panelDesplegable_;
     QGridLayout*                        layOpcionesMapa_;
     QBoxLayout*                         layOpcionesAlgoritmo_;
+    QBoxLayout*                         layOpcionesEstadistica_;
     menuTerreno*                        editoresTerreno_;
     QAction*                            muro_;
     QAction*                            rojo_;
@@ -74,6 +75,7 @@ private:
     QAction*                            metal_;
     QAction*                            rejilla_;
     QAction*                            tierra_;
+    QAction*                            nuclear_;
     QAction*                            ultimoAction_;
 private slots:
     void actualizarMapa();
@@ -87,6 +89,7 @@ private slots:
     void cambiarPincelARejilla();
     void cambiarPincelAMetal();
     void cambiarPincelATierra();
+    void cambiarPincelANuclear();
     void onSimular();
 public slots:
 };

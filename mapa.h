@@ -25,7 +25,25 @@ struct celda{
 };
 
 struct dirYPesos{
-    short                                   direccion_[4];  //0 Arriba, 1 Abajo, 2 Derecha, 3 Izquierda
+    short                                   direccion_[4];
+};
+
+enum tile {
+    nuclear,
+    rejilla,
+    tierra,
+    metal,
+    suelo,
+    rojo,
+    muro,
+};
+
+enum direcciones {
+    arriba,
+    abajo,
+    derecha,
+    izquierda,
+
 };
 
 class mapa : public QWidget{
@@ -39,6 +57,7 @@ public:
     void pintar();
     void cambiarCeldaEn(int,int,bool);
     int pos(int,int);
+    QPoint getFilaColumna(QPointF);
     void operacionesConstruccion(int,int,QProgressBar*);
     QGraphicsPixmapItem* pintarPixmap(double,double,QPixmap*);
     void sustituirCelda(double,double,short);
@@ -66,8 +85,6 @@ private:
     QList<QGraphicsPixmapItem*>             pixAgentes_;
     double                                  ultimoZoom_;
     QSlider*                                zoomSlider_;
-    int                                     direccionMovimiento_;    //0 Arriba, 1 Abajo, 2 Derecha, 3 Izquierda
-    int                                     idAgente_;
     QTimer*                                 tiempo_;
     bool                                    simulando_;
     QWidget*                                parent_;

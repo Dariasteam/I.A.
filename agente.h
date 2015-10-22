@@ -8,7 +8,7 @@
 #include <QPixmap>
 #include <QColor>
 
-class agente{
+class agente : public QWidget{
 
 
 public:
@@ -24,6 +24,7 @@ public:
     bool getActivo();
     QColor getColor();
     void pause();
+    bool getRastro();
 private:
     int                             tiempoMov_;
     int                             movimientoRestante_;
@@ -36,6 +37,9 @@ private:
     int                             dir_;
     QGraphicsPixmapItem*            gPix_;
     bool                            activo_;
+    bool                            rastro_;
+public slots:
+    void setRastro(bool);
 };
 
 #endif // AGENTE_H
