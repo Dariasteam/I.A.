@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <QScrollBar>
-
+#include <QDebug>
 
 
 using namespace std;
@@ -13,10 +13,11 @@ using namespace std;
 class MainWindow;
 
 
-mapa::mapa(int filas, int columnas, QProgressBar* barra, short a, short b,short c,short d,
+mapa::mapa(int filas, int columnas, QProgressBar* barra, short a, short b,short c,short d, QBoxLayout* lay,
            QWidget* parent) : QGraphicsView(parent)
     {
     operacionesConstruccion(filas,columnas,barra);
+    layScrollAgentes_ = lay;
     parent_ = parent;
     srand(time(NULL));
     for(int i=0;i<f_;i++){
@@ -43,7 +44,8 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, short a, short b,short 
     //layMapa_->addWidget(zoomSlider_);
 }
 
-mapa::mapa(ifstream* fich, QProgressBar* barra, QWidget* parent) : QGraphicsView(parent){
+mapa::mapa(ifstream* fich, QProgressBar* barra, QBoxLayout* lay, QWidget* parent) : QGraphicsView(parent){
+    layScrollAgentes_ = lay;
     parent_ = parent;
     *fich>>f_;
     *fich>>c_;
@@ -64,7 +66,6 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     c_=columnas;
     barra_=barra;
     dialogoAbrir_ = new QFileDialog(this);
-    //layMapa_ = new QBoxLayout(QBoxLayout::TopToBottom,this);
     matrizMapa_ = new celda[c_*f_];
     escena_ = new graphicsMapa(this);
     this->setScene(escena_);
@@ -119,14 +120,14 @@ void mapa::movimientoTempo(){
         agente* aux = movimientosActuales_.at(i);
         int id = aux->getId();
         if(movimientosActuales_.at(i)->getMovRestante()>0){
-            if(aux->getSeguir()){
+            /*if(aux->getSeguir()){
                 float szHorizontal = this->horizontalScrollBar()->width();
                 float szVertical = this->verticalScrollBar()->height();
                 szHorizontal = (szHorizontal*pixAgentes_.at(i)->x())/this->width()*ultimoZoom_;
                 szVertical = (szVertical*pixAgentes_.at(i)->y())/this->height()*ultimoZoom_;
                 this->horizontalScrollBar()->setValue(szHorizontal);
                 this->verticalScrollBar()->setValue(szVertical);
-            }
+            }*/
             switch (aux->getDir()){
             case arriba:
                 pixAgentes_.at(id)->moveBy(0,-1);
@@ -267,9 +268,9 @@ dirYPesos mapa::escanearEntorno(int x, int y){
 void mapa::addAgente(QPointF posReal){
     QPoint P = getFilaColumna(posReal);
     pixAgentes_.push_back(pintarPixmap(P.y(),P.x(),&graficosAgente_[1]));
-    agente* aux = new agente(P.x(),P.y(),escala_*32,agentes_.size(),this);
+    agente* aux = new agente("Agente"+QString::fromStdString(std::to_string(agentes_.size())),P.x(),P.y(),escala_*32,agentes_.size(),this);
+    layScrollAgentes_->addWidget(aux);
     matrizMapa_[pos(P.y(),P.x())].agente_ = aux;
-    ((MainWindow*)parent_)->addAgente(aux,agentes_.size());
     agentes_.push_back(aux);
     if(simulando_){
         aux->start();
@@ -277,7 +278,7 @@ void mapa::addAgente(QPointF posReal){
 }
 
 void mapa::startSimulacion(){
-    if(!simulando_ && movimientosActuales_.size()==0){
+    if(!simulando_ && movimientosActuales_.size()==0 && agentes_.size()>0){
         for(int i=0;i<agentes_.size();i++){
             agentes_.at(i)->start();
         }

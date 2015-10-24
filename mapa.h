@@ -2,8 +2,9 @@
 #define MAPA_H
 
 #include "graphicsmapa.h"
-#include "agente.h"
+//#include "agente.h"
 #include "celda.h"
+#include "agente.h"
 
 #include <QWidget>
 #include <QBoxLayout>
@@ -15,8 +16,6 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QSlider>
-
-class agente;
 
 struct celda{
     short                                   tipo_;
@@ -49,8 +48,8 @@ enum direcciones {
 class mapa : public QGraphicsView{
     Q_OBJECT
 public:
-    explicit mapa(int,int,QProgressBar*,short,short,short,short,QWidget* parent = 0);
-    explicit mapa(std::ifstream*,QProgressBar*, QWidget* parent = 0);
+    explicit mapa(int,int,QProgressBar*,short,short,short,short, QBoxLayout*, QWidget* parent = 0);
+    explicit mapa(std::ifstream*,QProgressBar*, QBoxLayout*, QWidget* parent = 0);
     int getFilas();
     int getColumnas();
     void guardar(std::ofstream*);
@@ -74,6 +73,7 @@ private:
     QPointF                                 mousePos_;
     QProgressBar*                           barra_;
     int                                     factor_;
+    QBoxLayout*                             layScrollAgentes_;
     QFileDialog*                            dialogoAbrir_;
     QString*                                rutaArchivo_;
     graphicsMapa *                          escena_;

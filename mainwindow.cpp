@@ -2,8 +2,8 @@
 #include "ui_mainwindow.h"
 #include "celda.h"
 #include "mapa.h"
-#include "ficha.h"
-#include "agente.h"
+//#include "a.h"
+//#include "agente.h"
 
 #include <iostream>
 #include <QLabel>
@@ -17,7 +17,6 @@
 using namespace std;
 
 class agente;
-class ficha;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -30,9 +29,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     layPrincipal_   = new QBoxLayout(QBoxLayout::TopToBottom,widPrincipal_);
     barraProgreso_  = new QProgressBar(this);
     layPrincipal_->addWidget(barraProgreso_);
-    widMapa_ = new mapa(10,10,barraProgreso_,0,0,0,0,this);
     widPrincipal_->setLayout(layPrincipal_);
-    layPrincipal_->addWidget(widMapa_);
+
 
     setWindowTitle("I.A.[*]");
     layout()->setSizeConstraint(QLayout::SetFixedSize);
@@ -140,7 +138,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     layDropBot->setSizeConstraint(QLayout::SetMinimumSize);
     layOpcionesAlgoritmo_->setSizeConstraint(QLayout::SetMinimumSize);
-    layScrollAgentes_->setSizeConstraint(QLayout::SetMaximumSize);
+    layScrollAgentes_->setSizeConstraint(QLayout::SetFixedSize);
+    layScrollAgentes_->setMargin(0);
     drop->setMinimumSize(110,110);
 
     layOpcionesAlgoritmo_->addWidget(scrollAgentes_);
@@ -197,6 +196,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     connect(nuclear_,SIGNAL(triggered(bool)),SLOT(cambiarPincelANuclear()));
 
 //OPERACIONES FINALES
+
+    widMapa_ = new mapa(10,10,barraProgreso_,0,0,0,0,layScrollAgentes_,this);
+    layPrincipal_->addWidget(widMapa_);
 
     zoomSlider_ = new QSlider(Qt::Horizontal,this);
     zoomSlider_->setRange(1,100);
@@ -286,7 +288,7 @@ void MainWindow::actualizarMapa(){
                    editoresTerreno_[0].valorAnterior_,
                    editoresTerreno_[1].valorAnterior_,
                    editoresTerreno_[2].valorAnterior_,
-                   editoresTerreno_[3].valorAnterior_,this);
+                   editoresTerreno_[3].valorAnterior_,layScrollAgentes_,this);
     layPrincipal_->replaceWidget(widMapa_,aux);
     actualizarAgentes();
     delete widMapa_;
@@ -300,7 +302,7 @@ void MainWindow::onAbrir(){
         fich.open(rutaArchivo_->toStdString().c_str(), ios::in);
         if(fich.is_open()){
             mapa* aux;
-            aux = new mapa(&fich,barraProgreso_,this);
+            aux = new mapa(&fich,barraProgreso_,layScrollAgentes_,this);
             layPrincipal_->replaceWidget(widMapa_,aux);
             delete widMapa_;
             widMapa_=aux;
@@ -395,11 +397,6 @@ void MainWindow::cambiarPincelARejilla(){
     ultimoAction_=rejilla_;
 }
 
-void MainWindow::addAgente(agente* a, int id){
-    ficha* aux = new ficha(QString("Agente ")+QString::fromStdString(std::to_string(id)),a,this);
-    layScrollAgentes_ ->addWidget(aux);
-}
-
 void MainWindow::onSimular(){
     if(botonSimular_->text()=="Simular"){
         botonSimular_->setText("Pausa");
@@ -412,6 +409,6 @@ void MainWindow::onSimular(){
 void MainWindow::actualizarSeguir(int id){
     int i=0;
     while(!layScrollAgentes_->isEmpty()){
-        ((ficha*)layScrollAgentes_->itemAt(i))->desactivarSegir();
+        ((agente*)layScrollAgentes_->itemAt(i))->desactivarSegir();
     }
 }

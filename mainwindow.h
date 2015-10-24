@@ -3,7 +3,7 @@
 
 #include "mapa.h"
 #include "dropbot.h"
-#include "agente.h"
+//#include "agente.h"
 
 #include <QMainWindow>
 #include <QGridLayout>
@@ -40,7 +40,7 @@ public:
     ~MainWindow();
     void actualizarTitulo(bool);
     void crearLabelSlider(QString,int,int);
-    void addAgente(agente*,int);
+    //void addAgente();
     void actualizarAgentes();
     void actualizarSeguir(int);
 protected:

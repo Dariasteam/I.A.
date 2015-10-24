@@ -1,28 +1,69 @@
-#include "agente.h"
-#include <QThread>
+#include "mapa.h"
+
+class mapa;
+
+#include <QColor>
+#include <QMouseEvent>
+#include <QKeyEvent>
+#include <QColorDialog>
 #include <thread>
 #include <iostream>
-#include <unistd.h>
-#include "mapa.h"
-#include <QTimer>
 
 using namespace std;
 
-struct dirYPesos;
-
-agente::agente(int x, int y, int tiempoMov, int id, QWidget* parent) : QWidget(parent){
+agente::agente(QString texto, int x, int y, int tiempoMov, int id, QWidget* parent) : QGroupBox(parent){
+    parent_ = parent;
     x_ = x;
     y_ = y;
-    id_ = id;
-    padre_ = parent;
+    cout<<x_<<" , "<<y_<<endl;
     tiempoMov_ = tiempoMov;
-    movimientoRestante_ = tiempoMov_;
-    activo_ = true;
-    rastro_ = false;
-    seguir_=false;
-    srand(time(NULL));
-    hilo_ = std::thread(&agente::getDir,this);
+    id_ = id;
+    lay_ = new QGridLayout(this);
+    lay_->setSizeConstraint(QLayout::SetFixedSize);
+    labelBot_.setPixmap(QPixmap("../I.A./recursos/robotAbajo.png"));
+    QPixmap P("../I.A./recursos/testigo.png");
+    color_ = QColor(rand()%255+1,rand()%255+1,rand()%255+1);
+    P.fill(color_);
+    labelColor_.setPixmap(P);
+    lay_->addWidget(&labelBot_,0,0);
+    labelText_.setText(texto);
+    lay_->addWidget(&labelText_,0,1);
+    lay_->addWidget(&labelColor_,0,2);
+    checkRastro_ = new QCheckBox("Rastro",this);
+    checkRastro_->setChecked(false);
+    checkSeguir_ = new QCheckBox("Seguir",this);
+    checkSeguir_->setChecked(false);
+    lay_->addWidget(checkRastro_,1,0);
+    lay_->addWidget(checkSeguir_,1,1);
+    lay_->setSizeConstraint(QLayout::SetFixedSize);
+    setCheckable(true);
+    connect(this,&QGroupBox::clicked,this,&agente::check);
+    hilo_ = std::thread(&agente::getMovRestante,this);
     hilo_.detach();
+}
+
+void agente::mouseDoubleClickEvent(QMouseEvent* E){
+    if(E->button() ==Qt::LeftButton){
+        if(isChecked()){
+            QColorDialog* d = new QColorDialog(this);
+            QPixmap P("../I.A./recursos/testigo.png");
+            color_ = d->getColor();
+            P.fill(color_);
+            labelColor_.setPixmap(P);
+        }
+    }
+}
+
+void agente::check(bool b){
+    if(b){
+        //start();
+    }else{
+        //pause();
+    }
+}
+
+void agente::desactivarSegir(){
+    checkSeguir_->setChecked(false);
 }
 
 void agente::start(){
@@ -37,7 +78,7 @@ void agente::finMovimiento(){
 void agente::movimiento(){
     if(activo_){
         movimientoRestante_ = tiempoMov_;
-        dirYPesos d = ((mapa*)padre_)->escanearEntorno(x_,y_);
+        dirYPesos d = ((mapa*)parent_)->escanearEntorno(x_,y_);
         dir_ = rand()%4 + 1;
         bool pausar = true;
         bool encontrado = false;
@@ -51,6 +92,8 @@ void agente::movimiento(){
         if(pausar || encontrado){
             pause();
         }else{
+            std::cout<<d.direccion_[0]<<std::endl;
+
             while (d.direccion_[dir_-1]<1 || d.direccion_[dir_-1]>4) {
                 dir_ = rand()%4 + 1;
             }
@@ -69,13 +112,9 @@ void agente::movimiento(){
                 x_--;
                 break;
             }
-            ((mapa*)padre_)->agentePideMovimiento(this,id_,dir_);
+            ((mapa*)parent_)->agentePideMovimiento(this,id_,dir_);
         }
     }
-}
-
-void agente::setColor(QColor color){
-    color_ = color;
 }
 
 int agente::getMovRestante(){
@@ -104,10 +143,6 @@ bool agente::getActivo(){
 
 QColor agente::getColor(){
     return color_;
-}
-
-void agente::setRastro(bool b){
-    rastro_ = b;
 }
 
 bool agente::getRastro(){
