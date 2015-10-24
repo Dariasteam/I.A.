@@ -46,7 +46,7 @@ enum direcciones {
 
 };
 
-class mapa : public QWidget{
+class mapa : public QGraphicsView{
     Q_OBJECT
 public:
     explicit mapa(int,int,QProgressBar*,short,short,short,short,QWidget* parent = 0);
@@ -69,7 +69,6 @@ private:
     QPixmap*                                graficosTerrenos_;
     QPixmap*                                graficosAgente_;
     short                                   pincel_;
-    QBoxLayout*                             layMapa_;
     int                                     c_;
     int                                     f_;
     QPointF                                 mousePos_;
@@ -78,13 +77,11 @@ private:
     QFileDialog*                            dialogoAbrir_;
     QString*                                rutaArchivo_;
     graphicsMapa *                          escena_;
-    QGraphicsView*                          view_;
     double                                  escala_;
     QList<agente*>                          agentes_;
     QList<agente*>                          movimientosActuales_;
     QList<QGraphicsPixmapItem*>             pixAgentes_;
     double                                  ultimoZoom_;
-    QSlider*                                zoomSlider_;
     QTimer*                                 tiempo_;
     bool                                    simulando_;
     QWidget*                                parent_;

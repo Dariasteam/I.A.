@@ -14,7 +14,7 @@ class MainWindow;
 
 
 mapa::mapa(int filas, int columnas, QProgressBar* barra, short a, short b,short c,short d,
-           QWidget* parent) : QWidget(parent)
+           QWidget* parent) : QGraphicsView(parent)
     {
     operacionesConstruccion(filas,columnas,barra);
     parent_ = parent;
@@ -40,10 +40,10 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, short a, short b,short 
         }
     }
     barra_->hide();
-    layMapa_->addWidget(zoomSlider_);
+    //layMapa_->addWidget(zoomSlider_);
 }
 
-mapa::mapa(ifstream* fich, QProgressBar* barra, QWidget* parent) : QWidget(parent){
+mapa::mapa(ifstream* fich, QProgressBar* barra, QWidget* parent) : QGraphicsView(parent){
     parent_ = parent;
     *fich>>f_;
     *fich>>c_;
@@ -56,7 +56,7 @@ mapa::mapa(ifstream* fich, QProgressBar* barra, QWidget* parent) : QWidget(paren
         }
     }
     barra_->hide();
-    layMapa_->addWidget(zoomSlider_);
+    //layMapa_->addWidget(zoomSlider_);
 }
 
 void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra){
@@ -64,10 +64,10 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     c_=columnas;
     barra_=barra;
     dialogoAbrir_ = new QFileDialog(this);
-    layMapa_ = new QBoxLayout(QBoxLayout::TopToBottom,this);
+    //layMapa_ = new QBoxLayout(QBoxLayout::TopToBottom,this);
     matrizMapa_ = new celda[c_*f_];
     escena_ = new graphicsMapa(this);
-    view_ = new QGraphicsView(escena_,this);
+    this->setScene(escena_);
     graficosTerrenos_ = new QPixmap[7];
     graficosTerrenos_[muro]     = QPixmap("../I.A./recursos/muro.png");
     graficosTerrenos_[rojo]     = QPixmap("../I.A./recursos/rojo.png");
@@ -81,29 +81,23 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     graficosAgente_[abajo]      = QPixmap("../I.A./recursos/robotAbajo.png");
     graficosAgente_[derecha]    = QPixmap("../I.A./recursos/robotDerecha.png");
     graficosAgente_[izquierda]  = QPixmap("../I.A./recursos/robotIzquierda.png");
-    zoomSlider_ = new QSlider(Qt::Horizontal,this);
-    zoomSlider_->setRange(1,100);
-    zoomSlider_->setValue(1);
-    layMapa_->addWidget(view_);
-    layMapa_->addWidget(zoomSlider_);
-    //simulando_ = false;
-    connect(zoomSlider_,SIGNAL(valueChanged(int)),this,SLOT(zoom(int)));
+    simulando_ = false;
     ultimoZoom_ = 1;
     if(f_>c_){
         escala_ = (double(600)/f_)/double(graficosTerrenos_[0].size().height());
-        view_->setMinimumSize((double(escala_*graficosTerrenos_[0].size().width())*c_)+2,600);
-        view_->setBaseSize((double(escala_*graficosTerrenos_[0].size().width())*c_)+2,600);
-        view_->setMaximumSize((double(escala_*graficosTerrenos_[0].size().width())*c_)+2,600);
+        this->setMinimumSize((double(escala_*graficosTerrenos_[0].size().width())*c_)+2,600);
+        this->setBaseSize((double(escala_*graficosTerrenos_[0].size().width())*c_)+2,600);
+        this->setMaximumSize((double(escala_*graficosTerrenos_[0].size().width())*c_)+2,600);
     }else if(c_>f_){
         escala_ = (double(600)/c_)/double(graficosTerrenos_[0].size().width());
-        view_->setMinimumSize(600,(double(escala_*graficosTerrenos_[0].size().height())*f_)+2);
-        view_->setBaseSize(600,(double(escala_*graficosTerrenos_[0].size().height())*f_)+2);
-        view_->setMaximumSize(600,(double(escala_*graficosTerrenos_[0].size().height())*f_)+2);
+        this->setMinimumSize(600,(double(escala_*graficosTerrenos_[0].size().height())*f_)+2);
+        this->setBaseSize(600,(double(escala_*graficosTerrenos_[0].size().height())*f_)+2);
+        this->setMaximumSize(600,(double(escala_*graficosTerrenos_[0].size().height())*f_)+2);
     }else{
         escala_ = (double(600)/f_)/double(graficosTerrenos_[0].size().width());
-        view_->setMinimumSize(602,602);
-        view_->setBaseSize(602,602);
-        view_->setMaximumSize(602,602);
+        this->setMinimumSize(602,602);
+        this->setBaseSize(602,602);
+        this->setMaximumSize(602,602);
     }
     emit actualizarBarra(0);
     barra_->setMaximum(c_*f_);
@@ -116,7 +110,7 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
 }
 
 void mapa::zoom(int i){
-    view_->scale(i*1/ultimoZoom_,i*1/ultimoZoom_);
+    this->scale(i*1/ultimoZoom_,i*1/ultimoZoom_);
     ultimoZoom_ = i;
 }
 
@@ -126,12 +120,12 @@ void mapa::movimientoTempo(){
         int id = aux->getId();
         if(movimientosActuales_.at(i)->getMovRestante()>0){
             if(aux->getSeguir()){
-                float szHorizontal = view_->horizontalScrollBar()->width();
-                float szVertical = view_->verticalScrollBar()->height();
-                szHorizontal = (szHorizontal*pixAgentes_.at(i)->x())/view_->width()*ultimoZoom_;
-                szVertical = (szVertical*pixAgentes_.at(i)->y())/view_->height()*ultimoZoom_;
-                view_->horizontalScrollBar()->setValue(szHorizontal);
-                view_->verticalScrollBar()->setValue(szVertical);
+                float szHorizontal = this->horizontalScrollBar()->width();
+                float szVertical = this->verticalScrollBar()->height();
+                szHorizontal = (szHorizontal*pixAgentes_.at(i)->x())/this->width()*ultimoZoom_;
+                szVertical = (szVertical*pixAgentes_.at(i)->y())/this->height()*ultimoZoom_;
+                this->horizontalScrollBar()->setValue(szHorizontal);
+                this->verticalScrollBar()->setValue(szVertical);
             }
             switch (aux->getDir()){
             case arriba:
@@ -186,8 +180,8 @@ void mapa::sustituirCelda(double fila, double columna, short idPix){
 }
 
 void mapa::pintar(){
-    double anchoMapa  = view_->width();
-    double altoMapa   = view_->height();
+    double anchoMapa  = this->width();
+    double altoMapa   = this->height();
     int ratonX = (mousePos_.x());
     int ratonY = (mousePos_.y());
     if((ratonX > 0) && (mousePos_.x() < anchoMapa) && (ratonY > 0)  && (mousePos_.y() < altoMapa)){

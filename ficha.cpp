@@ -30,6 +30,7 @@ ficha::ficha(QString texto, agente* a, QWidget* parent) : QGroupBox(parent){
     connect(checkRastro_,&QAbstractButton::clicked,agente_,&agente::setRastro);
     lay_->addWidget(checkRastro_,1,0);
     lay_->addWidget(checkSeguir_,1,1);
+    lay_->setSizeConstraint(QLayout::SetFixedSize);
     setCheckable(true);
     connect(this,&QGroupBox::clicked,this,&ficha::check);
     connect(checkSeguir_,&QAbstractButton::clicked,this,&ficha::checkSeguir);

@@ -70,15 +70,17 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     QWidget* opcionesAlgoritmo = new QWidget(panelDesplegable_);
     QWidget* opcionesEstadistica = new QWidget(panelDesplegable_);
 
-    panelDesplegable_->addItem(opcionesMapa,"Mapa");
-    panelDesplegable_->addItem(opcionesAlgoritmo,"Agente");
+    panelDesplegable_->addItem(opcionesMapa,       "Mapa");
+    panelDesplegable_->addItem(opcionesAlgoritmo,  "Agente");
     panelDesplegable_->addItem(opcionesEstadistica,"Estadística");
 
     layOpcionesMapa_ = new QGridLayout(opcionesMapa);
     layOpcionesAlgoritmo_ = new QBoxLayout(QBoxLayout::TopToBottom,opcionesAlgoritmo);
     layOpcionesEstadistica_ = new QBoxLayout(QBoxLayout::TopToBottom,opcionesEstadistica);
 
-    dockIzquierda_->layout()->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    //dockIzquierda_->setMinimumSize(230,230);
+    //dockIzquierda_->layout()->setSizeConstraint(QLayout::SetMaximumSize);
+    layOpcionesMapa_->setSizeConstraint(QLayout::SetFixedSize);
     addDockWidget(Qt::RightDockWidgetArea,dockIzquierda_);
 
 //INCIALIZACION DEL PANEL "MAPA"
@@ -87,7 +89,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     linea->setFrameShape(QFrame::HLine);
     QFrame* linea2   = new QFrame();
     linea2->setFrameShape(QFrame::HLine);
-
 
     spinFilas_      = new QSpinBox();
     spinColumnas_   = new QSpinBox();
@@ -131,12 +132,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     layDropBot->addWidget(drop);
     layDropBot->addWidget(new QLabel("Arrastra y suelta\npara añadir\nun agente"));
-    layOpcionesAlgoritmo_->setSizeConstraint(QLayout::SetMaximumSize);
+
 
     scrollAgentes_ = new QScrollArea(this);
     scrollAgentes_->setWidget(contenedor);
     scrollAgentes_->setWidgetResizable(true);
-    layScrollAgentes_->setSizeConstraint(QLayout::SetFixedSize);
+
+    layDropBot->setSizeConstraint(QLayout::SetMinimumSize);
+    layOpcionesAlgoritmo_->setSizeConstraint(QLayout::SetMinimumSize);
+    layScrollAgentes_->setSizeConstraint(QLayout::SetMaximumSize);
+    drop->setMinimumSize(110,110);
 
     layOpcionesAlgoritmo_->addWidget(scrollAgentes_);
     layOpcionesAlgoritmo_->addWidget(botonSimular_);
@@ -192,6 +197,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     connect(nuclear_,SIGNAL(triggered(bool)),SLOT(cambiarPincelANuclear()));
 
 //OPERACIONES FINALES
+
+    zoomSlider_ = new QSlider(Qt::Horizontal,this);
+    zoomSlider_->setRange(1,100);
+    zoomSlider_->setValue(1);
+    layPrincipal_->addWidget(zoomSlider_);
+    connect(zoomSlider_,SIGNAL(valueChanged(int)),widMapa_,SLOT(zoom(int)));
 
     setCentralWidget(widPrincipal_);
 }

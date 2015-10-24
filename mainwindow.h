@@ -78,6 +78,7 @@ private:
     QAction*                            tierra_;
     QAction*                            nuclear_;
     QAction*                            ultimoAction_;
+    QSlider*                            zoomSlider_;
 private slots:
     void actualizarMapa();
     void onAbrir();
