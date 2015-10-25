@@ -41,7 +41,6 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, short a, short b,short 
         }
     }
     barra_->hide();
-    //layMapa_->addWidget(zoomSlider_);
 }
 
 mapa::mapa(ifstream* fich, QProgressBar* barra, QBoxLayout* lay, QWidget* parent) : QGraphicsView(parent){
@@ -58,7 +57,6 @@ mapa::mapa(ifstream* fich, QProgressBar* barra, QBoxLayout* lay, QWidget* parent
         }
     }
     barra_->hide();
-    //layMapa_->addWidget(zoomSlider_);
 }
 
 void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra){
@@ -68,6 +66,7 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     dialogoAbrir_ = new QFileDialog(this);
     matrizMapa_ = new celda[c_*f_];
     escena_ = new graphicsMapa(this);
+    rastroTodos_ = true;
     this->setScene(escena_);
     graficosTerrenos_ = new QPixmap[7];
     graficosTerrenos_[muro]     = QPixmap("../I.A./recursos/muro.png");
@@ -118,16 +117,17 @@ void mapa::zoom(int i){
 void mapa::movimientoTempo(){
     for(int i=0;i<movimientosActuales_.size();i++){
         agente* aux = movimientosActuales_.at(i);
-        int id = aux->getId();
         if(movimientosActuales_.at(i)->getMovRestante()>0){
-            /*if(aux->getSeguir()){
+            int id = aux->getId();
+            if(aux->getSeguir()){
+                cout<<"siguiendo a "<<aux->getId()<<endl;
                 float szHorizontal = this->horizontalScrollBar()->width();
                 float szVertical = this->verticalScrollBar()->height();
                 szHorizontal = (szHorizontal*pixAgentes_.at(i)->x())/this->width()*ultimoZoom_;
                 szVertical = (szVertical*pixAgentes_.at(i)->y())/this->height()*ultimoZoom_;
                 this->horizontalScrollBar()->setValue(szHorizontal);
                 this->verticalScrollBar()->setValue(szVertical);
-            }*/
+            }
             switch (aux->getDir()){
             case arriba:
                 pixAgentes_.at(id)->moveBy(0,-1);
@@ -291,6 +291,24 @@ void mapa::startSimulacion(){
     }
 }
 
+void mapa::actualizarRastro(){
+    int i=0;
+    while(i<agentes_.size()){
+        agentes_.at(i)->setRastro(rastroTodos_);
+        i++;
+    }
+    rastroTodos_ = !rastroTodos_;
+}
 
+void mapa::actualizarSeguir(int id){
+    cout<<"pum"<<endl;
+    int i=0;
+    while(i<agentes_.size()){
+        if(i!=id){
+            agentes_.at(i)->unselectSeguir();
+        }
+        i++;
+    }
+}
 
 

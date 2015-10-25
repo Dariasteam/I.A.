@@ -40,9 +40,7 @@ public:
     ~MainWindow();
     void actualizarTitulo(bool);
     void crearLabelSlider(QString,int,int);
-    //void addAgente();
     void actualizarAgentes();
-    void actualizarSeguir(int);
 protected:
     void resizeEvent(QResizeEvent *);
 private:
@@ -55,6 +53,7 @@ private:
     QProgressBar*                       barraProgreso_;
     QPushButton*                        botonGenerar_;
     QPushButton*                        botonSimular_;
+    QPushButton*                        botonRastro_;
     QMenuBar*                           menuBar_;
     QMenu*                              mnuArchivo_;
     QAction*                            actGuardar_;

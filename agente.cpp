@@ -15,7 +15,6 @@ agente::agente(QString texto, int x, int y, int tiempoMov, int id, QWidget* pare
     parent_ = parent;
     x_ = x;
     y_ = y;
-    cout<<x_<<" , "<<y_<<endl;
     tiempoMov_ = tiempoMov;
     id_ = id;
     lay_ = new QGridLayout(this);
@@ -38,6 +37,7 @@ agente::agente(QString texto, int x, int y, int tiempoMov, int id, QWidget* pare
     lay_->setSizeConstraint(QLayout::SetFixedSize);
     setCheckable(true);
     connect(this,&QGroupBox::clicked,this,&agente::check);
+    connect(checkSeguir_,&QAbstractButton::clicked,((agente*)this),&agente::checkSeguir);
     hilo_ = std::thread(&agente::getMovRestante,this);
     hilo_.detach();
 }
@@ -56,9 +56,9 @@ void agente::mouseDoubleClickEvent(QMouseEvent* E){
 
 void agente::check(bool b){
     if(b){
-        //start();
+        start();
     }else{
-        //pause();
+        pause();
     }
 }
 
@@ -92,8 +92,6 @@ void agente::movimiento(){
         if(pausar || encontrado){
             pause();
         }else{
-            std::cout<<d.direccion_[0]<<std::endl;
-
             while (d.direccion_[dir_-1]<1 || d.direccion_[dir_-1]>4) {
                 dir_ = rand()%4 + 1;
             }
@@ -146,14 +144,21 @@ QColor agente::getColor(){
 }
 
 bool agente::getRastro(){
-    return rastro_;
+    return checkRastro_->isChecked();
 }
 
-void agente::setSeguir(bool b){
-    seguir_ = b;
+void agente::unselectSeguir(){
+    checkSeguir_->setChecked(false);
 }
 
 bool agente::getSeguir(){
-    return seguir_;
+    return checkSeguir_->isChecked();
 }
 
+void agente::setRastro(bool b){
+    checkRastro_->setChecked(b);
+}
+
+void agente::checkSeguir(){
+    ((mapa*)parent_)->actualizarSeguir(id_);
+}

@@ -120,6 +120,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     layScrollAgentes_ = new QBoxLayout(QBoxLayout::TopToBottom,contenedor);
 
     botonSimular_ = new QPushButton("Simular",this);
+    botonRastro_ = new QPushButton("Rastro todos",this);
 
     QBoxLayout* layDropBot = new QBoxLayout(QBoxLayout::LeftToRight,NULL);
 
@@ -143,9 +144,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     drop->setMinimumSize(110,110);
 
     layOpcionesAlgoritmo_->addWidget(scrollAgentes_);
+    layOpcionesAlgoritmo_->addWidget(botonRastro_);
     layOpcionesAlgoritmo_->addWidget(botonSimular_);
 
     connect(botonSimular_,SIGNAL(clicked(bool)),this,SLOT(onSimular()));
+
 
 //INICIALIZACION DEL PANEL "ESTADISTICA"
 
@@ -205,7 +208,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     zoomSlider_->setValue(1);
     layPrincipal_->addWidget(zoomSlider_);
     connect(zoomSlider_,SIGNAL(valueChanged(int)),widMapa_,SLOT(zoom(int)));
-
+    connect(botonRastro_,SIGNAL(clicked(bool)),widMapa_,SLOT(actualizarRastro()));
     setCentralWidget(widPrincipal_);
 }
 
@@ -293,6 +296,9 @@ void MainWindow::actualizarMapa(){
     actualizarAgentes();
     delete widMapa_;
     widMapa_=aux;
+    connect(zoomSlider_,SIGNAL(valueChanged(int)),widMapa_,SLOT(zoom(int)));
+    connect(botonRastro_,SIGNAL(clicked(bool)),widMapa_,SLOT(actualizarRastro()));
+    zoomSlider_->setValue(1);
 }
 
 void MainWindow::onAbrir(){
@@ -306,6 +312,9 @@ void MainWindow::onAbrir(){
             layPrincipal_->replaceWidget(widMapa_,aux);
             delete widMapa_;
             widMapa_=aux;
+            connect(zoomSlider_,SIGNAL(valueChanged(int)),widMapa_,SLOT(zoom(int)));
+            connect(botonRastro_,SIGNAL(clicked(bool)),widMapa_,SLOT(actualizarRastro()));
+            zoomSlider_->setValue(1);
             fich.close();
             actGuardar_->setEnabled(true);
             actualizarAgentes();
@@ -404,11 +413,4 @@ void MainWindow::onSimular(){
         botonSimular_->setText("Simular");
     }
     widMapa_->startSimulacion();
-}
-
-void MainWindow::actualizarSeguir(int id){
-    int i=0;
-    while(!layScrollAgentes_->isEmpty()){
-        ((agente*)layScrollAgentes_->itemAt(i))->desactivarSegir();
-    }
 }

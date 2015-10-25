@@ -2,7 +2,6 @@
 #define MAPA_H
 
 #include "graphicsmapa.h"
-//#include "agente.h"
 #include "celda.h"
 #include "agente.h"
 
@@ -84,12 +83,15 @@ private:
     double                                  ultimoZoom_;
     QTimer*                                 tiempo_;
     bool                                    simulando_;
+    bool                                    rastroTodos_;
     QWidget*                                parent_;
 public slots:
     void movioMouse(QPointF);
     void zoom(int);
     void movimientoTempo();
     void startSimulacion();
+    void actualizarRastro();
+    void actualizarSeguir(int);
     void agentePideMovimiento(agente*,int,int);
 signals:
     void actualizarBarra(int);
