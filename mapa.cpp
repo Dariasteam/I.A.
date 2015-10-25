@@ -30,9 +30,9 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, short a, short b,short 
             }else if(aleatoriedad<=a+b){
                 sustituirCelda(i,j,metal);
             }else if(aleatoriedad<=a+b+c){
-                sustituirCelda(i,j,tierra);
-            }else if(aleatoriedad<=a+b+c+d){
                 sustituirCelda(i,j,rejilla);
+            }else if(aleatoriedad<=a+b+c+d){
+                sustituirCelda(i,j,tierra);
             }else{
                 sustituirCelda(i,j,suelo);
             }
@@ -105,51 +105,14 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     connect(this,SIGNAL(actualizarBarra(int)),barra_,SLOT(setValue(int)));
     pincel_ = 5;
     tiempo_ = new QTimer(this);
-    connect(tiempo_,SIGNAL(timeout()),this,SLOT(movimientoTempo()));
-    tiempo_->start(15);
+    connect(tiempo_,SIGNAL(timeout()),this,SLOT(movimientoTempo()));;
+    tiempo_->start(1);
 }
 
 void mapa::zoom(int i){
     this->scale(i*1/ultimoZoom_,i*1/ultimoZoom_);
     ultimoZoom_ = i;
 }
-
-void mapa::movimientoTempo(){
-    for(int i=0;i<movimientosActuales_.size();i++){
-        agente* aux = movimientosActuales_.at(i);
-        if(movimientosActuales_.at(i)->getMovRestante()>0){
-            int id = aux->getId();
-            if(aux->getSeguir()){
-                cout<<"siguiendo a "<<aux->getId()<<endl;
-                float szHorizontal = this->horizontalScrollBar()->width();
-                float szVertical = this->verticalScrollBar()->height();
-                szHorizontal = (szHorizontal*pixAgentes_.at(i)->x())/this->width()*ultimoZoom_;
-                szVertical = (szVertical*pixAgentes_.at(i)->y())/this->height()*ultimoZoom_;
-                this->horizontalScrollBar()->setValue(szHorizontal);
-                this->verticalScrollBar()->setValue(szVertical);
-            }
-            switch (aux->getDir()){
-            case arriba:
-                pixAgentes_.at(id)->moveBy(0,-1);
-                break;
-            case abajo:
-                pixAgentes_.at(id)->moveBy(0,1);
-                break;
-            case derecha:
-                pixAgentes_.at(id)->moveBy(1,0);
-                break;
-            default:
-                pixAgentes_.at(id)->moveBy(-1,0);
-                break;
-            }
-            aux->reducirMov();
-        }else{
-            aux->finMovimiento();
-            movimientosActuales_.removeAt(i);
-        }
-    }
-}
-
 
 QGraphicsPixmapItem* mapa::pintarPixmap(double fila, double columna, QPixmap* pix){
     if(fila >= 0 && fila<f_ && columna >= 0 && columna < c_){
@@ -183,9 +146,9 @@ void mapa::sustituirCelda(double fila, double columna, short idPix){
 void mapa::pintar(){
     double anchoMapa  = this->width();
     double altoMapa   = this->height();
-    int ratonX = (mousePos_.x());
-    int ratonY = (mousePos_.y());
-    if((ratonX > 0) && (mousePos_.x() < anchoMapa) && (ratonY > 0)  && (mousePos_.y() < altoMapa)){
+    double ratonX = (mousePos_.x());
+    double ratonY = (mousePos_.y());
+    if((ratonX > 0) && (mousePos_.x() < anchoMapa) && (ratonY > 0) && (mousePos_.y() < altoMapa)){
         double xCelda = anchoMapa  / c_;
         double yCelda = altoMapa   / f_;
         double c = ratonX / xCelda;
@@ -241,16 +204,64 @@ void mapa::cambiarTipoPincel(short tipo){
     pincel_ = tipo;
 }
 
-void mapa::agentePideMovimiento(agente* A, int id, int dir){   //1 Arriba, 2 Abajo, 3 Derecha, 4 Izquierda
-    movimientosActuales_.push_back(A);
+void mapa::movimientoTempo(){
+    float valor;
+    if(32*escala_>10){
+        valor=1;
+    }else if(32*escala_<2){
+        valor=0.2;
+    }else{
+        valor=0.02;
+    }
+    for(int i=0;i<movimientosActuales_.size();i++){
+        movimiento* mov = movimientosActuales_.at(i);
+        if(mov->movRestante_>0){
+            int id = mov->id_;
+            if(mov->seguir_){
+                float szHorizontal = this->horizontalScrollBar()->width();
+                float szVertical = this->verticalScrollBar()->height();
+                szHorizontal = (szHorizontal*mov->pix_->x())/this->width()*ultimoZoom_;
+                szVertical = (szVertical*mov->pix_->y())/this->height()*ultimoZoom_;
+                this->horizontalScrollBar()->setValue(szHorizontal);
+                this->verticalScrollBar()->setValue(szVertical);
+            }
+            switch (mov->dir_){
+            case arriba:
+                mov->pix_->moveBy(0,-valor);
+                break;
+            case abajo:
+                mov->pix_->moveBy(0,valor);
+                break;
+            case derecha:
+                mov->pix_->moveBy(valor,0);
+                break;
+            default:
+                mov->pix_->moveBy(-valor,0);
+                break;
+            }
+            mov->movRestante_=mov->movRestante_-valor;
+        }else{
+            movimientosActuales_.removeAt(i);
+            mov->agente_->finMovimiento();
+        }
+    }
+}
 
-    pixAgentes_.at(id)->setPixmap(graficosAgente_[dir]);
-    QPoint P = getFilaColumna(QPointF(pixAgentes_.at(id)->x(),pixAgentes_.at(id)->y()));
-    matrizMapa_[mapa::pos(P.y(),P.x())].agente_ = NULL;
+void mapa::agentePideMovimiento(agente* A, int id, int dir, QGraphicsPixmapItem* gPix, bool seguir){
+    movimiento* aux = new movimiento;
+    aux->dir_= dir;
+    aux->pix_= gPix;
+    aux->id_ = id;
+    aux->movRestante_ = 32*escala_;
+    aux->agente_ = A;
+    aux->seguir_ = seguir;
+    aux->pix_->setPixmap(graficosAgente_[dir]);
+    movimientosActuales_.push_back(aux);
+    matrizMapa_[mapa::pos(A->getY(),A->getX())].agente_ = NULL;
     if(A->getRastro()){
         QPixmap* pix = new QPixmap(graficosTerrenos_[0]);
         pix->fill(A->getColor());
-        QGraphicsPixmapItem* aux = pintarPixmap(P.y(),P.x(),pix);
+        QGraphicsPixmapItem* aux = pintarPixmap(A->getY(),A->getX(),pix);
         aux->setZValue(1);
         aux->setOpacity(0.2);
     }
@@ -267,8 +278,8 @@ dirYPesos mapa::escanearEntorno(int x, int y){
 
 void mapa::addAgente(QPointF posReal){
     QPoint P = getFilaColumna(posReal);
-    pixAgentes_.push_back(pintarPixmap(P.y(),P.x(),&graficosAgente_[1]));
-    agente* aux = new agente("Agente"+QString::fromStdString(std::to_string(agentes_.size())),P.x(),P.y(),escala_*32,agentes_.size(),this);
+    QGraphicsPixmapItem* gPix = (pintarPixmap(P.y(),P.x(),&graficosAgente_[1]));
+    agente* aux = new agente("Agente"+QString::fromStdString(std::to_string(agentes_.size())),P.x(),P.y(),escala_*32,agentes_.size(),gPix,this);
     layScrollAgentes_->addWidget(aux);
     matrizMapa_[pos(P.y(),P.x())].agente_ = aux;
     agentes_.push_back(aux);
@@ -301,7 +312,6 @@ void mapa::actualizarRastro(){
 }
 
 void mapa::actualizarSeguir(int id){
-    cout<<"pum"<<endl;
     int i=0;
     while(i<agentes_.size()){
         if(i!=id){

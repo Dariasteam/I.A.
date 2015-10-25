@@ -26,6 +26,16 @@ struct dirYPesos{
     short                                   direccion_[4];
 };
 
+struct movimiento{
+    QGraphicsPixmapItem*                    pix_;
+    short                                   dir_;
+    QPoint*                                 posFinal_;
+    int                                     id_;
+    double                                  movRestante_;
+    agente*                                 agente_;
+    bool                                    seguir_;
+};
+
 enum tile {
     nuclear,
     rejilla,
@@ -78,8 +88,7 @@ private:
     graphicsMapa *                          escena_;
     double                                  escala_;
     QList<agente*>                          agentes_;
-    QList<agente*>                          movimientosActuales_;
-    QList<QGraphicsPixmapItem*>             pixAgentes_;
+    QList<movimiento*>                      movimientosActuales_;
     double                                  ultimoZoom_;
     QTimer*                                 tiempo_;
     bool                                    simulando_;
@@ -92,7 +101,7 @@ public slots:
     void startSimulacion();
     void actualizarRastro();
     void actualizarSeguir(int);
-    void agentePideMovimiento(agente*,int,int);
+    void agentePideMovimiento(agente*,int,int,QGraphicsPixmapItem*,bool);
 signals:
     void actualizarBarra(int);
 };

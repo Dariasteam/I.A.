@@ -11,10 +11,11 @@ class mapa;
 
 using namespace std;
 
-agente::agente(QString texto, int x, int y, int tiempoMov, int id, QWidget* parent) : QGroupBox(parent){
+agente::agente(QString texto, int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix, QWidget* parent) : QGroupBox(parent){
     parent_ = parent;
     x_ = x;
     y_ = y;
+    gPix_ = gPix;
     tiempoMov_ = tiempoMov;
     id_ = id;
     lay_ = new QGridLayout(this);
@@ -72,6 +73,20 @@ void agente::start(){
 }
 
 void agente::finMovimiento(){
+    switch (dir_) {
+    case arriba:
+        y_--;
+        break;
+    case abajo:
+        y_++;
+        break;
+    case derecha:
+        x_++;
+        break;
+    default:
+        x_--;
+        break;
+    }
     movimiento();
 }
 
@@ -96,21 +111,7 @@ void agente::movimiento(){
                 dir_ = rand()%4 + 1;
             }
             dir_--;
-            switch (dir_) {
-            case arriba:
-                y_--;
-                break;
-            case abajo:
-                y_++;
-                break;
-            case derecha:
-                x_++;
-                break;
-            default:
-                x_--;
-                break;
-            }
-            ((mapa*)parent_)->agentePideMovimiento(this,id_,dir_);
+            ((mapa*)parent_)->agentePideMovimiento(this,id_,dir_,gPix_,checkSeguir_->isChecked());
         }
     }
 }
@@ -161,4 +162,12 @@ void agente::setRastro(bool b){
 
 void agente::checkSeguir(){
     ((mapa*)parent_)->actualizarSeguir(id_);
+}
+
+int agente::getX(){
+    return x_;
+}
+
+int agente::getY(){
+    return y_;
 }
