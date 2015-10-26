@@ -72,6 +72,7 @@ public:
     void cambiarTipoPincel(short);
     dirYPesos escanearEntorno(int x, int y);
     void addAgente(QPointF);
+    void seguirAgente(double x, double y);
 private:
     celda*                                  matrizMapa_;
     QPixmap*                                graficosTerrenos_;
@@ -98,11 +99,10 @@ public slots:
     void movioMouse(QPointF);
     void zoom(int);
     void velocidad(int);
-    void movimientoTempo();
     void startSimulacion();
     void actualizarRastro();
     void actualizarSeguir(int);
-    void agentePideMovimiento(agente*,int,int,QGraphicsPixmapItem*,bool,bool);
+    //void agentePideMovimiento(agente*,int,int,QGraphicsPixmapItem*,bool,bool);
 signals:
     void actualizarBarra(int);
 };

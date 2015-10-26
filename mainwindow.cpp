@@ -134,10 +134,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     layDropBot->addWidget(new QLabel("Arrastra y suelta\npara añadir\nun agente\n\nVelocidad:"));
 
     velocidadSlider_ = new QSlider(Qt::Horizontal,contenedor);
-    velocidadSlider_->setRange(1,30);
+    velocidadSlider_->setRange(1,100);
     velocidadSlider_->setInvertedControls(true);
     velocidadSlider_->setInvertedAppearance(true);
-    velocidadSlider_->setValue(30);
+    velocidadSlider_->setValue(1);
 
     scrollAgentes_ = new QScrollArea(this);
     scrollAgentes_->setWidget(contenedor);

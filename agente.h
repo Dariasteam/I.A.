@@ -12,11 +12,12 @@
 #include <QCheckBox>
 #include <thread>
 #include <QGraphicsPixmapItem>
+#include <QPixmap>
 
 
 class agente : public QGroupBox{
 public:
-    agente(QString texto, int x, int y, double tiempoMov_, int id,QGraphicsPixmapItem* gPix, QWidget* parent);
+    agente(QString texto, int x, int y, double tiempoMov_, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, QWidget* parent);
     void mouseDoubleClickEvent(QMouseEvent* );
     QColor getColor();
     void detontante();
@@ -28,6 +29,7 @@ public:
     void pause();
     void setRastro(bool);
     void unselectSeguir();
+    void setVelocidad(int);
     int getX();
     int getY();
 private:
@@ -49,6 +51,8 @@ private:
     QCheckBox*                      checkRastro_;
     QCheckBox*                      checkSeguir_;
     QTimer*                         tiempo_;
+    QPixmap*                        lado_;
+    double                          valor_;
 public slots:
     void check(bool);
     void checkSeguir();

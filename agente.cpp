@@ -11,13 +11,15 @@ class mapa;
 
 using namespace std;
 
-agente::agente(QString texto, int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix, QWidget* parent) : QGroupBox(parent){
+agente::agente(QString texto, int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, QWidget* parent) : QGroupBox(parent){
     parent_ = parent;
     x_ = x;
     y_ = y;
+    lado_ = lado;
     gPix_ = gPix;
     tiempoMov_ = tiempoMov;
     id_ = id;
+    valor_=1;
     lay_ = new QGridLayout(this);
     lay_->setSizeConstraint(QLayout::SetMinimumSize);
     labelBot_.setPixmap(QPixmap("../I.A./recursos/robotAbajo.png"));
@@ -38,6 +40,8 @@ agente::agente(QString texto, int x, int y, double tiempoMov, int id, QGraphicsP
     setCheckable(true);
     connect(this,&QGroupBox::clicked,this,&agente::check);
     connect(checkSeguir_,&QAbstractButton::clicked,((agente*)this),&agente::checkSeguir);
+    activo_=false;
+    movimientoRestante_=0;
     hilo_ = std::thread(&agente::getColor,this);
     hilo_.detach();
 }
@@ -86,37 +90,51 @@ void agente::finMovimiento(){
         x_--;
         break;
     }
+    if(checkRastro_->isChecked()){
+        QPixmap* pix = new QPixmap(gPix_->pixmap());
+        pix->fill(color_);
+        QGraphicsPixmapItem* aux = ((mapa*)parent_)->pintarPixmap(y_,x_,pix);
+        aux->setZValue(1);
+        aux->setOpacity(0.2);
+    }
     movimiento();
 }
 
 void agente::detontante(){
     tiempo_ = new QTimer();
-    tiempo_->start(10);
     connect(tiempo_,&QTimer::timeout,this,&agente::animador);
+    movimiento();
+    tiempo_->start(10);
 }
 
 void agente::animador(){
-    double valor = 1;
-    switch (dir_){
-    case arriba:
-        gPix_->moveBy(0,-valor);
-        break;
-    case abajo:
-        gPix_->moveBy(0,valor);
-        break;
-    case derecha:
-        gPix_->moveBy(valor,0);
-        break;
-    default:
-        gPix_->moveBy(-valor,0);
-        break;
+    if(movimientoRestante_>0){
+        switch (dir_){
+        case arriba:
+            gPix_->moveBy(0,-valor_);
+            break;
+        case abajo:
+            gPix_->moveBy(0,valor_);
+            break;
+        case derecha:
+            gPix_->moveBy(valor_,0);
+            break;
+        default:
+            gPix_->moveBy(-valor_,0);
+            break;
+        }
+        if(checkSeguir_->isChecked()){
+            ((mapa*)parent_)->seguirAgente(gPix_->x(),gPix_->y());
+        }
+        movimientoRestante_= movimientoRestante_-valor_;
+        if(!movimientoRestante_){
+            finMovimiento();
+        }
     }
-    movimientoRestante_= movimientoRestante_-valor;
 }
 
 void agente::movimiento(){
     if(activo_){
-        movimientoRestante_ = tiempoMov_;
         dirYPesos d = ((mapa*)parent_)->escanearEntorno(x_,y_);
         dir_ = rand()%4 + 1;
         bool pausar = true;
@@ -124,6 +142,7 @@ void agente::movimiento(){
         for(int i=0;i<4;i++){
             if(d.direccion_[i]==0){
                 encontrado=true;
+                gPix_->setPixmap(lado_[i]);
             }else if(d.direccion_[i]<5){
                 pausar=false;
             }
@@ -135,35 +154,12 @@ void agente::movimiento(){
                 dir_ = rand()%4 + 1;
             }
             dir_--;
-
+            gPix_->setPixmap(lado_[dir_]);
+            movimientoRestante_ = tiempoMov_;
             //((mapa*)parent_)->agentePideMovimiento(this,id_,dir_,gPix_,checkSeguir_->isChecked(),checkRastro_->isChecked());
         }
     }
 
-
-    /*if(activo_){
-        movimientoRestante_ = tiempoMov_;
-        dirYPesos d = ((mapa*)parent_)->escanearEntorno(x_,y_);
-        dir_ = rand()%4 + 1;
-        bool pausar = true;
-        bool encontrado = false;
-        for(int i=0;i<4;i++){
-            if(d.direccion_[i]==0){
-                encontrado=true;
-            }else if(d.direccion_[i]<5){
-                pausar=false;
-            }
-        }
-        if(pausar || encontrado){
-            pause();
-        }else{
-            while (d.direccion_[dir_-1]<1 || d.direccion_[dir_-1]>4) {
-                dir_ = rand()%4 + 1;
-            }
-            dir_--;
-            ((mapa*)parent_)->agentePideMovimiento(this,id_,dir_,gPix_,checkSeguir_->isChecked(),checkRastro_->isChecked());
-        }
-    }*/
 }
 
 void agente::pause(){
@@ -196,4 +192,8 @@ int agente::getX(){
 
 int agente::getY(){
     return y_;
+}
+
+void agente::setVelocidad(int i){
+    tiempo_->start(i);
 }

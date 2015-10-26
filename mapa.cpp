@@ -105,8 +105,8 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     connect(this,SIGNAL(actualizarBarra(int)),barra_,SLOT(setValue(int)));
     pincel_ = 5;
     tiempo_ = new QTimer(this);
-    connect(tiempo_,SIGNAL(timeout()),this,SLOT(movimientoTempo()));;
-    tiempo_->start(30);
+    //connect(tiempo_,SIGNAL(timeout()),this,SLOT(movimientoTempo()));;
+    //tiempo_->start(30);
 }
 
 void mapa::zoom(int i){
@@ -204,68 +204,17 @@ void mapa::cambiarTipoPincel(short tipo){
     pincel_ = tipo;
 }
 
-void mapa::movimientoTempo(){
-    float valor;
-    if(32*escala_>2){
-        valor=1;
-    }else if(32*escala_<2 && 32*escala_>0.8){
-        valor=0.1;
-    }else{
-        valor=0.01;
-    }
-    for(int i=0;i<movimientosActuales_.size();i++){
-        movimiento* mov = movimientosActuales_.at(i);
-        if(mov->movRestante_>0){
-            int id = mov->id_;
-            if(mov->seguir_){
-                float szHorizontal = this->horizontalScrollBar()->width();
-                float szVertical = this->verticalScrollBar()->height();
-                szHorizontal = (szHorizontal*mov->pix_->x())/this->width()*ultimoZoom_;
-                szVertical = (szVertical*mov->pix_->y())/this->height()*ultimoZoom_;
-                this->horizontalScrollBar()->setValue(szHorizontal);
-                this->verticalScrollBar()->setValue(szVertical);
-            }
-            switch (mov->dir_){
-            case arriba:
-                mov->pix_->moveBy(0,-valor);
-                break;
-            case abajo:
-                mov->pix_->moveBy(0,valor);
-                break;
-            case derecha:
-                mov->pix_->moveBy(valor,0);
-                break;
-            default:
-                mov->pix_->moveBy(-valor,0);
-                break;
-            }
-            mov->movRestante_=mov->movRestante_-valor;
-        }else{
-            movimientosActuales_.removeAt(i);
-            matrizMapa_[mapa::pos(mov->agente_->getY(),mov->agente_->getX())].agente_ = mov->agente_;
-            mov->agente_->finMovimiento();
-        }
-    }
-}
-
-void mapa::agentePideMovimiento(agente* A, int id, int dir, QGraphicsPixmapItem* gPix, bool seguir, bool rastro){
-    movimiento* aux = new movimiento;
-    aux->dir_= dir;
-    aux->pix_= gPix;
-    aux->id_ = id;
-    aux->movRestante_ = 32*escala_;
-    aux->agente_ = A;
-    aux->seguir_ = seguir;
-    aux->pix_->setPixmap(graficosAgente_[dir]);
-    movimientosActuales_.push_back(aux);
+/*void mapa::agentePideMovimiento(agente* A, int id, int dir, QGraphicsPixmapItem* gPix, bool seguir, bool rastro){
     matrizMapa_[mapa::pos(A->getY(),A->getX())].agente_ = NULL;
-    if(rastro){
-        QPixmap* pix = new QPixmap(graficosTerrenos_[0]);
-        pix->fill(A->getColor());
-        QGraphicsPixmapItem* aux = pintarPixmap(A->getY(),A->getX(),pix);
-        aux->setZValue(1);
-        aux->setOpacity(0.2);
-    }
+}*/
+
+void mapa::seguirAgente(double x, double y){
+    float szHorizontal = this->horizontalScrollBar()->width();
+    float szVertical = this->verticalScrollBar()->height();
+    szHorizontal = (szHorizontal*x)/this->width()*ultimoZoom_;
+    szVertical = (szVertical*y)/this->height()*ultimoZoom_;
+    this->horizontalScrollBar()->setValue(szHorizontal);
+    this->verticalScrollBar()->setValue(szVertical);
 }
 
 dirYPesos mapa::escanearEntorno(int x, int y){
@@ -280,7 +229,8 @@ dirYPesos mapa::escanearEntorno(int x, int y){
 void mapa::addAgente(QPointF posReal){
     QPoint P = getFilaColumna(posReal);
     QGraphicsPixmapItem* gPix = (pintarPixmap(P.y(),P.x(),&graficosAgente_[1]));
-    agente* aux = new agente("Agente"+QString::fromStdString(std::to_string(agentes_.size())),P.x(),P.y(),escala_*32,agentes_.size(),gPix,this);
+    QString nombre("Agente"+QString::fromStdString(std::to_string(agentes_.size())));
+    agente* aux = new agente(nombre,P.x(),P.y(),escala_*32,agentes_.size(),gPix,graficosAgente_,this);
     layScrollAgentes_->addWidget(aux);
     matrizMapa_[pos(P.y(),P.x())].agente_ = aux;
     agentes_.push_back(aux);
@@ -324,5 +274,9 @@ void mapa::actualizarSeguir(int id){
 }
 
 void mapa::velocidad(int i){
-    tiempo_->start(i);
+    for(int j=0;j<agentes_.size();j++){
+        agentes_.at(j)->setVelocidad(i);
+    }
 }
+
+
