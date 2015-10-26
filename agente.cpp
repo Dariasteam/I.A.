@@ -1,6 +1,8 @@
 #include "mapa.h"
+#include "mainwindow.h"
 
 class mapa;
+class MainWindow;
 
 #include <QColor>
 #include <QMouseEvent>
@@ -11,7 +13,7 @@ class mapa;
 
 using namespace std;
 
-agente::agente(QString texto, int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, celda* mapa, QWidget* parent) : QGroupBox(parent){
+agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, mapa* mapa, QWidget* parent) : QGroupBox(parent){
     parent_ = parent;
     x_ = x;
     y_ = y;
@@ -30,7 +32,7 @@ agente::agente(QString texto, int x, int y, double tiempoMov, int id, QGraphicsP
     P.fill(color_);
     labelColor_.setPixmap(P);
     lay_->addWidget(&labelBot_,0,0);
-    labelText_.setText(texto);
+    labelText_.setText(("Agente "+QString::fromStdString(std::to_string(id_))));
     lay_->addWidget(&labelText_,0,1);
     lay_->addWidget(&labelColor_,0,2);
     checkRastro_ = new QCheckBox("Rastro",this);
@@ -99,7 +101,7 @@ void agente::finMovimiento(){
     if(checkRastro_->isChecked()){
         QPixmap* pix = new QPixmap(gPix_->pixmap());
         pix->fill(color_);
-        QGraphicsPixmapItem* aux = ((mapa*)parent_)->pintarPixmap(y_,x_,pix);
+        QGraphicsPixmapItem* aux = ((mapa*)mapaReal_)->pintarPixmap(y_,x_,pix);
         aux->setZValue(1);
         aux->setOpacity(0.2);
     }
@@ -114,7 +116,7 @@ void agente::detontante(){
 }
 
 void agente::animador(){
-    if(movimientoRestante_>0 && activo_){
+    if(movimientoRestante_>0){
         switch (dir_){
         case arriba:
             gPix_->moveBy(0,-valor_);
@@ -129,8 +131,8 @@ void agente::animador(){
             gPix_->moveBy(-valor_,0);
             break;
         }
-        if(checkSeguir_->isChecked()){
-            ((mapa*)parent_)->seguirAgente(gPix_->x(),gPix_->y());
+        if(activo_ && checkSeguir_->isChecked()){
+            mapaReal_->enfocar(gPix_->x(),gPix_->y());
         }
         movimientoRestante_= movimientoRestante_-valor_;
         if(!movimientoRestante_){
@@ -141,8 +143,9 @@ void agente::animador(){
 
 void agente::movimiento(){
     if(activo_){
+        srand(std::time(NULL));
         short* direccion_;
-        direccion_ = ((mapa*)parent_)->escanearEntorno(x_,y_);
+        direccion_ = mapaReal_->escanearEntorno(x_,y_);
         bool pausar = true;
         bool encontrado = false;
         for(int i=0;i<4;i++){
@@ -157,7 +160,7 @@ void agente::movimiento(){
             pause();
         }else{
             while (direccion_[dir_-1]<1 || direccion_[dir_-1]>4) {
-                dir_ = rand()%4 + 1;
+                dir_ = rand()%4+1;
             }
             dir_--;
             gPix_->setPixmap(lado_[dir_]);
@@ -188,7 +191,7 @@ void agente::setRastro(bool b){
 }
 
 void agente::checkSeguir(){
-    ((mapa*)parent_)->actualizarSeguir(id_);
+    ((MainWindow*)parent_)->actualizarSeguir(id_);
 }
 
 int agente::getX(){

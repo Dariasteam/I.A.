@@ -16,16 +16,16 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    mapa.cpp \
     graphicsmapa.cpp \
     dropbot.cpp \
-    agente.cpp
+    agente.cpp \
+    mapa.cpp
 
 HEADERS  += mainwindow.h \
-    mapa.h \
     graphicsmapa.h \
     dropbot.h \
-    agente.h
+    agente.h \
+    mapa.h
 
 FORMS    += mainwindow.ui
 

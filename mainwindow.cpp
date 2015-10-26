@@ -2,8 +2,6 @@
 #include "ui_mainwindow.h"
 #include "celda.h"
 #include "mapa.h"
-//#include "a.h"
-//#include "agente.h"
 
 #include <iostream>
 #include <QLabel>
@@ -30,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     barraProgreso_  = new QProgressBar(this);
     layPrincipal_->addWidget(barraProgreso_);
     widPrincipal_->setLayout(layPrincipal_);
-
+    mapas_ = new QTabWidget(this);
 
     setWindowTitle("I.A.[*]");
     layout()->setSizeConstraint(QLayout::SetFixedSize);
@@ -55,6 +53,25 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     menuBar_->addMenu(mnuArchivo_);
     setMenuBar(menuBar_);
+
+//INICIALIZACION DE LOS PIX
+
+    graficosTerrenos_ = new QPixmap[7];
+    graficosTerrenos_[muro]     = QPixmap("../I.A./recursos/muro.png");
+    graficosTerrenos_[rojo]     = QPixmap("../I.A./recursos/rojo.png");
+    graficosTerrenos_[suelo]    = QPixmap("../I.A./recursos/suelo.png");
+    graficosTerrenos_[metal]    = QPixmap("../I.A./recursos/metal.png");
+    graficosTerrenos_[tierra]   = QPixmap("../I.A./recursos/tierra.png");
+    graficosTerrenos_[rejilla]  = QPixmap("../I.A./recursos/rejilla.png");
+    graficosTerrenos_[nuclear]  = QPixmap("../I.A./recursos/nuclear.png");
+    graficosAgente_ = new QPixmap[4];
+    graficosAgente_[arriba]     = QPixmap("../I.A./recursos/robotArriba.png");
+    graficosAgente_[abajo]      = QPixmap("../I.A./recursos/robotAbajo.png");
+    graficosAgente_[derecha]    = QPixmap("../I.A./recursos/robotDerecha.png");
+    graficosAgente_[izquierda]  = QPixmap("../I.A./recursos/robotIzquierda.png");
+    pincel_ = 5;
+
+    widMapa_ = new mapa(10,10,barraProgreso_,0,0,0,0,graficosTerrenos_,((QWidget*)this));
 
 //INCIALIZACIÓN DEL DOCK Y SU CONTENIDO
 
@@ -117,7 +134,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     layScrollAgentes_ = new QBoxLayout(QBoxLayout::TopToBottom,contenedor);
 
     botonSimular_ = new QPushButton("Simular",this);
+    botonSimular_->setCheckable(true);
     botonRastro_ = new QPushButton("Rastro todos",this);
+    botonRastro_->setCheckable(true);
 
     QBoxLayout* layDropBot = new QBoxLayout(QBoxLayout::LeftToRight,NULL);
     layDropBot->setSizeConstraint(QBoxLayout::SetFixedSize);
@@ -146,15 +165,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     layScrollAgentes_->setMargin(0);
     drop->setMinimumSize(110,110);
 
-    widMapa_ = new mapa(10,10,barraProgreso_,0,0,0,0,layScrollAgentes_,this);
-
     layOpcionesAlgoritmo_->addWidget(velocidadSlider_);
     layOpcionesAlgoritmo_->addWidget(scrollAgentes_);
     layOpcionesAlgoritmo_->addWidget(botonRastro_);
     layOpcionesAlgoritmo_->addWidget(botonSimular_);
 
-    connect(botonSimular_,SIGNAL(clicked(bool)),this,SLOT(onSimular()));
-    connect(velocidadSlider_,SIGNAL(valueChanged(int)),widMapa_,SLOT(velocidad(int)));
+    connect(botonSimular_,&QAbstractButton::clicked,this,&MainWindow::onSimular);
+    connect(velocidadSlider_,SIGNAL(valueChanged(int)),this,SLOT(velocidad(int)));
 
 
 //INICIALIZACION DEL PANEL "ESTADISTICA"
@@ -171,13 +188,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     QLabel* pincelesTool = new QLabel("Terrenos: ",this);
     barra->addWidget(pincelesTool);
 
-    muro_ = new QAction(QIcon(QPixmap("../I.A./recursos/muro.png")),"muro",this);
-    rojo_ = new QAction(QIcon(QPixmap("../I.A./recursos/rojo.png")),"rojo",this);
-    suelo_ = new QAction(QIcon(QPixmap("../I.A./recursos/suelo.png")),"suelo",this);
-    metal_ = new QAction(QIcon(QPixmap("../I.A./recursos/metal.png")),"metal",this);
-    rejilla_ = new QAction(QIcon(QPixmap("../I.A./recursos/rejilla.png")),"rejilla",this);
-    tierra_ = new QAction(QIcon(QPixmap("../I.A./recursos/tierra.png")),"tierra",this);
-    nuclear_ = new QAction(QIcon(QPixmap("../I.A./recursos/nuclear.png")),"nuclear",this);
+    muro_ = new QAction(QIcon(graficosTerrenos_[muro]),"muro",this);
+    rojo_ = new QAction(QIcon(graficosTerrenos_[rojo]),"rojo",this);
+    suelo_ = new QAction(QIcon(graficosTerrenos_[suelo]),"suelo",this);
+    metal_ = new QAction(QIcon(graficosTerrenos_[metal]),"metal",this);
+    rejilla_ = new QAction(QIcon(graficosTerrenos_[rejilla]),"rejilla",this);
+    tierra_ = new QAction(QIcon(graficosTerrenos_[tierra]),"tierra",this);
+    nuclear_ = new QAction(QIcon(graficosTerrenos_[nuclear]),"nuclear",this);
 
     muro_->setCheckable(true);
     rojo_->setCheckable(true);
@@ -204,24 +221,25 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
         ultimoAction_->setChecked(true);
     };
 
-    connect(muro_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(muro_); widMapa_->setPincel(muro);}));
-    connect(rojo_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(rojo_); widMapa_->setPincel(rojo);}));
-    connect(suelo_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(suelo_); widMapa_->setPincel(suelo);}));
-    connect(metal_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(metal_); widMapa_->setPincel(metal);}));
-    connect(rejilla_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(rejilla_); widMapa_->setPincel(rejilla);}));
-    connect(tierra_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(tierra_); widMapa_->setPincel(tierra);}));
-    connect(nuclear_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(nuclear_); widMapa_->setPincel(nuclear);}));
+    connect(muro_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(muro_); this->setPincel(muro);}));
+    connect(rojo_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(rojo_); this->setPincel(rojo);}));
+    connect(suelo_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(suelo_); this->setPincel(suelo);}));
+    connect(metal_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(metal_); this->setPincel(metal);}));
+    connect(rejilla_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(rejilla_); this->setPincel(rejilla);}));
+    connect(tierra_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(tierra_); this->setPincel(tierra);}));
+    connect(nuclear_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(nuclear_); this->setPincel(nuclear);}));
 
 //OPERACIONES FINALES
-
-    layPrincipal_->addWidget(widMapa_);
 
     zoomSlider_ = new QSlider(Qt::Horizontal,this);
     zoomSlider_->setRange(1,100);
     zoomSlider_->setValue(1);
+
+    connect(zoomSlider_,&QAbstractSlider::valueChanged,widMapa_,&mapa::zoom);
+    connect(botonRastro_,&QAbstractButton::clicked,this,&MainWindow::actualizarRastro);
+    mapas_->addTab(widMapa_,"Escenario");
+    layPrincipal_->addWidget(mapas_);
     layPrincipal_->addWidget(zoomSlider_);
-    connect(zoomSlider_,SIGNAL(valueChanged(int)),widMapa_,SLOT(zoom(int)));
-    connect(botonRastro_,SIGNAL(clicked(bool)),widMapa_,SLOT(actualizarRastro()));
     setCentralWidget(widPrincipal_);
 }
 
@@ -286,33 +304,14 @@ void MainWindow::actualizarSliders(){
     }
 }
 
-void MainWindow::resizeEvent(QResizeEvent*){
-}
-
-void MainWindow::actualizarAgentes(){
-    while(!layScrollAgentes_->isEmpty()){
-        layScrollAgentes_->takeAt(0);
-    }
-    botonSimular_->setText("Simular");
-}
-
 void MainWindow::actualizarMapa(){
-    mapa* aux;
     cout<<"Generando nuevo mapa"<<endl;
-    aux = new mapa(spinFilas_->value(),spinColumnas_->value(),barraProgreso_,
+    mapa* aux = new mapa(spinFilas_->value(),spinColumnas_->value(),barraProgreso_,
                    editoresTerreno_[0].valorAnterior_,
                    editoresTerreno_[1].valorAnterior_,
                    editoresTerreno_[2].valorAnterior_,
-                   editoresTerreno_[3].valorAnterior_,layScrollAgentes_,this);
-    layPrincipal_->replaceWidget(widMapa_,aux);
-    actualizarAgentes();
-    while(!widMapa_->stopSimulacion()){
-
-    }
-    delete widMapa_;
-    widMapa_=aux;
-    actualizarConnects();
-
+                   editoresTerreno_[3].valorAnterior_,graficosTerrenos_,this);
+    operacionesActualizacion(aux);
 }
 
 void MainWindow::onAbrir(){
@@ -321,17 +320,11 @@ void MainWindow::onAbrir(){
     if(rutaArchivo_->contains(".map")){
         fich.open(rutaArchivo_->toStdString().c_str(), ios::in);
         if(fich.is_open()){
-            mapa* aux;
-            aux = new mapa(&fich,barraProgreso_,layScrollAgentes_,this);
-            layPrincipal_->replaceWidget(widMapa_,aux);
+            mapa* aux = new mapa(&fich,barraProgreso_,graficosTerrenos_,this);
             fich.close();
             actGuardar_->setEnabled(true);
             setWindowTitle("I.A.[*] - "+*rutaArchivo_);
-            actualizarAgentes();
-            widMapa_->stopSimulacion();
-            delete widMapa_;
-            widMapa_=aux;
-            actualizarConnects();
+            operacionesActualizacion(aux);
         }else{
             QMessageBox* error = new QMessageBox();
             error->setText("No se ha podido abrir el archivo");
@@ -342,12 +335,21 @@ void MainWindow::onAbrir(){
     }
 }
 
-void MainWindow::actualizarConnects(){
-    connect(zoomSlider_,SIGNAL(valueChanged(int)),widMapa_,SLOT(zoom(int)));
-    connect(botonRastro_,SIGNAL(clicked(bool)),widMapa_,SLOT(actualizarRastro()));
-    connect(velocidadSlider_,SIGNAL(valueChanged(int)),widMapa_,SLOT(velocidad(int)));
+void MainWindow::operacionesActualizacion(mapa* aux){
+    while(mapas_->count()>0){
+        mapas_->removeTab(0);
+    }
+    mapas_->insertTab(0,aux,"Escenario");
+    widMapa_ = ((mapa*)mapas_->widget(0));
+    connect(zoomSlider_,&QAbstractSlider::valueChanged,widMapa_,&mapa::zoom);
     velocidadSlider_->setValue(100);
     zoomSlider_->setValue(1);
+    botonRastro_->setChecked(false);
+    botonSimular_->setChecked(false);
+    while(!layScrollAgentes_->isEmpty()){
+        delete layScrollAgentes_->takeAt(0);
+    }
+    botonSimular_->setText("Simular");
 }
 
 void MainWindow::onGuardarComo(){
@@ -363,7 +365,7 @@ void MainWindow::onGuardar(){
     cout<<"Voy a guardar en"<<rutaArchivo_->toStdString()<<endl;
     fich.open(rutaArchivo_->toStdString().c_str(), std::fstream::out | std::fstream::trunc);
     if(fich.is_open()){
-        widMapa_->guardar(&fich);
+        guardar(&fich);
         fich.close();
         actGuardar_->setEnabled(true);
     }else{
@@ -381,11 +383,94 @@ void MainWindow::actualizarTitulo(bool b){this->setWindowModified(true);
     }
 }
 
+
+void MainWindow::guardar(ofstream* fich){
+    int f = widMapa_->getFilas();
+    int c = widMapa_->getColumnas();
+    *fich<<f<<" "<<c<<endl;
+    for(int i=0;i<f;i++){
+        for(int j=0;j<c;j++){
+            *fich<<widMapa_->getCelda(i,j)<<" ";
+        }
+        *fich<<endl;
+    }
+}
+
+void MainWindow::setPincel(short tipo){
+    pincel_ = tipo;
+}
+
+void MainWindow::pintar(){
+    double anchoMapa  = ((mapa*)mapas_->widget(0))->width();
+    double altoMapa   = ((mapa*)mapas_->widget(0))->height();
+    double ratonX = (mousePos_.x());
+    double ratonY = (mousePos_.y());
+    int f = widMapa_->getFilas();
+    int c = widMapa_->getColumnas();
+    if((ratonX > 0) && (mousePos_.x() < anchoMapa) && (ratonY > 0) && (mousePos_.y() < altoMapa)){
+        double xCelda = anchoMapa  / c;
+        double yCelda = altoMapa   / f;
+        double c = ratonX / xCelda;
+        double f = ratonY / yCelda;
+        int fila    = (int)(f);
+        int columna = (int)(c);
+        if(fila>-1 && fila<f && columna>-1 && columna<c){
+            widMapa_->sustituirCelda(fila,columna,pincel_);
+        }
+    }
+}
+
+
 void MainWindow::onSimular(){
     if(botonSimular_->text()=="Simular"){
-        botonSimular_->setText("Pausa");
+        botonSimular_->setText("Simulando");
+        for(int i=0;i<agentes_.size();i++){
+            agentes_.at(i)->start();
+        }
     }else{
         botonSimular_->setText("Simular");
+        for(int i=0;i<agentes_.size();i++){
+            agentes_.at(i)->pause();
+        }
     }
-    widMapa_->startSimulacion();
 }
+
+void MainWindow::velocidad(int i){
+    for(int j=0;j<agentes_.size();j++){
+        agentes_.at(j)->setVelocidad(i);
+    }
+}
+
+void MainWindow::actualizarRastro(bool b){
+    for(int i=0;i<agentes_.size();i++){
+        agentes_.at(i)->setRastro(b);
+    }
+}
+
+void MainWindow::actualizarSeguir(int id){
+    int i=0;
+    while(i<agentes_.size()){
+        if(i!=id){
+            agentes_.at(i)->unselectSeguir();
+        }
+        i++;
+    }
+}
+
+void MainWindow::addAgente(QPointF posReal){
+    QPoint P = widMapa_->getFilaColumna(posReal);
+    QGraphicsPixmapItem* gPix = (widMapa_->pintarPixmap(P.y(),P.x(),&graficosAgente_[1]));
+    agente* aux = new agente(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),gPix,graficosAgente_,widMapa_,this);
+    layScrollAgentes_->addWidget(aux);
+    agentes_.push_back(aux);
+    aux->detontante();
+    if(botonSimular_->isChecked()){
+        aux->start();
+    }
+}
+
+void MainWindow::movioMouse(QPointF mousePos){
+    mousePos_ = mousePos;
+    pintar();
+}
+

@@ -3,7 +3,7 @@
 
 #include "mapa.h"
 #include "dropbot.h"
-//#include "agente.h"
+#include "agente.h"
 
 #include <QMainWindow>
 #include <QGridLayout>
@@ -19,6 +19,8 @@
 #include <QDockWidget>
 #include <QToolBox>
 #include <QList>
+#include <QTabWidget>
+#include <QSlider>
 
 namespace Ui {
     class MainWindow;
@@ -30,7 +32,18 @@ struct menuTerreno{
     short                               valorAnterior_;
 };
 
+enum tile {
+    nuclear,
+    rejilla,
+    tierra,
+    metal,
+    suelo,
+    rojo,
+    muro,
+};
+
 class agente;
+class mapa;
 
 class MainWindow : public QMainWindow{
     Q_OBJECT
@@ -40,15 +53,15 @@ public:
     ~MainWindow();
     void actualizarTitulo(bool);
     void crearLabelSlider(QString,int,int);
-    void actualizarAgentes();
-    void actualizarConnects();
-protected:
-    void resizeEvent(QResizeEvent *);
+    void guardar(std::ofstream*);
+    void pintar();
+    void addAgente(QPointF);
+    void operacionesActualizacion(mapa*);
 private:
     Ui::MainWindow*                     ui;
     QWidget*                            widPrincipal_;
     QBoxLayout*                         layPrincipal_;
-    mapa*                               widMapa_;
+    mapa*                             widMapa_;
     QSpinBox*                           spinFilas_;
     QSpinBox*                           spinColumnas_;
     QProgressBar*                       barraProgreso_;
@@ -80,14 +93,25 @@ private:
     QAction*                            ultimoAction_;
     QSlider*                            zoomSlider_;
     QSlider*                            velocidadSlider_;
+    QTabWidget*                         mapas_;
+    QPixmap*                            graficosTerrenos_;
+    QPixmap*                            graficosAgente_;
+    short                               pincel_;
+    QList<agente*>                      agentes_;
+    QPointF                             mousePos_;
 private slots:
     void actualizarMapa();
+    void actualizarSliders();
     void onAbrir();
     void onGuardar();
     void onGuardarComo();
-    void actualizarSliders();
     void onSimular();
+    void setPincel(short);
+    void velocidad(int);
+    void actualizarRastro(bool);
 public slots:
+    void actualizarSeguir(int);
+    void movioMouse(QPointF);
 };
 
 #endif // MAINWINDOW_H

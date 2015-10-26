@@ -1,16 +1,14 @@
 #include "graphicsmapa.h"
-#include "mapa.h"
 #include "mainwindow.h"
 
 #include <QGraphicsSceneMouseEvent>
-#include <QDebug>
-#include <iostream>
 
 class MainWindow;
 class mapa;
 
-graphicsMapa::graphicsMapa(QWidget *parent) : QGraphicsScene(parent){
-    connect(this,SIGNAL(sendMousePos(QPointF)),parent,SLOT(movioMouse(QPointF)));
+graphicsMapa::graphicsMapa(QWidget *parent) : QGraphicsScene(){
+    parent_ = parent;
+    connect(this,&graphicsMapa::sendMousePos,((MainWindow*)parent_),&MainWindow::movioMouse);
 }
 
 QPointF graphicsMapa::GetMousePos(){
@@ -36,7 +34,7 @@ void graphicsMapa::dragMoveEvent(QGraphicsSceneDragDropEvent* E){
 
 void graphicsMapa::dropEvent(QGraphicsSceneDragDropEvent* E){
     if(E->mimeData()->hasText() && E->mimeData()->text()=="mimeBot"){
-         ((mapa*)parent())->addAgente(E->scenePos());
+         ((MainWindow*)(parent_))->addAgente(E->scenePos());
     }
 }
 

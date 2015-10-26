@@ -15,12 +15,13 @@
 #include <thread>
 #include <QGraphicsPixmapItem>
 #include <QPixmap>
+#include <QTimer>
 
-struct celda;
+class mapa;
 
 class agente : public QGroupBox{
 public:
-    agente(QString texto, int x, int y, double tiempoMov_, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, celda* mapa, QWidget* parent);
+    agente(int x, int y, double tiempoMov_, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, mapa* mapa, QWidget* parent);
     void mouseDoubleClickEvent(QMouseEvent* );
     ~agente();
     QColor getColor();
@@ -57,8 +58,8 @@ private:
     QTimer*                         tiempo_;
     QPixmap*                        lado_;
     double                          valor_;
-    celda*                          mapaReal_;
-    celda*                          mapaComun_;
+    mapa*                         mapaReal_;
+    mapa*                         mapaMem_;
 public slots:
     void check(bool);
     void checkSeguir();

@@ -16,9 +16,10 @@ class graphicsMapa : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    explicit graphicsMapa(QWidget *parent = 0);
-    QPointF mousePos_;
+    graphicsMapa(QWidget*);
+    QPointF                     mousePos_;
     QBoxLayout*                 layFichas_;
+    QWidget*                    parent_;
     QPointF GetMousePos();
     void dragMoveEvent(QGraphicsSceneDragDropEvent*);
     void dropEvent(QGraphicsSceneDragDropEvent*);
