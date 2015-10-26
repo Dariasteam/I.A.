@@ -61,7 +61,7 @@ private:
     Ui::MainWindow*                     ui;
     QWidget*                            widPrincipal_;
     QBoxLayout*                         layPrincipal_;
-    mapa*                             widMapa_;
+    mapa*                               widMapa_;
     QSpinBox*                           spinFilas_;
     QSpinBox*                           spinColumnas_;
     QProgressBar*                       barraProgreso_;
@@ -99,6 +99,7 @@ private:
     short                               pincel_;
     QList<agente*>                      agentes_;
     QPointF                             mousePos_;
+    mapa*   mem;
 private slots:
     void actualizarMapa();
     void actualizarSliders();
@@ -109,6 +110,7 @@ private slots:
     void setPincel(short);
     void velocidad(int);
     void actualizarRastro(bool);
+    void zoomSobre(int);
 public slots:
     void actualizarSeguir(int);
     void movioMouse(QPointF);

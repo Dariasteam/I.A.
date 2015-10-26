@@ -29,6 +29,7 @@ public:
     void desactivarSegir();
     void movimiento();
     void start();
+    bool terminar();
     void finMovimiento();
     bool getActivo();
     bool pause();
@@ -37,6 +38,7 @@ public:
     void setVelocidad(int);
     int getX();
     int getY();
+    void setMemoria(mapa*);
 private:
     int                             tiempoMov_;
     int                             movimientoRestante_;

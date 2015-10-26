@@ -153,7 +153,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     velocidadSlider_->setRange(1,100);
     velocidadSlider_->setInvertedControls(true);
     velocidadSlider_->setInvertedAppearance(true);
-    velocidadSlider_->setValue(100);
+    velocidadSlider_->setValue(50);
 
     scrollAgentes_ = new QScrollArea(this);
     scrollAgentes_->setWidget(contenedor);
@@ -235,12 +235,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     zoomSlider_->setRange(1,100);
     zoomSlider_->setValue(1);
 
-    connect(zoomSlider_,&QAbstractSlider::valueChanged,widMapa_,&mapa::zoom);
+    connect(zoomSlider_,&QAbstractSlider::valueChanged,this,&MainWindow::zoomSobre);
     connect(botonRastro_,&QAbstractButton::clicked,this,&MainWindow::actualizarRastro);
     mapas_->addTab(widMapa_,"Escenario");
+
+    mapas_->setMaximumSize(widMapa_->width(),widMapa_->height()+35);
+
     layPrincipal_->addWidget(mapas_);
     layPrincipal_->addWidget(zoomSlider_);
     setCentralWidget(widPrincipal_);
+
+    mem = new mapa(widMapa_->getFilas(),widMapa_->getColumnas(),graficosTerrenos_,this);
+    mapas_->addTab(mem,"Memoria");
 }
 
 MainWindow::~MainWindow(){
@@ -341,15 +347,25 @@ void MainWindow::operacionesActualizacion(mapa* aux){
     }
     mapas_->insertTab(0,aux,"Escenario");
     widMapa_ = ((mapa*)mapas_->widget(0));
-    connect(zoomSlider_,&QAbstractSlider::valueChanged,widMapa_,&mapa::zoom);
-    velocidadSlider_->setValue(100);
+    velocidadSlider_->setValue(50);
     zoomSlider_->setValue(1);
     botonRastro_->setChecked(false);
     botonSimular_->setChecked(false);
+    while(agentes_.count()>0){
+        while(!agentes_.at(0)->terminar()){
+        }
+        agentes_.removeFirst();
+    }
+
     while(!layScrollAgentes_->isEmpty()){
         delete layScrollAgentes_->takeAt(0);
     }
+    int i=0;
     botonSimular_->setText("Simular");
+    mapas_->setMaximumSize(widMapa_->width(),widMapa_->height()+35);
+    delete mem;
+    mem = new mapa(widMapa_->getFilas(),widMapa_->getColumnas(),graficosTerrenos_,this);
+    mapas_->addTab(mem,"Memoria");
 }
 
 void MainWindow::onGuardarComo(){
@@ -464,13 +480,21 @@ void MainWindow::addAgente(QPointF posReal){
     layScrollAgentes_->addWidget(aux);
     agentes_.push_back(aux);
     aux->detontante();
+    aux->setVelocidad(velocidadSlider_->value());
     if(botonSimular_->isChecked()){
         aux->start();
     }
+    aux->setMemoria(mem);
 }
 
 void MainWindow::movioMouse(QPointF mousePos){
     mousePos_ = mousePos;
     pintar();
+}
+
+void MainWindow::zoomSobre(int z){
+    for(int i=0;i<mapas_->count();i++){
+        ((mapa*)mapas_->widget(i))->zoom(z);
+    }
 }
 

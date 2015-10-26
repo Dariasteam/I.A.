@@ -9,6 +9,7 @@ class MainWindow;
 #include <QKeyEvent>
 #include <QColorDialog>
 #include <thread>
+#include <stdlib.h>
 #include <iostream>
 
 using namespace std;
@@ -22,8 +23,9 @@ agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix
     tiempoMov_ = tiempoMov;
     id_ = id;
     valor_=1;
-    dir_=0;
+    dir_= 0;
     mapaReal_ = mapa;
+    mapaMem_ = NULL;
     lay_ = new QGridLayout(this);
     lay_->setSizeConstraint(QLayout::SetMinimumSize);
     labelBot_.setPixmap(QPixmap("../I.A./recursos/robotAbajo.png"));
@@ -52,6 +54,12 @@ agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix
 
 agente::~agente(){
 
+}
+
+bool agente::terminar(){
+    activo_=false;
+    cout<<"Es seguro eliminar este agente"<<endl;
+    return true;
 }
 
 void agente::mouseDoubleClickEvent(QMouseEvent* E){
@@ -83,36 +91,11 @@ void agente::start(){
     movimiento();
 }
 
-void agente::finMovimiento(){
-    switch (dir_) {
-    case arriba:
-        y_--;
-        break;
-    case abajo:
-        y_++;
-        break;
-    case derecha:
-        x_++;
-        break;
-    default:
-        x_--;
-        break;
-    }
-    if(checkRastro_->isChecked()){
-        QPixmap* pix = new QPixmap(gPix_->pixmap());
-        pix->fill(color_);
-        QGraphicsPixmapItem* aux = ((mapa*)mapaReal_)->pintarPixmap(y_,x_,pix);
-        aux->setZValue(1);
-        aux->setOpacity(0.2);
-    }
-    movimiento();
-}
-
 void agente::detontante(){
+    srand(std::time(0));
     tiempo_ = new QTimer();
     connect(tiempo_,&QTimer::timeout,this,&agente::animador);
     movimiento();
-    tiempo_->start(10);
 }
 
 void agente::animador(){
@@ -141,13 +124,47 @@ void agente::animador(){
     }
 }
 
+void agente::finMovimiento(){
+    switch (dir_) {
+    case arriba:
+        y_--;
+        break;
+    case abajo:
+        y_++;
+        break;
+    case derecha:
+        x_++;
+        break;
+    default:
+        x_--;
+        break;
+    }
+    if(checkRastro_->isChecked()){
+        QPixmap* pix = new QPixmap(gPix_->pixmap());
+        pix->fill(color_);
+        QGraphicsPixmapItem* aux = ((mapa*)mapaReal_)->pintarPixmap(y_,x_,pix);
+        aux->setZValue(1);
+        aux->setOpacity(0.2);
+    }
+    movimiento();
+}
+
 void agente::movimiento(){
     if(activo_){
-        srand(std::time(NULL));
         short* direccion_;
         direccion_ = mapaReal_->escanearEntorno(x_,y_);
         bool pausar = true;
         bool encontrado = false;
+        if(mapaMem_!=NULL){
+            while(!mapaMem_->mu_.try_lock()){
+
+            }
+            mapaMem_->setCelda(y_-1,x_,direccion_[arriba]);
+            mapaMem_->setCelda(y_+1,x_,direccion_[abajo]);
+            mapaMem_->setCelda(y_,x_+1,direccion_[derecha]);
+            mapaMem_->setCelda(y_,x_-1,direccion_[izquierda]);
+            mapaMem_->mu_.unlock();
+        }
         for(int i=0;i<4;i++){
             if(direccion_[i]==0){
                 encontrado=true;
@@ -159,6 +176,7 @@ void agente::movimiento(){
         if(pausar || encontrado){
             pause();
         }else{
+            dir_ = rand()%4+1;
             while (direccion_[dir_-1]<1 || direccion_[dir_-1]>4) {
                 dir_ = rand()%4+1;
             }
@@ -205,3 +223,8 @@ int agente::getY(){
 void agente::setVelocidad(int i){
     tiempo_->start(i);
 }
+
+void agente::setMemoria(mapa* mapaMem){
+    mapaMem_ = mapaMem;
+}
+

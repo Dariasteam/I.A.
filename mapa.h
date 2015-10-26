@@ -9,6 +9,7 @@
 #include <QProgressBar>
 #include <fstream>
 #include <QScrollBar>
+#include <mutex>
 
 
 class MainWindow;
@@ -31,10 +32,12 @@ class mapa : public QGraphicsView{
 public:
     mapa(int f,int c,QProgressBar*,short,short,short,short,QPixmap*,QWidget* parent);
     mapa(std::ifstream*,QProgressBar*,QPixmap*,QWidget* parent);
+    mapa(int f,int c, QPixmap*,QWidget* parent);
     void operacionesConstruccion(QProgressBar*);
     int getFilas();
     int getColumnas();
     short getCelda(int,int);
+    void setCelda(int,int,short);
     int pos(int,int);
     void guardar(std::ofstream*);
     QGraphicsPixmapItem* pintarPixmap(double,double,QPixmap*);
@@ -43,8 +46,9 @@ public:
     QPoint getFilaColumna(QPointF);
     double getEscala();
     void enfocar(double x, double y);
+    std::mutex                              mu_;
 private:
-    celda*                                  mapaMapa_;
+    celda*                                  mapa_;
     QPixmap*                                graficosTerrenos_;
     short                                   pincel_;
     int                                     c_;

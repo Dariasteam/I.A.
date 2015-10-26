@@ -8,8 +8,8 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, short a, short b,short 
            QPixmap* graficosTerrenos, QWidget* parent) : QGraphicsView(){
     f_ =filas;
     c_ =columnas;
-    graficosTerrenos_=graficosTerrenos;
     parent_ = parent;
+    graficosTerrenos_=graficosTerrenos;
     operacionesConstruccion(barra);
     srand(time(NULL));
     for(int i=0;i<f_;i++){
@@ -28,14 +28,14 @@ mapa::mapa(int filas, int columnas, QProgressBar* barra, short a, short b,short 
             }else{
                 sustituirCelda(i,j,suelo);
             }
-            mapaMapa_[pos(i,j)].agente_ = NULL;
+            mapa_[pos(i,j)].agente_ = NULL;
             //emit actualizarBarra(j+(i*c_));
         }
     }
     barra_->hide();
 }
 
-mapa::mapa(std::ifstream* fich, QProgressBar *barra, QPixmap* graficosTerrenos, QWidget *parent) : QGraphicsView(parent){
+mapa::mapa(std::ifstream* fich, QProgressBar *barra, QPixmap* graficosTerrenos, QWidget *parent) : QGraphicsView(){
     *fich>>f_;
     *fich>>c_;
     parent_ = parent;
@@ -51,9 +51,17 @@ mapa::mapa(std::ifstream* fich, QProgressBar *barra, QPixmap* graficosTerrenos, 
     barra_->hide();
 }
 
+mapa::mapa(int f, int c, QPixmap* graficosTerrenos, QWidget *parent){
+    f_=f;
+    c_=c;
+    parent_=parent;
+    graficosTerrenos_=graficosTerrenos;
+    operacionesConstruccion(NULL);
+}
+
 void mapa::operacionesConstruccion(QProgressBar* b){
     barra_ = b;
-    mapaMapa_ = new celda[c_*f_];
+    mapa_ = new celda[c_*f_];
     ultimoZoom_ = 1;
     if(f_>c_){
         escala_ = (double(600)/f_)/double(graficosTerrenos_[0].size().height());
@@ -73,8 +81,10 @@ void mapa::operacionesConstruccion(QProgressBar* b){
     }
     //connect(this,&mapa::actualizarBarra,barra_,&QProgressBar::setValue);
     //emit actualizarBarra(0);
-    barra_->setMaximum(c_*f_);
-    barra_->show();
+    if(barra_!=NULL){
+        barra_->setMaximum(c_*f_);
+        barra_->show();
+    }
     escena_ = new graphicsMapa(parent_);
     setScene(escena_);
 }
@@ -85,7 +95,7 @@ void mapa::zoom(int i){
 }
 
 short mapa::getCelda(int f, int c){
-    return mapaMapa_[pos(f,c)].tipo_;
+    return mapa_[pos(f,c)].tipo_;
 }
 
 double mapa::getEscala(){
@@ -123,7 +133,7 @@ QGraphicsPixmapItem* mapa::pintarPixmap(double fila, double columna, QPixmap* pi
 void mapa::sustituirCelda(double fila, double columna, short idPix){
     if(fila >= 0 && fila<f_ && columna >= 0 && columna < c_){
         QPixmap* pix = &graficosTerrenos_[idPix];
-        QGraphicsPixmapItem* auxPixBorrar = mapaMapa_[pos(fila,columna)].pix_;
+        QGraphicsPixmapItem* auxPixBorrar = mapa_[pos(fila,columna)].pix_;
         QGraphicsPixmapItem* auxPix;
         auxPix = escena_->addPixmap(*pix);
         auxPix->setScale(escala_);
@@ -132,8 +142,8 @@ void mapa::sustituirCelda(double fila, double columna, short idPix){
         if(auxPixBorrar==NULL){
             delete auxPixBorrar;
         }
-        mapaMapa_[pos(fila,columna)].pix_=auxPix;
-        mapaMapa_[pos(fila,columna)].tipo_=idPix;
+        mapa_[pos(fila,columna)].pix_=auxPix;
+        mapa_[pos(fila,columna)].tipo_=idPix;
     }
 }
 
@@ -145,10 +155,10 @@ QPoint mapa::getFilaColumna(QPointF P){
 
 short* mapa::escanearEntorno(int x, int y){
     short* direccion_ = new short[4];
-    direccion_[arriba]    =  (!(y<=1)   )*mapaMapa_[pos(y-1,x)].tipo_ +(y<=1)   *(-1);
-    direccion_[abajo]     =  (!(y>=f_-2))*mapaMapa_[pos(y+1,x)].tipo_ +(y>=f_-2)*(-1);
-    direccion_[derecha]   =  (!(x>=c_-2))*mapaMapa_[pos(y,x+1)].tipo_ +(x>=c_-2)*(-1);
-    direccion_[izquierda] =  (!(x<=1)   )*mapaMapa_[pos(y,x-1)].tipo_ +(x<=1)   *(-1);
+    direccion_[arriba]    =  (!(y<=1)   )*mapa_[pos(y-1,x)].tipo_ +(y<=1)   *(-1);
+    direccion_[abajo]     =  (!(y>=f_-2))*mapa_[pos(y+1,x)].tipo_ +(y>=f_-2)*(-1);
+    direccion_[derecha]   =  (!(x>=c_-2))*mapa_[pos(y,x+1)].tipo_ +(x>=c_-2)*(-1);
+    direccion_[izquierda] =  (!(x<=1)   )*mapa_[pos(y,x-1)].tipo_ +(x<=1)   *(-1);
     return direccion_;
 }
 
@@ -159,4 +169,12 @@ void mapa::enfocar(double x, double y){
     szVertical = (szVertical*y)/this->height()*ultimoZoom_;
     this->horizontalScrollBar()->setValue(szHorizontal);
     this->verticalScrollBar()->setValue(szVertical);
+}
+
+void mapa::setCelda(int x, int y, short v){
+    if(v==-1){
+        v=6;
+    }
+    mapa_[pos(y,x)].tipo_ = v;
+    sustituirCelda(x,y,v);
 }
