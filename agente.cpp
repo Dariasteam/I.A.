@@ -19,7 +19,7 @@ agente::agente(QString texto, int x, int y, double tiempoMov, int id, QGraphicsP
     tiempoMov_ = tiempoMov;
     id_ = id;
     lay_ = new QGridLayout(this);
-    lay_->setSizeConstraint(QLayout::SetFixedSize);
+    lay_->setSizeConstraint(QLayout::SetMinimumSize);
     labelBot_.setPixmap(QPixmap("../I.A./recursos/robotAbajo.png"));
     QPixmap P("../I.A./recursos/testigo.png");
     color_ = QColor(rand()%255+1,rand()%255+1,rand()%255+1);
@@ -35,11 +35,10 @@ agente::agente(QString texto, int x, int y, double tiempoMov, int id, QGraphicsP
     checkSeguir_->setChecked(false);
     lay_->addWidget(checkRastro_,1,0);
     lay_->addWidget(checkSeguir_,1,1);
-    lay_->setSizeConstraint(QLayout::SetFixedSize);
     setCheckable(true);
     connect(this,&QGroupBox::clicked,this,&agente::check);
     connect(checkSeguir_,&QAbstractButton::clicked,((agente*)this),&agente::checkSeguir);
-    hilo_ = std::thread(&agente::getMovRestante,this);
+    hilo_ = std::thread(&agente::getColor,this);
     hilo_.detach();
 }
 
@@ -90,8 +89,14 @@ void agente::finMovimiento(){
     movimiento();
 }
 
+void agente::detontante(){
+    tiempo_ = new QTimer();
+    tiempo_->start(10);
+    connect(tiempo_,&QTimer::timeout,this,&agente::movimiento);
+}
+
 void agente::movimiento(){
-    if(activo_){
+    while(activo_){
         movimientoRestante_ = tiempoMov_;
         dirYPesos d = ((mapa*)parent_)->escanearEntorno(x_,y_);
         dir_ = rand()%4 + 1;
@@ -111,25 +116,35 @@ void agente::movimiento(){
                 dir_ = rand()%4 + 1;
             }
             dir_--;
-            ((mapa*)parent_)->agentePideMovimiento(this,id_,dir_,gPix_,checkSeguir_->isChecked());
+
+            //((mapa*)parent_)->agentePideMovimiento(this,id_,dir_,gPix_,checkSeguir_->isChecked(),checkRastro_->isChecked());
         }
     }
-}
 
-int agente::getMovRestante(){
-    return movimientoRestante_;
-}
 
-int agente::getDir(){
-    return dir_;
-}
-
-void agente::reducirMov(){
-    movimientoRestante_--;
-}
-
-int agente::getId(){
-    return id_;
+    /*if(activo_){
+        movimientoRestante_ = tiempoMov_;
+        dirYPesos d = ((mapa*)parent_)->escanearEntorno(x_,y_);
+        dir_ = rand()%4 + 1;
+        bool pausar = true;
+        bool encontrado = false;
+        for(int i=0;i<4;i++){
+            if(d.direccion_[i]==0){
+                encontrado=true;
+            }else if(d.direccion_[i]<5){
+                pausar=false;
+            }
+        }
+        if(pausar || encontrado){
+            pause();
+        }else{
+            while (d.direccion_[dir_-1]<1 || d.direccion_[dir_-1]>4) {
+                dir_ = rand()%4 + 1;
+            }
+            dir_--;
+            ((mapa*)parent_)->agentePideMovimiento(this,id_,dir_,gPix_,checkSeguir_->isChecked(),checkRastro_->isChecked());
+        }
+    }*/
 }
 
 void agente::pause(){
@@ -144,16 +159,8 @@ QColor agente::getColor(){
     return color_;
 }
 
-bool agente::getRastro(){
-    return checkRastro_->isChecked();
-}
-
 void agente::unselectSeguir(){
     checkSeguir_->setChecked(false);
-}
-
-bool agente::getSeguir(){
-    return checkSeguir_->isChecked();
 }
 
 void agente::setRastro(bool b){
@@ -161,7 +168,9 @@ void agente::setRastro(bool b){
 }
 
 void agente::checkSeguir(){
-    ((mapa*)parent_)->actualizarSeguir(id_);
+    gPix_->moveBy(id_+1,id_+1);
+    id_++;
+    //((mapa*)parent_)->actualizarSeguir(id_);
 }
 
 int agente::getX(){

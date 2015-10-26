@@ -19,19 +19,14 @@ public:
     agente(QString texto, int x, int y, double tiempoMov_, int id,QGraphicsPixmapItem* gPix, QWidget* parent);
     void mouseDoubleClickEvent(QMouseEvent* );
     QColor getColor();
+    void detontante();
     void desactivarSegir();
-    int getId();
     void movimiento();
     void start();
     void finMovimiento();
-    int getMovRestante();
-    int getDir();
-    void reducirMov();
     bool getActivo();
     void pause();
-    bool getRastro();
     void setRastro(bool);
-    bool getSeguir();
     void unselectSeguir();
     int getX();
     int getY();
@@ -53,6 +48,7 @@ private:
     QColor                          color_;
     QCheckBox*                      checkRastro_;
     QCheckBox*                      checkSeguir_;
+    QTimer*                         tiempo_;
 public slots:
     void check(bool);
     void checkSeguir();

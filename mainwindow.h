@@ -41,6 +41,7 @@ public:
     void actualizarTitulo(bool);
     void crearLabelSlider(QString,int,int);
     void actualizarAgentes();
+    void actualizarConnects();
 protected:
     void resizeEvent(QResizeEvent *);
 private:
@@ -78,6 +79,7 @@ private:
     QAction*                            nuclear_;
     QAction*                            ultimoAction_;
     QSlider*                            zoomSlider_;
+    QSlider*                            velocidadSlider_;
 private slots:
     void actualizarMapa();
     void onAbrir();

@@ -123,6 +123,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     botonRastro_ = new QPushButton("Rastro todos",this);
 
     QBoxLayout* layDropBot = new QBoxLayout(QBoxLayout::LeftToRight,NULL);
+    layDropBot->setSizeConstraint(QBoxLayout::SetFixedSize);
 
     layOpcionesAlgoritmo_->addLayout(layDropBot);
 
@@ -130,8 +131,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     drop->setPixmap(QPixmap("../I.A./recursos/robotAbajo.png"));
 
     layDropBot->addWidget(drop);
-    layDropBot->addWidget(new QLabel("Arrastra y suelta\npara añadir\nun agente"));
+    layDropBot->addWidget(new QLabel("Arrastra y suelta\npara añadir\nun agente\n\nVelocidad:"));
 
+    velocidadSlider_ = new QSlider(Qt::Horizontal,contenedor);
+    velocidadSlider_->setRange(1,30);
+    velocidadSlider_->setInvertedControls(true);
+    velocidadSlider_->setInvertedAppearance(true);
+    velocidadSlider_->setValue(30);
 
     scrollAgentes_ = new QScrollArea(this);
     scrollAgentes_->setWidget(contenedor);
@@ -143,11 +149,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     layScrollAgentes_->setMargin(0);
     drop->setMinimumSize(110,110);
 
+    widMapa_ = new mapa(10,10,barraProgreso_,0,0,0,0,layScrollAgentes_,this);
+
+    layOpcionesAlgoritmo_->addWidget(velocidadSlider_);
     layOpcionesAlgoritmo_->addWidget(scrollAgentes_);
     layOpcionesAlgoritmo_->addWidget(botonRastro_);
     layOpcionesAlgoritmo_->addWidget(botonSimular_);
 
     connect(botonSimular_,SIGNAL(clicked(bool)),this,SLOT(onSimular()));
+    connect(velocidadSlider_,SIGNAL(valueChanged(int)),widMapa_,SLOT(velocidad(int)));
 
 
 //INICIALIZACION DEL PANEL "ESTADISTICA"
@@ -200,7 +210,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
 //OPERACIONES FINALES
 
-    widMapa_ = new mapa(10,10,barraProgreso_,0,0,0,0,layScrollAgentes_,this);
+
     layPrincipal_->addWidget(widMapa_);
 
     zoomSlider_ = new QSlider(Qt::Horizontal,this);
@@ -293,12 +303,10 @@ void MainWindow::actualizarMapa(){
                    editoresTerreno_[2].valorAnterior_,
                    editoresTerreno_[3].valorAnterior_,layScrollAgentes_,this);
     layPrincipal_->replaceWidget(widMapa_,aux);
-    actualizarAgentes();
     delete widMapa_;
     widMapa_=aux;
-    connect(zoomSlider_,SIGNAL(valueChanged(int)),widMapa_,SLOT(zoom(int)));
-    connect(botonRastro_,SIGNAL(clicked(bool)),widMapa_,SLOT(actualizarRastro()));
-    zoomSlider_->setValue(1);
+    actualizarAgentes();
+    actualizarConnects();
 }
 
 void MainWindow::onAbrir(){
@@ -312,13 +320,11 @@ void MainWindow::onAbrir(){
             layPrincipal_->replaceWidget(widMapa_,aux);
             delete widMapa_;
             widMapa_=aux;
-            connect(zoomSlider_,SIGNAL(valueChanged(int)),widMapa_,SLOT(zoom(int)));
-            connect(botonRastro_,SIGNAL(clicked(bool)),widMapa_,SLOT(actualizarRastro()));
-            zoomSlider_->setValue(1);
             fich.close();
             actGuardar_->setEnabled(true);
+            actualizarConnects();
             actualizarAgentes();
-            this->setWindowTitle("I.A.[*] - "+*rutaArchivo_);
+            setWindowTitle("I.A.[*] - "+*rutaArchivo_);
         }else{
             QMessageBox* error = new QMessageBox();
             error->setText("No se ha podido abrir el archivo");
@@ -327,6 +333,14 @@ void MainWindow::onAbrir(){
     }else{
         cout<<"El fichero no es un archivo .map"<<endl;
     }
+}
+
+void MainWindow::actualizarConnects(){
+    connect(zoomSlider_,SIGNAL(valueChanged(int)),widMapa_,SLOT(zoom(int)));
+    connect(botonRastro_,SIGNAL(clicked(bool)),widMapa_,SLOT(actualizarRastro()));
+    connect(velocidadSlider_,SIGNAL(valueChanged(int)),widMapa_,SLOT(velocidad(int)));
+    velocidadSlider_->setValue(30);
+    zoomSlider_->setValue(1);
 }
 
 void MainWindow::onGuardarComo(){

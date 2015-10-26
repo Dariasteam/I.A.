@@ -97,11 +97,12 @@ private:
 public slots:
     void movioMouse(QPointF);
     void zoom(int);
+    void velocidad(int);
     void movimientoTempo();
     void startSimulacion();
     void actualizarRastro();
     void actualizarSeguir(int);
-    void agentePideMovimiento(agente*,int,int,QGraphicsPixmapItem*,bool);
+    void agentePideMovimiento(agente*,int,int,QGraphicsPixmapItem*,bool,bool);
 signals:
     void actualizarBarra(int);
 };

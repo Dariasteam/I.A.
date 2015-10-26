@@ -106,7 +106,7 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     pincel_ = 5;
     tiempo_ = new QTimer(this);
     connect(tiempo_,SIGNAL(timeout()),this,SLOT(movimientoTempo()));;
-    tiempo_->start(1);
+    tiempo_->start(30);
 }
 
 void mapa::zoom(int i){
@@ -206,12 +206,12 @@ void mapa::cambiarTipoPincel(short tipo){
 
 void mapa::movimientoTempo(){
     float valor;
-    if(32*escala_>10){
+    if(32*escala_>2){
         valor=1;
-    }else if(32*escala_<2){
-        valor=0.2;
+    }else if(32*escala_<2 && 32*escala_>0.8){
+        valor=0.1;
     }else{
-        valor=0.02;
+        valor=0.01;
     }
     for(int i=0;i<movimientosActuales_.size();i++){
         movimiento* mov = movimientosActuales_.at(i);
@@ -242,12 +242,13 @@ void mapa::movimientoTempo(){
             mov->movRestante_=mov->movRestante_-valor;
         }else{
             movimientosActuales_.removeAt(i);
+            matrizMapa_[mapa::pos(mov->agente_->getY(),mov->agente_->getX())].agente_ = mov->agente_;
             mov->agente_->finMovimiento();
         }
     }
 }
 
-void mapa::agentePideMovimiento(agente* A, int id, int dir, QGraphicsPixmapItem* gPix, bool seguir){
+void mapa::agentePideMovimiento(agente* A, int id, int dir, QGraphicsPixmapItem* gPix, bool seguir, bool rastro){
     movimiento* aux = new movimiento;
     aux->dir_= dir;
     aux->pix_= gPix;
@@ -258,7 +259,7 @@ void mapa::agentePideMovimiento(agente* A, int id, int dir, QGraphicsPixmapItem*
     aux->pix_->setPixmap(graficosAgente_[dir]);
     movimientosActuales_.push_back(aux);
     matrizMapa_[mapa::pos(A->getY(),A->getX())].agente_ = NULL;
-    if(A->getRastro()){
+    if(rastro){
         QPixmap* pix = new QPixmap(graficosTerrenos_[0]);
         pix->fill(A->getColor());
         QGraphicsPixmapItem* aux = pintarPixmap(A->getY(),A->getX(),pix);
@@ -321,4 +322,6 @@ void mapa::actualizarSeguir(int id){
     }
 }
 
-
+void mapa::velocidad(int i){
+    tiempo_->start(i);
+}
