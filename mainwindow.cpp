@@ -75,9 +75,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     layOpcionesMapa_ = new QGridLayout(opcionesMapa);
     layOpcionesAlgoritmo_ = new QBoxLayout(QBoxLayout::TopToBottom,opcionesAlgoritmo);
     layOpcionesEstadistica_ = new QBoxLayout(QBoxLayout::TopToBottom,opcionesEstadistica);
-
-    //dockIzquierda_->setMinimumSize(230,230);
-    //dockIzquierda_->layout()->setSizeConstraint(QLayout::SetMaximumSize);
     layOpcionesMapa_->setSizeConstraint(QLayout::SetFixedSize);
     addDockWidget(Qt::RightDockWidgetArea,dockIzquierda_);
 
@@ -294,7 +291,7 @@ void MainWindow::resizeEvent(QResizeEvent*){
 
 void MainWindow::actualizarAgentes(){
     while(!layScrollAgentes_->isEmpty()){
-        delete layScrollAgentes_->takeAt(0);
+        layScrollAgentes_->takeAt(0);
     }
     botonSimular_->setText("Simular");
 }
@@ -308,11 +305,14 @@ void MainWindow::actualizarMapa(){
                    editoresTerreno_[2].valorAnterior_,
                    editoresTerreno_[3].valorAnterior_,layScrollAgentes_,this);
     layPrincipal_->replaceWidget(widMapa_,aux);
+    actualizarAgentes();
+    while(!widMapa_->stopSimulacion()){
+
+    }
     delete widMapa_;
     widMapa_=aux;
-
-    actualizarAgentes();
     actualizarConnects();
+
 }
 
 void MainWindow::onAbrir(){
@@ -324,13 +324,14 @@ void MainWindow::onAbrir(){
             mapa* aux;
             aux = new mapa(&fich,barraProgreso_,layScrollAgentes_,this);
             layPrincipal_->replaceWidget(widMapa_,aux);
-            delete widMapa_;
-            widMapa_=aux;
             fich.close();
             actGuardar_->setEnabled(true);
             setWindowTitle("I.A.[*] - "+*rutaArchivo_);
-            actualizarConnects();
             actualizarAgentes();
+            widMapa_->stopSimulacion();
+            delete widMapa_;
+            widMapa_=aux;
+            actualizarConnects();
         }else{
             QMessageBox* error = new QMessageBox();
             error->setText("No se ha podido abrir el archivo");

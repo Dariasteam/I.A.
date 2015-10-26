@@ -1,6 +1,8 @@
 #ifndef agente_H
 #define agente_H
 
+#include "mapa.h"
+
 #include <QGroupBox>
 #include <QWidget>
 #include <QPixmap>
@@ -14,10 +16,11 @@
 #include <QGraphicsPixmapItem>
 #include <QPixmap>
 
+struct celda;
 
 class agente : public QGroupBox{
 public:
-    agente(QString texto, int x, int y, double tiempoMov_, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, QWidget* parent);
+    agente(QString texto, int x, int y, double tiempoMov_, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, celda* mapa, QWidget* parent);
     void mouseDoubleClickEvent(QMouseEvent* );
     ~agente();
     QColor getColor();
@@ -27,7 +30,7 @@ public:
     void start();
     void finMovimiento();
     bool getActivo();
-    void pause();
+    bool pause();
     void setRastro(bool);
     void unselectSeguir();
     void setVelocidad(int);
@@ -54,6 +57,8 @@ private:
     QTimer*                         tiempo_;
     QPixmap*                        lado_;
     double                          valor_;
+    celda*                          mapaReal_;
+    celda*                          mapaComun_;
 public slots:
     void check(bool);
     void checkSeguir();

@@ -214,20 +214,11 @@ void mapa::seguirAgente(double x, double y){
     this->verticalScrollBar()->setValue(szVertical);
 }
 
-dirYPesos mapa::escanearEntorno(int x, int y){
-    dirYPesos S;
-    S.direccion_[arriba]    = (!(y<=1)   )*matrizMapa_[pos(y-1,x)].tipo_ +(y<=1)   *(-1);
-    S.direccion_[abajo]     = (!(y>=f_-2))*matrizMapa_[pos(y+1,x)].tipo_ +(y>=f_-2)*(-1);
-    S.direccion_[derecha]   = (!(x>=c_-2))*matrizMapa_[pos(y,x+1)].tipo_ +(x>=c_-2)*(-1);
-    S.direccion_[izquierda] = (!(x<=1)   )*matrizMapa_[pos(y,x-1)].tipo_ +(x<=1)   *(-1);
-    return S;
-}
-
 void mapa::addAgente(QPointF posReal){
     QPoint P = getFilaColumna(posReal);
     QGraphicsPixmapItem* gPix = (pintarPixmap(P.y(),P.x(),&graficosAgente_[1]));
     QString nombre("Agente"+QString::fromStdString(std::to_string(agentes_.size())));
-    agente* aux = new agente(nombre,P.x(),P.y(),escala_*32,agentes_.size(),gPix,graficosAgente_,this);
+    agente* aux = new agente(nombre,P.x(),P.y(),escala_*32,agentes_.size(),gPix,graficosAgente_,matrizMapa_,this);
     layScrollAgentes_->addWidget(aux);
     matrizMapa_[pos(P.y(),P.x())].agente_ = aux;
     agentes_.push_back(aux);
@@ -235,6 +226,26 @@ void mapa::addAgente(QPointF posReal){
     if(simulando_){
         aux->start();
     }
+}
+
+bool mapa::stopSimulacion(){
+    int j = 0;
+    while(j<agentes_.size()){
+        for(int i=0;i<agentes_.size();i++){
+            j=j+agentes_.at(i)->pause();
+        }
+    }
+    simulando_=false;
+    return true;
+}
+
+short* mapa::escanearEntorno(int x, int y){
+    short* direccion_ = new short[4];
+    direccion_[arriba]    =  (!(y<=1)   )*matrizMapa_[pos(y-1,x)].tipo_ +(y<=1)   *(-1);
+    direccion_[abajo]     =  (!(y>=f_-2))*matrizMapa_[pos(y+1,x)].tipo_ +(y>=f_-2)*(-1);
+    direccion_[derecha]   =  (!(x>=c_-2))*matrizMapa_[pos(y,x+1)].tipo_ +(x>=c_-2)*(-1);
+    direccion_[izquierda] =  (!(x<=1)   )*matrizMapa_[pos(y,x-1)].tipo_ +(x<=1)   *(-1);
+    return direccion_;
 }
 
 void mapa::startSimulacion(){

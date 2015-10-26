@@ -22,10 +22,6 @@ struct celda{
     agente*                                 agente_;
 };
 
-struct dirYPesos{
-    short                                   direccion_[4];
-};
-
 enum tile {
     nuclear,
     rejilla,
@@ -60,9 +56,10 @@ public:
     QGraphicsPixmapItem* pintarPixmap(double,double,QPixmap*);
     void sustituirCelda(double,double,short);
     void setPincel(short);
-    dirYPesos escanearEntorno(int x, int y);
     void addAgente(QPointF);
     void seguirAgente(double x, double y);
+    bool stopSimulacion();
+    short* escanearEntorno(int x, int y);
 private:
     celda*                                  matrizMapa_;
     QPixmap*                                graficosTerrenos_;

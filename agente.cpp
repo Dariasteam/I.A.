@@ -11,7 +11,7 @@ class mapa;
 
 using namespace std;
 
-agente::agente(QString texto, int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, QWidget* parent) : QGroupBox(parent){
+agente::agente(QString texto, int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, celda* mapa, QWidget* parent) : QGroupBox(parent){
     parent_ = parent;
     x_ = x;
     y_ = y;
@@ -20,6 +20,8 @@ agente::agente(QString texto, int x, int y, double tiempoMov, int id, QGraphicsP
     tiempoMov_ = tiempoMov;
     id_ = id;
     valor_=1;
+    dir_=0;
+    mapaReal_ = mapa;
     lay_ = new QGridLayout(this);
     lay_->setSizeConstraint(QLayout::SetMinimumSize);
     labelBot_.setPixmap(QPixmap("../I.A./recursos/robotAbajo.png"));
@@ -112,7 +114,7 @@ void agente::detontante(){
 }
 
 void agente::animador(){
-    if(movimientoRestante_>0){
+    if(movimientoRestante_>0 && activo_){
         switch (dir_){
         case arriba:
             gPix_->moveBy(0,-valor_);
@@ -139,35 +141,34 @@ void agente::animador(){
 
 void agente::movimiento(){
     if(activo_){
-        dirYPesos d = ((mapa*)parent_)->escanearEntorno(x_,y_);
-        dir_ = rand()%4 + 1;
+        short* direccion_;
+        direccion_ = ((mapa*)parent_)->escanearEntorno(x_,y_);
         bool pausar = true;
         bool encontrado = false;
         for(int i=0;i<4;i++){
-            if(d.direccion_[i]==0){
+            if(direccion_[i]==0){
                 encontrado=true;
                 gPix_->setPixmap(lado_[i]);
-            }else if(d.direccion_[i]<5){
+            }else if(direccion_[i]<5){
                 pausar=false;
             }
         }
         if(pausar || encontrado){
             pause();
         }else{
-            while (d.direccion_[dir_-1]<1 || d.direccion_[dir_-1]>4) {
+            while (direccion_[dir_-1]<1 || direccion_[dir_-1]>4) {
                 dir_ = rand()%4 + 1;
             }
             dir_--;
             gPix_->setPixmap(lado_[dir_]);
             movimientoRestante_ = tiempoMov_;
-            //((mapa*)parent_)->agentePideMovimiento(this,id_,dir_,gPix_,checkSeguir_->isChecked(),checkRastro_->isChecked());
         }
     }
-
 }
 
-void agente::pause(){
+bool agente::pause(){
     activo_ = false;
+    return true;
 }
 
 bool agente::getActivo(){
