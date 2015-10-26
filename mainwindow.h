@@ -86,13 +86,6 @@ private slots:
     void onGuardar();
     void onGuardarComo();
     void actualizarSliders();
-    void cambiarPincelAMuro();
-    void cambiarPincelARojo();
-    void cambiarPincelASuelo();
-    void cambiarPincelARejilla();
-    void cambiarPincelAMetal();
-    void cambiarPincelATierra();
-    void cambiarPincelANuclear();
     void onSimular();
 public slots:
 };

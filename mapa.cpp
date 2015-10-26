@@ -67,7 +67,8 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     matrizMapa_ = new celda[c_*f_];
     escena_ = new graphicsMapa(this);
     rastroTodos_ = true;
-    this->setScene(escena_);
+    simulando_ = false;
+    ultimoZoom_ = 1;
     graficosTerrenos_ = new QPixmap[7];
     graficosTerrenos_[muro]     = QPixmap("../I.A./recursos/muro.png");
     graficosTerrenos_[rojo]     = QPixmap("../I.A./recursos/rojo.png");
@@ -81,8 +82,6 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
     graficosAgente_[abajo]      = QPixmap("../I.A./recursos/robotAbajo.png");
     graficosAgente_[derecha]    = QPixmap("../I.A./recursos/robotDerecha.png");
     graficosAgente_[izquierda]  = QPixmap("../I.A./recursos/robotIzquierda.png");
-    simulando_ = false;
-    ultimoZoom_ = 1;
     if(f_>c_){
         escala_ = (double(600)/f_)/double(graficosTerrenos_[0].size().height());
         this->setMinimumSize((double(escala_*graficosTerrenos_[0].size().width())*c_)+2,600);
@@ -99,14 +98,12 @@ void mapa::operacionesConstruccion(int filas ,int columnas, QProgressBar* barra)
         this->setBaseSize(602,602);
         this->setMaximumSize(602,602);
     }
+    connect(this,SIGNAL(actualizarBarra(int)),barra_,SLOT(setValue(int)));
     emit actualizarBarra(0);
+    pincel_ = 5;
     barra_->setMaximum(c_*f_);
     barra_->show();
-    connect(this,SIGNAL(actualizarBarra(int)),barra_,SLOT(setValue(int)));
-    pincel_ = 5;
-    tiempo_ = new QTimer(this);
-    //connect(tiempo_,SIGNAL(timeout()),this,SLOT(movimientoTempo()));;
-    //tiempo_->start(30);
+    setScene(escena_);
 }
 
 void mapa::zoom(int i){
@@ -200,7 +197,7 @@ void mapa::movioMouse(QPointF mousePos){
 }
 
 
-void mapa::cambiarTipoPincel(short tipo){
+void mapa::setPincel(short tipo){
     pincel_ = tipo;
 }
 
@@ -241,7 +238,7 @@ void mapa::addAgente(QPointF posReal){
 }
 
 void mapa::startSimulacion(){
-    if(!simulando_ && movimientosActuales_.size()==0 && agentes_.size()>0){
+    if(!simulando_  && agentes_.size()>0){
         for(int i=0;i<agentes_.size();i++){
             agentes_.at(i)->start();
         }

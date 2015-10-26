@@ -137,7 +137,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     velocidadSlider_->setRange(1,100);
     velocidadSlider_->setInvertedControls(true);
     velocidadSlider_->setInvertedAppearance(true);
-    velocidadSlider_->setValue(1);
+    velocidadSlider_->setValue(100);
 
     scrollAgentes_ = new QScrollArea(this);
     scrollAgentes_->setWidget(contenedor);
@@ -171,17 +171,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     barra->setAllowedAreas(Qt::AllToolBarAreas);
     this->addToolBar(barra);
 
+    QLabel* pincelesTool = new QLabel("Terrenos: ",this);
+    barra->addWidget(pincelesTool);
+
     muro_ = new QAction(QIcon(QPixmap("../I.A./recursos/muro.png")),"muro",this);
     rojo_ = new QAction(QIcon(QPixmap("../I.A./recursos/rojo.png")),"rojo",this);
     suelo_ = new QAction(QIcon(QPixmap("../I.A./recursos/suelo.png")),"suelo",this);
     metal_ = new QAction(QIcon(QPixmap("../I.A./recursos/metal.png")),"metal",this);
     rejilla_ = new QAction(QIcon(QPixmap("../I.A./recursos/rejilla.png")),"rejilla",this);
-    tierra_ = new QAction(QIcon(QPixmap("../I.A./recursos/tierra.png")),"Tierra",this);
-    nuclear_ = new QAction(QIcon(QPixmap("../I.A./recursos/nuclear.png")),"Nuclear",this);
-    ultimoAction_ = suelo_;
-
-    QLabel* pincelesTool = new QLabel("Terrenos: ",this);
-    barra->addWidget(pincelesTool);
+    tierra_ = new QAction(QIcon(QPixmap("../I.A./recursos/tierra.png")),"tierra",this);
+    nuclear_ = new QAction(QIcon(QPixmap("../I.A./recursos/nuclear.png")),"nuclear",this);
 
     muro_->setCheckable(true);
     rojo_->setCheckable(true);
@@ -200,16 +199,23 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     barra->addSeparator();
     barra->addAction(nuclear_);
 
-    connect(muro_,SIGNAL(triggered()),this,SLOT(cambiarPincelAMuro()));
-    connect(rojo_,SIGNAL(triggered()),this,SLOT(cambiarPincelARojo()));
-    connect(suelo_,SIGNAL(triggered()),this,SLOT(cambiarPincelASuelo()));
-    connect(metal_,SIGNAL(triggered()),this,SLOT(cambiarPincelAMetal()));
-    connect(rejilla_,SIGNAL(triggered()),this,SLOT(cambiarPincelARejilla()));
-    connect(tierra_,SIGNAL(triggered()),this,SLOT(cambiarPincelATierra()));
-    connect(nuclear_,SIGNAL(triggered(bool)),SLOT(cambiarPincelANuclear()));
+    ultimoAction_ = suelo_;
+
+    auto changeultimoAction_ = [&] (QAction* action) {
+        ultimoAction_->setChecked(false);
+        ultimoAction_ = action;
+        ultimoAction_->setChecked(true);
+    };
+
+    connect(muro_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(muro_); widMapa_->setPincel(muro);}));
+    connect(rojo_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(rojo_); widMapa_->setPincel(rojo);}));
+    connect(suelo_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(suelo_); widMapa_->setPincel(suelo);}));
+    connect(metal_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(metal_); widMapa_->setPincel(metal);}));
+    connect(rejilla_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(rejilla_); widMapa_->setPincel(rejilla);}));
+    connect(tierra_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(tierra_); widMapa_->setPincel(tierra);}));
+    connect(nuclear_, &QAction::triggered, this, ([=] (void) { changeultimoAction_(nuclear_); widMapa_->setPincel(nuclear);}));
 
 //OPERACIONES FINALES
-
 
     layPrincipal_->addWidget(widMapa_);
 
@@ -291,7 +297,6 @@ void MainWindow::actualizarAgentes(){
         delete layScrollAgentes_->takeAt(0);
     }
     botonSimular_->setText("Simular");
-    layScrollAgentes_->update();
 }
 
 void MainWindow::actualizarMapa(){
@@ -305,6 +310,7 @@ void MainWindow::actualizarMapa(){
     layPrincipal_->replaceWidget(widMapa_,aux);
     delete widMapa_;
     widMapa_=aux;
+
     actualizarAgentes();
     actualizarConnects();
 }
@@ -322,9 +328,9 @@ void MainWindow::onAbrir(){
             widMapa_=aux;
             fich.close();
             actGuardar_->setEnabled(true);
+            setWindowTitle("I.A.[*] - "+*rutaArchivo_);
             actualizarConnects();
             actualizarAgentes();
-            setWindowTitle("I.A.[*] - "+*rutaArchivo_);
         }else{
             QMessageBox* error = new QMessageBox();
             error->setText("No se ha podido abrir el archivo");
@@ -339,7 +345,7 @@ void MainWindow::actualizarConnects(){
     connect(zoomSlider_,SIGNAL(valueChanged(int)),widMapa_,SLOT(zoom(int)));
     connect(botonRastro_,SIGNAL(clicked(bool)),widMapa_,SLOT(actualizarRastro()));
     connect(velocidadSlider_,SIGNAL(valueChanged(int)),widMapa_,SLOT(velocidad(int)));
-    velocidadSlider_->setValue(30);
+    velocidadSlider_->setValue(100);
     zoomSlider_->setValue(1);
 }
 
@@ -372,52 +378,6 @@ void MainWindow::actualizarTitulo(bool b){this->setWindowModified(true);
     }else{
         this->setWindowModified(false);
     }
-}
-
-
-void MainWindow::cambiarPincelAMuro(){
-    ultimoAction_->setChecked(false);
-    widMapa_->cambiarTipoPincel(6);
-    ultimoAction_ = muro_;
-}
-
-
-void MainWindow::cambiarPincelARojo(){
-    ultimoAction_->setChecked(false);
-    widMapa_->cambiarTipoPincel(5);
-    ultimoAction_=rojo_;
-}
-
-
-void MainWindow::cambiarPincelASuelo(){
-    ultimoAction_->setChecked(false);
-    widMapa_->cambiarTipoPincel(4);
-    ultimoAction_=suelo_;
-}
-
-void MainWindow::cambiarPincelANuclear(){
-    ultimoAction_->setCheckable(false);
-    widMapa_->cambiarTipoPincel(0);
-    ultimoAction_=suelo_;
-}
-
-void MainWindow::cambiarPincelAMetal(){
-    ultimoAction_->setChecked(false);
-    widMapa_->cambiarTipoPincel(3);
-    ultimoAction_=metal_;
-}
-
-void MainWindow::cambiarPincelATierra(){
-    ultimoAction_->setChecked(false);
-    widMapa_->cambiarTipoPincel(2);
-    ultimoAction_=tierra_;
-}
-
-
-void MainWindow::cambiarPincelARejilla(){
-    ultimoAction_->setChecked(false);
-    widMapa_->cambiarTipoPincel(1);
-    ultimoAction_=rejilla_;
 }
 
 void MainWindow::onSimular(){

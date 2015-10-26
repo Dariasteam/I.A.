@@ -19,6 +19,7 @@ class agente : public QGroupBox{
 public:
     agente(QString texto, int x, int y, double tiempoMov_, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, QWidget* parent);
     void mouseDoubleClickEvent(QMouseEvent* );
+    ~agente();
     QColor getColor();
     void detontante();
     void desactivarSegir();

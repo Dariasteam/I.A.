@@ -26,16 +26,6 @@ struct dirYPesos{
     short                                   direccion_[4];
 };
 
-struct movimiento{
-    QGraphicsPixmapItem*                    pix_;
-    short                                   dir_;
-    QPoint*                                 posFinal_;
-    int                                     id_;
-    double                                  movRestante_;
-    agente*                                 agente_;
-    bool                                    seguir_;
-};
-
 enum tile {
     nuclear,
     rejilla,
@@ -69,7 +59,7 @@ public:
     void operacionesConstruccion(int,int,QProgressBar*);
     QGraphicsPixmapItem* pintarPixmap(double,double,QPixmap*);
     void sustituirCelda(double,double,short);
-    void cambiarTipoPincel(short);
+    void setPincel(short);
     dirYPesos escanearEntorno(int x, int y);
     void addAgente(QPointF);
     void seguirAgente(double x, double y);
@@ -86,12 +76,10 @@ private:
     QBoxLayout*                             layScrollAgentes_;
     QFileDialog*                            dialogoAbrir_;
     QString*                                rutaArchivo_;
-    graphicsMapa *                          escena_;
+    graphicsMapa*                           escena_;
     double                                  escala_;
     QList<agente*>                          agentes_;
-    QList<movimiento*>                      movimientosActuales_;
     double                                  ultimoZoom_;
-    QTimer*                                 tiempo_;
     bool                                    simulando_;
     bool                                    rastroTodos_;
     QWidget*                                parent_;

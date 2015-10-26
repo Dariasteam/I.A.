@@ -46,6 +46,10 @@ agente::agente(QString texto, int x, int y, double tiempoMov, int id, QGraphicsP
     hilo_.detach();
 }
 
+agente::~agente(){
+
+}
+
 void agente::mouseDoubleClickEvent(QMouseEvent* E){
     if(E->button() ==Qt::LeftButton){
         if(isChecked()){
