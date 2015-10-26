@@ -284,6 +284,7 @@ void mapa::addAgente(QPointF posReal){
     layScrollAgentes_->addWidget(aux);
     matrizMapa_[pos(P.y(),P.x())].agente_ = aux;
     agentes_.push_back(aux);
+    aux->detontante();
     if(simulando_){
         aux->start();
     }

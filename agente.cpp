@@ -92,11 +92,30 @@ void agente::finMovimiento(){
 void agente::detontante(){
     tiempo_ = new QTimer();
     tiempo_->start(10);
-    connect(tiempo_,&QTimer::timeout,this,&agente::movimiento);
+    connect(tiempo_,&QTimer::timeout,this,&agente::animador);
+}
+
+void agente::animador(){
+    double valor = 1;
+    switch (dir_){
+    case arriba:
+        gPix_->moveBy(0,-valor);
+        break;
+    case abajo:
+        gPix_->moveBy(0,valor);
+        break;
+    case derecha:
+        gPix_->moveBy(valor,0);
+        break;
+    default:
+        gPix_->moveBy(-valor,0);
+        break;
+    }
+    movimientoRestante_= movimientoRestante_-valor;
 }
 
 void agente::movimiento(){
-    while(activo_){
+    if(activo_){
         movimientoRestante_ = tiempoMov_;
         dirYPesos d = ((mapa*)parent_)->escanearEntorno(x_,y_);
         dir_ = rand()%4 + 1;
@@ -168,9 +187,7 @@ void agente::setRastro(bool b){
 }
 
 void agente::checkSeguir(){
-    gPix_->moveBy(id_+1,id_+1);
-    id_++;
-    //((mapa*)parent_)->actualizarSeguir(id_);
+    ((mapa*)parent_)->actualizarSeguir(id_);
 }
 
 int agente::getX(){

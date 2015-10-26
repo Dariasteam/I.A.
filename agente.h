@@ -52,6 +52,7 @@ private:
 public slots:
     void check(bool);
     void checkSeguir();
+    void animador();
 };
 
 #endif // agente_H
