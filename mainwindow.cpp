@@ -137,6 +137,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     botonSimular_->setCheckable(true);
     botonRastro_ = new QPushButton("Rastro todos",this);
     botonRastro_->setCheckable(true);
+    botonMemoria_=new QPushButton("Memoria todos",this);
+    botonMemoria_->setCheckable(true);
 
     QBoxLayout* layDropBot = new QBoxLayout(QBoxLayout::LeftToRight,NULL);
     layDropBot->setSizeConstraint(QBoxLayout::SetFixedSize);
@@ -168,11 +170,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     layOpcionesAlgoritmo_->addWidget(velocidadSlider_);
     layOpcionesAlgoritmo_->addWidget(scrollAgentes_);
     layOpcionesAlgoritmo_->addWidget(botonRastro_);
+    layOpcionesAlgoritmo_->addWidget(botonMemoria_);
     layOpcionesAlgoritmo_->addWidget(botonSimular_);
 
     connect(botonSimular_,&QAbstractButton::clicked,this,&MainWindow::onSimular);
+    connect(botonMemoria_,&QAbstractButton::clicked,this,&MainWindow::actualizarMemoria);
     connect(velocidadSlider_,SIGNAL(valueChanged(int)),this,SLOT(velocidad(int)));
-
 
 //INICIALIZACION DEL PANEL "ESTADISTICA"
 
@@ -245,8 +248,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     layPrincipal_->addWidget(zoomSlider_);
     setCentralWidget(widPrincipal_);
 
-    mem = new mapa(widMapa_->getFilas(),widMapa_->getColumnas(),graficosTerrenos_,this);
-    mapas_->addTab(mem,"Memoria");
+    memoria_ = new mapa(widMapa_->getFilas(),widMapa_->getColumnas(),graficosTerrenos_,this);
+    mapas_->addTab(memoria_,"Memoria");
 }
 
 MainWindow::~MainWindow(){
@@ -351,6 +354,7 @@ void MainWindow::operacionesActualizacion(mapa* aux){
     zoomSlider_->setValue(1);
     botonRastro_->setChecked(false);
     botonSimular_->setChecked(false);
+    botonMemoria_->setChecked(false);
     while(agentes_.count()>0){
         while(!agentes_.at(0)->terminar()){
         }
@@ -363,9 +367,9 @@ void MainWindow::operacionesActualizacion(mapa* aux){
     int i=0;
     botonSimular_->setText("Simular");
     mapas_->setMaximumSize(widMapa_->width(),widMapa_->height()+35);
-    delete mem;
-    mem = new mapa(widMapa_->getFilas(),widMapa_->getColumnas(),graficosTerrenos_,this);
-    mapas_->addTab(mem,"Memoria");
+    delete memoria_;
+    memoria_ = new mapa(widMapa_->getFilas(),widMapa_->getColumnas(),graficosTerrenos_,this);
+    mapas_->addTab(memoria_,"Memoria");
 }
 
 void MainWindow::onGuardarComo(){
@@ -467,16 +471,22 @@ void MainWindow::actualizarSeguir(int id){
     int i=0;
     while(i<agentes_.size()){
         if(i!=id){
-            agentes_.at(i)->unselectSeguir();
+            agentes_.at(i)->setSeguir(false);
         }
         i++;
+    }
+}
+
+void MainWindow::actualizarMemoria(bool b){
+    for(int i=0;i<agentes_.size();i++){
+        agentes_.at(i)->setMemoria(b);
     }
 }
 
 void MainWindow::addAgente(QPointF posReal){
     QPoint P = widMapa_->getFilaColumna(posReal);
     QGraphicsPixmapItem* gPix = (widMapa_->pintarPixmap(P.y(),P.x(),&graficosAgente_[1]));
-    agente* aux = new agente(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),gPix,graficosAgente_,widMapa_,this);
+    agente* aux = new agente(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),gPix,graficosAgente_,widMapa_,memoria_,this);
     layScrollAgentes_->addWidget(aux);
     agentes_.push_back(aux);
     aux->detontante();
@@ -484,7 +494,6 @@ void MainWindow::addAgente(QPointF posReal){
     if(botonSimular_->isChecked()){
         aux->start();
     }
-    aux->setMemoria(mem);
 }
 
 void MainWindow::movioMouse(QPointF mousePos){
@@ -497,4 +506,3 @@ void MainWindow::zoomSobre(int z){
         ((mapa*)mapas_->widget(i))->zoom(z);
     }
 }
-

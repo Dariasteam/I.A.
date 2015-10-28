@@ -16,29 +16,35 @@
 #include <QGraphicsPixmapItem>
 #include <QPixmap>
 #include <QTimer>
+#include <QList>
 
 class mapa;
 
+struct celda;
+
+struct nodo{
+    QList<celda*>  nodosPasados_;
+    int            coste_;
+};
+
+
 class agente : public QGroupBox{
 public:
-    agente(int x, int y, double tiempoMov_, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, mapa* mapa, QWidget* parent);
+    agente(int x, int y, double tiempoMov_, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, mapa* map, mapa* mem, QWidget* parent);
     void mouseDoubleClickEvent(QMouseEvent* );
     ~agente();
-    QColor getColor();
     void detontante();
-    void desactivarSegir();
     void movimiento();
     void start();
     bool terminar();
     void finMovimiento();
-    bool getActivo();
     bool pause();
+    void setMemoria(bool);
     void setRastro(bool);
-    void unselectSeguir();
+    void setSeguir(bool);
     void setVelocidad(int);
     int getX();
     int getY();
-    void setMemoria(mapa*);
 private:
     int                             tiempoMov_;
     int                             movimientoRestante_;
@@ -57,15 +63,22 @@ private:
     QColor                          color_;
     QCheckBox*                      checkRastro_;
     QCheckBox*                      checkSeguir_;
+    QCheckBox*                      checkMemoria_;
     QTimer*                         tiempo_;
     QPixmap*                        lado_;
     double                          valor_;
-    mapa*                         mapaReal_;
-    mapa*                         mapaMem_;
+    mapa*                           mapaReal_;
+    mapa*                           mapaMem_;
 public slots:
     void check(bool);
-    void checkSeguir();
     void animador();
+
+    //ALGORITMO
+public:
+
+private:
+    QList<nodo>                     lista_;
+
 };
 
 #endif // agente_H

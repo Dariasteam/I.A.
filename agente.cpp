@@ -1,7 +1,6 @@
 #include "mapa.h"
 #include "mainwindow.h"
 
-class mapa;
 class MainWindow;
 
 #include <QColor>
@@ -14,7 +13,7 @@ class MainWindow;
 
 using namespace std;
 
-agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, mapa* mapa, QWidget* parent) : QGroupBox(parent){
+agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, mapa* map, mapa* mem, QWidget* parent) : QGroupBox(parent){
     parent_ = parent;
     x_ = x;
     y_ = y;
@@ -24,8 +23,8 @@ agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix
     id_ = id;
     valor_=1;
     dir_= 0;
-    mapaReal_ = mapa;
-    mapaMem_ = NULL;
+    mapaMem_ = mem;
+    mapaReal_ = map;
     lay_ = new QGridLayout(this);
     lay_->setSizeConstraint(QLayout::SetMinimumSize);
     labelBot_.setPixmap(QPixmap("../I.A./recursos/robotAbajo.png"));
@@ -41,14 +40,17 @@ agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix
     checkRastro_->setChecked(false);
     checkSeguir_ = new QCheckBox("Seguir",this);
     checkSeguir_->setChecked(false);
+    checkMemoria_ = new QCheckBox("Mem",this);
+    checkMemoria_->setChecked(false);
     lay_->addWidget(checkRastro_,1,0);
     lay_->addWidget(checkSeguir_,1,1);
+    lay_->addWidget(checkMemoria_,1,2);
     setCheckable(true);
     connect(this,&QGroupBox::clicked,this,&agente::check);
-    connect(checkSeguir_,&QAbstractButton::clicked,((agente*)this),&agente::checkSeguir);
+    connect(checkSeguir_,&QAbstractButton::clicked,((agente*)this),&agente::setSeguir);
     activo_=false;
     movimientoRestante_=0;
-    hilo_ = std::thread(&agente::getColor,this);
+    hilo_ = std::thread(&agente::getX,this);
     hilo_.detach();
 }
 
@@ -80,10 +82,6 @@ void agente::check(bool b){
     }else{
         pause();
     }
-}
-
-void agente::desactivarSegir(){
-    checkSeguir_->setChecked(false);
 }
 
 void agente::start(){
@@ -155,9 +153,9 @@ void agente::movimiento(){
         direccion_ = mapaReal_->escanearEntorno(x_,y_);
         bool pausar = true;
         bool encontrado = false;
-        if(mapaMem_!=NULL){
+        if(checkMemoria_->isChecked() && mapaMem_!=NULL){
             while(!mapaMem_->mu_.try_lock()){
-
+                cout<<"Esperando desbloqueo del mutex"<<endl;
             }
             mapaMem_->setCelda(y_-1,x_,direccion_[arriba]);
             mapaMem_->setCelda(y_+1,x_,direccion_[abajo]);
@@ -192,24 +190,16 @@ bool agente::pause(){
     return true;
 }
 
-bool agente::getActivo(){
-    return activo_;
-}
-
-QColor agente::getColor(){
-    return color_;
-}
-
-void agente::unselectSeguir(){
-    checkSeguir_->setChecked(false);
-}
-
 void agente::setRastro(bool b){
     checkRastro_->setChecked(b);
 }
 
-void agente::checkSeguir(){
-    ((MainWindow*)parent_)->actualizarSeguir(id_);
+void agente::setSeguir(bool b){
+    if(b){
+        ((MainWindow*)parent_)->actualizarSeguir(id_);
+    }else{
+        checkSeguir_->setChecked(false);
+    }
 }
 
 int agente::getX(){
@@ -224,7 +214,7 @@ void agente::setVelocidad(int i){
     tiempo_->start(i);
 }
 
-void agente::setMemoria(mapa* mapaMem){
-    mapaMem_ = mapaMem;
+void agente::setMemoria(bool b){
+    checkMemoria_->setChecked(b);
 }
 

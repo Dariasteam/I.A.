@@ -62,12 +62,14 @@ private:
     QWidget*                            widPrincipal_;
     QBoxLayout*                         layPrincipal_;
     mapa*                               widMapa_;
+    mapa*                               memoria_;
     QSpinBox*                           spinFilas_;
     QSpinBox*                           spinColumnas_;
     QProgressBar*                       barraProgreso_;
     QPushButton*                        botonGenerar_;
     QPushButton*                        botonSimular_;
     QPushButton*                        botonRastro_;
+    QPushButton*                        botonMemoria_;
     QMenuBar*                           menuBar_;
     QMenu*                              mnuArchivo_;
     QAction*                            actGuardar_;
@@ -99,7 +101,6 @@ private:
     short                               pincel_;
     QList<agente*>                      agentes_;
     QPointF                             mousePos_;
-    mapa*   mem;
 private slots:
     void actualizarMapa();
     void actualizarSliders();
@@ -110,6 +111,7 @@ private slots:
     void setPincel(short);
     void velocidad(int);
     void actualizarRastro(bool);
+    void actualizarMemoria(bool);
     void zoomSobre(int);
 public slots:
     void actualizarSeguir(int);
