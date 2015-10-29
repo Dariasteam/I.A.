@@ -23,10 +23,14 @@ class mapa;
 struct celda;
 
 struct nodo{
-    QList<celda*>  nodosPasados_;
-    int            coste_;
+    celda*      contenido_;
 };
 
+struct trayectoria{
+    QList<nodo*>        recorrido_;
+    int                 coste_;
+    int                 id_;
+};
 
 class agente : public QGroupBox{
 public:
@@ -34,7 +38,6 @@ public:
     void mouseDoubleClickEvent(QMouseEvent* );
     ~agente();
     void detontante();
-    void movimiento();
     void start();
     bool terminar();
     void finMovimiento();
@@ -43,6 +46,8 @@ public:
     void setRastro(bool);
     void setSeguir(bool);
     void setVelocidad(int);
+    void comprobarMovimientos();
+    void writeMem();
     int getX();
     int getY();
 private:
@@ -51,7 +56,8 @@ private:
     int                             id_;
     int                             x_;
     int                             y_;
-    std::thread                     hilo_;
+    std::thread                     hiloAnimacion_;
+    std::thread                     hiloCalculo_;
     int                             dir_;
     QGraphicsPixmapItem*            gPix_;
     bool                            activo_;
@@ -69,6 +75,7 @@ private:
     double                          valor_;
     mapa*                           mapaReal_;
     mapa*                           mapaMem_;
+    QList<short>                    trayectoDefinido_;
 public slots:
     void check(bool);
     void animador();
@@ -77,8 +84,22 @@ public slots:
 public:
 
 private:
-    QList<nodo>                     lista_;
-
+    QList<trayectoria*>              lista_;
+    QList<nodo*>                     caminoActual_;
+    QList<short>                     trayectoRecorrido_;
+    nodo*                            inicio_;
+    bool                             regresando_;
+    bool                             recuperando_;
+    bool                             origen_;
+    int                              cuenta_;
+    int                              idActual_;
+    void algoritmo();
+    void expandir();
+    void imprimir();
+    void insertar(trayectoria* A);
+    void regresar();
+    void recuperar();
+    bool comprobarCamino();
 };
 
 #endif // agente_H

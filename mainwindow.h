@@ -34,10 +34,10 @@ struct menuTerreno{
 
 enum tile {
     nuclear,
+    suelo,
+    metal,
     rejilla,
     tierra,
-    metal,
-    suelo,
     rojo,
     muro,
 };

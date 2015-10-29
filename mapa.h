@@ -19,6 +19,9 @@ struct celda{
     short                                   tipo_;
     QGraphicsPixmapItem*                    pix_;
     agente*                                 agente_;
+    int                                     x_;
+    int                                     y_;
+    void imprimir();
 };
 
 enum direcciones {
@@ -36,7 +39,7 @@ public:
     void operacionesConstruccion(QProgressBar*);
     int getFilas();
     int getColumnas();
-    short getCelda(int,int);
+    celda* getCelda(int,int);
     void setCelda(int,int,short);
     int pos(int,int);
     void guardar(std::ofstream*);

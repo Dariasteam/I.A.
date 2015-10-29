@@ -94,8 +94,8 @@ void mapa::zoom(int i){
     ultimoZoom_ = i;
 }
 
-short mapa::getCelda(int f, int c){
-    return mapa_[pos(f,c)].tipo_;
+celda* mapa::getCelda(int f, int c){
+    return &mapa_[pos(f,c)];
 }
 
 double mapa::getEscala(){
@@ -143,6 +143,8 @@ void mapa::sustituirCelda(double fila, double columna, short idPix){
             delete auxPixBorrar;
         }
         mapa_[pos(fila,columna)].pix_=auxPix;
+        mapa_[pos(fila,columna)].x_=columna;
+        mapa_[pos(fila,columna)].y_=fila;
         mapa_[pos(fila,columna)].tipo_=idPix;
     }
 }
@@ -177,4 +179,8 @@ void mapa::setCelda(int x, int y, short v){
     }
     mapa_[pos(y,x)].tipo_ = v;
     sustituirCelda(x,y,v);
+}
+
+void celda::imprimir(){
+    cout<<"("<<y_<<","<<x_<<")["<<tipo_<<"]";
 }

@@ -410,7 +410,7 @@ void MainWindow::guardar(ofstream* fich){
     *fich<<f<<" "<<c<<endl;
     for(int i=0;i<f;i++){
         for(int j=0;j<c;j++){
-            *fich<<widMapa_->getCelda(i,j)<<" ";
+            *fich<<widMapa_->getCelda(i,j)->tipo_<<" ";
         }
         *fich<<endl;
     }
