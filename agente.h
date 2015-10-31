@@ -22,15 +22,38 @@ class mapa;
 
 struct celda;
 
-struct nodo{
-    celda*      contenido_;
+class nodo{
+public:
+    nodo(nodo* padre = 0, short pcoste = 0, short dirllegar = -1, celda* c = 0){
+        padre_ = padre;
+        pCoste_ = pcoste;
+        dirLlegar_ = dirllegar;
+        celda_ = c;
+        for(int i=0;i<4;i++){
+            hijos_[i]=NULL;
+            hCostes_[i] = -1;
+            explorado_[i]=false;
+        }
+    }
+    nodo*           hijos_[4];
+    bool            explorado_[4];
+    nodo*           padre_;
+    short           hCostes_[4];
+    short           pCoste_;
+    short           dirLlegar_;
+    celda*          celda_;
 };
 
+/*struct nodo{
+    celda*      contenido_;
+};*/
+
 struct trayectoria{
-    QList<nodo*>        recorrido_;
-    int                 coste_;
-    int                 id_;
+    QList<nodo*>    recorrido_;
+    short           coste_;
 };
+
+
 
 class agente : public QGroupBox{
 public:
@@ -84,22 +107,24 @@ public slots:
 public:
 
 private:
-    QList<trayectoria*>              lista_;
-    QList<nodo*>                     caminoActual_;
-    QList<short>                     trayectoRecorrido_;
-    nodo*                            inicio_;
+    nodo*                            raiz_;
+    nodo*                            actual_;
+    QList<trayectoria*>              listaDeTrayectorias_;
+    QList<nodo*>                     caminoRecorrido_;
     bool                             regresando_;
     bool                             recuperando_;
     bool                             origen_;
     int                              cuenta_;
     int                              idActual_;
+    short                            costazo_;
+    bool celdaPisada(trayectoria*, celda*);
     void algoritmo();
-    void expandir();
+    void actualizarcoordenadas(short);
+    nodo* expandir(nodo* F);
     void imprimir();
     void insertar(trayectoria* A);
-    void regresar();
     void recuperar();
-    bool comprobarCamino();
+    nodo* comprobarCamino();
 };
 
 #endif // agente_H

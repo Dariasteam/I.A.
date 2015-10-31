@@ -364,7 +364,6 @@ void MainWindow::operacionesActualizacion(mapa* aux){
     while(!layScrollAgentes_->isEmpty()){
         delete layScrollAgentes_->takeAt(0);
     }
-    int i=0;
     botonSimular_->setText("Simular");
     mapas_->setMaximumSize(widMapa_->width(),widMapa_->height()+35);
     delete memoria_;
