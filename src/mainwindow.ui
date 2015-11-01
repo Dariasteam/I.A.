@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>IA</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
@@ -35,14 +35,41 @@
       <item>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
+         <widget class="QTabWidget" name="tabWidget">
+          <property name="toolTip">
+           <string/>
+          </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="mapa">
+           <attribute name="title">
+            <string>Page</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <layout class="QVBoxLayout" name="map_layout"/>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="mem">
+           <attribute name="title">
+            <string>Page</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <layout class="QVBoxLayout" name="mem_layout"/>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+        <item>
          <widget class="QProgressBar" name="progressBar">
           <property name="value">
            <number>24</number>
           </property>
          </widget>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="map_layout"/>
         </item>
         <item>
          <widget class="QSlider" name="zoom">
@@ -98,13 +125,13 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>150</width>
+     <width>300</width>
      <height>41</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>150</width>
+     <width>300</width>
      <height>524287</height>
     </size>
    </property>

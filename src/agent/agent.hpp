@@ -1,21 +1,34 @@
 #pragma once
 
+#include <QList>
 #include "../map.h"
-#include "output.hpp"
-#include "sensors.hpp"
 
-namespace Model {
+
+using namespace std;
+struct CellWeight;
+
+struct Pos {
+    int x_;
+    int y_;
+};
+
+struct Path {
+    QList<Pos> path_;
+    double cost_;
+};
 
 class Agent {
-private:
+public:
   int x_;
   int y_;
-  Sensors sensors_;
+  bool noFinded_;
+  Path * possibleEnd_;
+  QList<Path> paths_;
+  Path joinPath_;
 public:
-  Agent(int,int,Map &);
+  Agent(int,int);
   ~Agent();
-  // | Get sensors aviable of agent, useful on a interaction clock' ticks.
-  Sensors & getSensors(void);
-  Output operator()(void);
+  Pos operator()(QList<CellWeight>);
+  void insertSort(Path path);
+  void pathJoin(Path p, Path p2);
 };
-}

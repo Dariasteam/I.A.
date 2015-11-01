@@ -9,7 +9,8 @@
 #include <QToolBox>
 
 #include "ui_mainwindow.h"
-#include "mapoptions.h"
+#include "options/mapoptions.h"
+#include "options/agentoptions.h"
 #include "map.h"
 
 namespace Ui {

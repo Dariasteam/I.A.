@@ -3,6 +3,7 @@
 
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
+#include <QMimeData>
 #include <QPointF>
 
 class MapScene : public QGraphicsScene
@@ -12,9 +13,12 @@ public:
     explicit MapScene(QObject *parent=0);
 signals:
     void mousePos(QPointF);
+    void dropAgent(QPointF);
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
+    void dropEvent(QGraphicsSceneDragDropEvent *event);
 };
 
 #endif // MAPSCENE_H

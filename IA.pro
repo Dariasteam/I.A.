@@ -18,20 +18,20 @@ SOURCES += main.cpp\
     src/map.cpp \
     src/mapscene.cpp \
     src/mainwindow.cpp \
-    src/mapoptions.cpp \
+    src/options/mapoptions.cpp \
     src/agent/agent.cpp \
-    src/agent/sensors.cpp
+    src/options/agentoptions.cpp \
+    src/options/dragagent.cpp \
+    src/options/agenttoken.cpp
 
 HEADERS  += src/map.h \
     src/mapscene.h \
     src/mainwindow.h \
-    src/mapoptions.h \
+    src/options/mapoptions.h \
     src/agent/agent.hpp \
-    src/agent/lrta.hpp \
-    src/agent/output.hpp \
-    src/agent/sensors.hpp
-
-#FORMS    += mainwindow.ui
+    src/options/agentoptions.h \
+    src/options/dragagent.h \
+    src/options/agenttoken.h
 
 DISTFILES +=
 
@@ -40,4 +40,6 @@ RESOURCES += \
 
 FORMS += \
     src/mainwindow.ui \
-    src/mapoptions.ui
+    src/options/mapoptions.ui \
+    src/options/agentoptions.ui \
+    src/options/agenttoken.ui

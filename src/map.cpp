@@ -9,7 +9,11 @@ Map::Map(int columns, int rows
     pencil_(RedTile),
     rows_(rows),
     cols_(columns),
-    lastZoom_(1)
+    lastZoom_(1),
+    sizeTile_(0),
+    loadFactor_(0),
+    agents_(),
+    agentDirections_(4)
 {
     initMap();
     for (int j = 0; j < rows_; j++) {
@@ -40,7 +44,11 @@ Map::Map(ifstream* fich, QWidget *parent):
     pencil_(RedTile),
     rows_(0),
     cols_(0),
-    lastZoom_(1)
+    lastZoom_(1),
+    sizeTile_(0),
+    loadFactor_(0),
+    agents_(),
+    agentDirections_(4)
 {
     *fich>>rows_;
     *fich>>cols_;
@@ -68,6 +76,12 @@ void Map::initMap(void) {
     double sizeTile_x = this->width()/cols_;
     double sizeTile_y = this->height()/rows_;
     sizeTile_ = sizeTile_x < sizeTile_y ? sizeTile_x : sizeTile_y;
+
+    connect(this->scene(),SIGNAL(dropAgent(QPointF)),this,SLOT(drawAgentOnDrop(QPointF)));
+    agentDirections_[Up]    = QPixmap(":/recursos/robotArriba.png");
+    agentDirections_[Down]  = QPixmap(":/recursos/robotAbajo.png");
+    agentDirections_[Left]  = QPixmap(":/recursos/robotIzquierda.png");
+    agentDirections_[Right] = QPixmap(":/recursos/robotDerecha.png");
 }
 
 void Map::makeZoom(int factor) {
@@ -75,11 +89,11 @@ void Map::makeZoom(int factor) {
     lastZoom_ = factor;
 }
 
-QGraphicsPixmapItem* Map::drawPixmap(int column, int row, CellTile cell) {
-    QPixmap * pix = &terrain_[cell];
-    QGraphicsPixmapItem * auxPix = this->scene()->addPixmap(*pix);
-    auxPix->setScale(sizeTile_/pix->size().height());
+QGraphicsPixmapItem* Map::drawPixmap(int column, int row, QPixmap & pixmap) {
+    QGraphicsPixmapItem * auxPix = this->scene()->addPixmap(pixmap);
+    auxPix->setScale(sizeTile_/pixmap.size().height());
     auxPix->setPos(sizeTile_*column, sizeTile_*row);
+    auxPix->setZValue(2);
     return auxPix;
 }
 
@@ -91,20 +105,27 @@ void Map::exchangeCell(int column, int row, CellTile cell) {
 
     auxPix->setScale(sizeTile_/pix->size().height());
     auxPix->setPos(sizeTile_*column, sizeTile_*row);
+    auxPix->setZValue(-1);
+    map_[pos(column,row)] = { cell, auxPix};
 
-    if(auxPixRemove==NULL){
+    if(auxPixRemove!=NULL){
+        scene()->removeItem(auxPixRemove);
         delete auxPixRemove;
-        auxPixRemove == NULL;
+        auxPixRemove = NULL;
     }
-    map_[pos(column,row)] = { cell, auxPix };
 }
 
 void Map::redraw(void) {
-    this->scene()->clear();
     for (int i = 0; i < rows_; i++) {
         for (int j = 0; j <cols_; j++) {
-            exchangeCell(j, i, (CellTile)map_[pos(j,i)].type_);
+            QGraphicsPixmapItem * auxPix = map_[pos(j,i)].pix_;
+            auxPix->setScale(sizeTile_/32);
+            auxPix->setPos(sizeTile_*j, sizeTile_*i);
         }
+    }
+    for (auto &i : agents_) {
+        i.pix_->setScale(sizeTile_/32);
+        i.pix_->setPos(sizeTile_*i.agent_->x_, sizeTile_*i.agent_->y_);
     }
 }
 
@@ -113,6 +134,13 @@ void Map::drawOnMouse(QPointF mousePos) {
        && (mousePos.y() > 0)  && (mousePos.y() < (sizeTile_*rows_)))
         exchangeCell(mousePos.x() / sizeTile_, mousePos.y() / sizeTile_, pencil_);
 }
+
+void Map::drawAgentOnDrop(QPointF mousePos) {
+    if((mousePos.x() > 0) && (mousePos.x() < (sizeTile_*cols_))
+       && (mousePos.y() > 0)  && (mousePos.y() < (sizeTile_*rows_)))
+        addAgent(mousePos.x() / sizeTile_, mousePos.y() / sizeTile_);
+}
+
 
 void Map::resizeEvent(QResizeEvent * e){
     double sizeTile_x = e->size().width()/cols_;
@@ -134,4 +162,71 @@ bool Map::save(ofstream* fich){
 
 void Map::setPencil(CellTile pencil) {
     pencil_=pencil;
+}
+
+QList<CellWeight> Map::getAroundCells(int col, int row) {
+    QList<CellWeight> listCells;
+    auto helper = [=, &listCells] (int i, int j) {
+        if (col+i < cols_ && row+j < rows_ && map_[pos(col+i,row+j)].type_ != RedTile) {
+            Cell cell = map_[pos(col+i,row+j)];
+            listCells.push_back({col+i,row+j,cell.type_});
+        }
+    };
+    helper(1,0);
+    helper(0,1);
+    helper(-1,0);
+    helper(0,-1);
+    return listCells;
+}
+
+void Map::addAgent(int col, int row) {
+    static int count;  // esto no mola mucho pero bueno
+    count++;
+    Agent * agent = new Agent(col,row);
+    agents_.push_back({drawPixmap(col,row,agentDirections_[Down]),agent, count});
+    emit newAgent(this,count);
+    startAI();
+}
+
+void Map::moveAgent(int col, int row, int id) {
+    for (auto it = agents_.begin(); it < agents_.end(); it++) {
+        if (it->id_==id) {
+            it->pix_->setPos(sizeTile_*col, sizeTile_*row);
+            it->pix_->setScale(sizeTile_/32);
+        }
+    }
+}
+
+void Map::removeAgent(int id) {
+    for (auto it = agents_.begin(); it < agents_.end(); it++) {
+        if (it->id_ == id) {
+            scene()->removeItem(it->pix_);
+            agents_.erase(it);
+        }
+    }
+}
+
+void Map::speedMove(int speed) {
+
+}
+
+
+void Map::startAI(void) {
+    cout << "startAI" << endl;
+    QTimer * timer = new QTimer(this);
+    timer->setInterval(500);
+    timer->start();
+    connect(timer,&QTimer::timeout,this, &Map::tick);
+}
+
+void Map::tick() {
+    for (auto i : agents_) {
+        Pos pos = (*i.agent_)(getAroundCells(i.agent_->x_,i.agent_->y_));
+        moveAgent(pos.x_,pos.y_,i.id_);
+    }
+}
+
+
+void Map::stopAI(void) {
+
 }

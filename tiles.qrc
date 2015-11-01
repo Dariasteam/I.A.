@@ -1,20 +1,16 @@
 <RCC>
     <qresource prefix="/">
-        <file>recursos/baldosa.jpg</file>
         <file>recursos/metal.png</file>
         <file>recursos/muro.png</file>
-        <file>recursos/muroLow.png</file>
         <file>recursos/nuclear.png</file>
         <file>recursos/rejilla.png</file>
-        <file>recursos/robot.gif</file>
-        <file>recursos/robot.png</file>
-        <file>recursos/robot32x32.gif</file>
-        <file>recursos/robot32x32.png</file>
-        <file>recursos/robot32x32.xcf</file>
-        <file>recursos/robot64x64.gif</file>
         <file>recursos/rojo.png</file>
         <file>recursos/suelo.png</file>
-        <file>recursos/sueloLow.png</file>
         <file>recursos/tierra.png</file>
+        <file>recursos/robotAbajo.png</file>
+        <file>recursos/robotArriba.png</file>
+        <file>recursos/robotDerecha.png</file>
+        <file>recursos/robotIzquierda.png</file>
+        <file>recursos/testigo.png</file>
     </qresource>
 </RCC>

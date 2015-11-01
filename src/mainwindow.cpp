@@ -8,6 +8,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this);
     ui->map_layout->addWidget(widMap_);
 
+    ui->tabWidget->setTabText(0,"Escenario");
+    ui->tabWidget->setTabText(1,"Memoria");
+
     QAction * muro_ = new QAction(QIcon(QPixmap(":/recursos/muro.png")),"Muro",this);
     QAction * rojo_ = new QAction(QIcon(QPixmap(":/recursos/rojo.png")),"Rojo",this);
     QAction * suelo_ = new QAction(QIcon(QPixmap(":/recursos/suelo.png")),"Suelo",this);
@@ -51,12 +54,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     mapOptions_ = new MapOptions(toolBox);
     toolBox->addItem(mapOptions_, "Mapa");
+    AgentOptions * agentOptions = new AgentOptions(toolBox);
+    toolBox->addItem(agentOptions,"Agentes");
 
     connect(ui->zoom,SIGNAL(valueChanged(int)),widMap_,SLOT(makeZoom(int)));
     connect(mapOptions_,SIGNAL(onSpawn()),this,SLOT(onUpdateMap()));
     connect(ui->actionAbrir,SIGNAL(triggered(bool)),this,SLOT(onOpen()));
     connect(ui->actionGuardar,SIGNAL(triggered(bool)),this,SLOT(onSave()));
     connect(ui->actionGuardar_Como ,SIGNAL(triggered(bool)),this,SLOT(onSaveAs()));
+
+    connect(widMap_,SIGNAL(newAgent(Map*,int)),agentOptions,SLOT(createAgentInfo(Map*,int)));
 }
 
 MainWindow::~MainWindow() {
