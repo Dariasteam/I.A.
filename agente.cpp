@@ -53,19 +53,26 @@ agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix
     movimientoRestante_=0;
 
     raiz_ = new nodo();
+    raiz_->profundidad_=0;
     raiz_->celda_ = mapaReal_->getCelda(y_,x_);
+    raiz_->dirLlegar_=-8;
     actual_ = raiz_;
+    fin_ = false;
+
+    objetivo_ = mapaReal_->getCelda(1,1);
+
+
 
     trayectoria* T = new trayectoria;
     T->coste_=0;
     T->recorrido_.push_back(raiz_);
-    listaDeTrayectorias_.push_back(T);
+    listaAbierta_.push_back(T);
 
     hiloAnimacion_ = std::thread(&agente::detontante,this);
-    hiloAnimacion_.join();
+    hiloAnimacion_.detach();
 
-    hiloCalculo_ = std::thread(&agente::algoritmo,this);
-    hiloCalculo_.join();
+    /*hiloCalculo_ = std::thread(&agente::algoritmo,this);
+    hiloCalculo_.detach();*/
 }
 
 agente::~agente(){
@@ -99,12 +106,14 @@ void agente::check(bool b){
 }
 
 void agente::start(){
+    mapaMem_->setCelda(y_,x_,mapaReal_->getCelda(y_,x_)->tipo_);
     activo_ = true;
     algoritmo();
 }
 
 void agente::detontante(){
     tiempo_ = new QTimer();
+    tiempo_->start(5);
     movimientoRestante_ = tiempoMov_;
     connect(tiempo_,&QTimer::timeout,this,&agente::animador);
 }
@@ -132,22 +141,18 @@ void agente::animador(){
             }
             movimientoRestante_= movimientoRestante_-valor_;
             if(!movimientoRestante_){
-                movimientoRestante_ = tiempoMov_;
+                writeMem();
                 trayectoDefinido_.takeFirst();
-                finMovimiento();
+                if(checkRastro_->isChecked()){
+                    QPixmap* pix = new QPixmap(gPix_->pixmap());
+                    pix->fill(color_);
+                    QGraphicsPixmapItem* aux = ((mapa*)mapaReal_)->pintarPixmap(y_,x_,pix);
+                    aux->setZValue(1);
+                    aux->setOpacity(0.2);
+                }
+                movimientoRestante_ = tiempoMov_;
             }
         }
-    }
-}
-
-void agente::finMovimiento(){
-    writeMem();
-    if(checkRastro_->isChecked()){
-        QPixmap* pix = new QPixmap(gPix_->pixmap());
-        pix->fill(color_);
-        QGraphicsPixmapItem* aux = ((mapa*)mapaReal_)->pintarPixmap(y_,x_,pix);
-        aux->setZValue(1);
-        aux->setOpacity(0.2);
     }
 }
 
@@ -162,15 +167,6 @@ void agente::writeMem(){
         mapaMem_->setCelda(y_,x_+1,direccion_[derecha]);
         mapaMem_->setCelda(y_,x_-1,direccion_[izquierda]);
         mapaMem_->mu_.unlock();
-    }
-}
-
-void agente::algoritmo(){
-    if(activo_){
-        for(int i=0;i<10;i++){
-            expandir(raiz_);
-            cout<<"Forzado "<<endl;
-        }
     }
 }
 
@@ -211,129 +207,137 @@ void agente::setMemoria(bool b){
     }
 }
 
-bool agente::celdaPisada(trayectoria* t, celda* c){
-    for(int i=0;i<t->recorrido_.count();i++){
-        if(t->recorrido_.at(i)->celda_ == c){
+bool agente::celdaPisada(nodo* N, celda* C){
+    if(C  == raiz_->celda_){
+        cout<<"raiz pisada"<<endl;
+        return true;
+    }
+    while(N!=raiz_){
+        if(C == N->celda_){
+            cout<<"Celda pisada"<<endl;
             return true;
         }
+        N = N->padre_;
     }
     return false;
 }
 
 void agente::actualizarcoordenadas(short d){
-    switch (d) {
-    case arriba:
+    short e=-1;
+    if(d==arriba || d==abajo+4){
         y_--;
+        e = arriba;
         cout<<"Mover arriba"<<endl;
-        break;
-    case abajo:
+    }else if(d==abajo || d==arriba+4){
         y_++;
+        e = abajo;
         cout<<"Mover abajo"<<endl;
-        break;
-    case derecha:
+    }else if(d==derecha|| d==izquierda+4){
         x_++;
+        e = derecha;
         cout<<"Mover derecha"<<endl;
-        break;
-    case izquierda:
+    }else if(d==izquierda || d==derecha+4){
         x_--;
+        e = izquierda;
         cout<<"Mover izquierda"<<endl;
-        break;
     }
-    trayectoDefinido_.push_back(d);
+    if(e>-1 && e<4){
+        trayectoDefinido_.push_back(e);
+    }
 }
 
-nodo* agente::expandir(nodo* F){
-    if(F!=NULL){
-        imprimir();
-        actual_ = F;
-        if(!listaDeTrayectorias_.isEmpty()){
-            trayectoria* T = listaDeTrayectorias_.takeFirst();
-            bool b = true;
-            for(int j=0;j<4;j++){
-                celda* aux;
-                if(j==arriba){
-                    aux = mapaReal_->getCelda(y_-1,x_);
-                }else if(j==abajo){
-                    aux = mapaReal_->getCelda(y_+1,x_);
-                }else if(j==derecha){
-                    aux = mapaReal_->getCelda(y_,x_+1);
-                }else if(j==izquierda){
-                    aux = mapaReal_->getCelda(y_,x_-1);
+celda* agente::escanearDireccion(short d){
+    if(d==arriba){
+        return mapaReal_->getCelda(y_-1,x_);
+    }else if(d==abajo){
+        return mapaReal_->getCelda(y_+1,x_);
+    }else if(d==derecha){
+        return mapaReal_->getCelda(y_,x_+1);
+    }else if(d==izquierda){
+        return mapaReal_->getCelda(y_,x_-1);
+    }
+}
+
+void agente::algoritmo(){
+    if(activo_){
+        //while(!listaAbierta_.isEmpty() && !fin_){
+            expandir(raiz_);
+        cout<<"Fin"<<endl;
+    }
+}
+
+nodo* agente::expandir(nodo* F){        //profundidad y coste
+    actualizarcoordenadas(F->dirLlegar_);
+    imprimir();
+    if(F->celda_->tipo_!=0 && !fin_){
+        cout<<"Profundidad: "<<F->profundidad_<<endl;
+        if(!listaAbierta_.isEmpty()){
+            if(!F->completo_){
+                trayectoria* T = listaAbierta_.takeFirst();
+                for(int j=0;j<4;j++){
+                    celda* aux = escanearDireccion(j);
+                    if(aux!=NULL && aux->tipo_ > -1 && aux->tipo_<5 && !celdaPisada(F,aux)){
+                        nodo* N = new nodo(F,aux->tipo_,j,aux);
+                        F->hijos_[j] = N;
+                        N->profundidad_=F->profundidad_+1;
+                        trayectoria* A = new trayectoria;
+                        (*A).recorrido_ = (*T).recorrido_;
+                        A->coste_ = T->coste_ + aux->tipo_;
+                        A->recorrido_.push_back(N);
+                        insertar(A);
+                    }
                 }
-                if(aux->tipo_ > 0 && aux->tipo_<5 && !celdaPisada(T,aux) && F->hijos_[j]==NULL){//sólo introduce los nodos alcanzables
-                    nodo* N = new nodo(actual_,aux->tipo_,j,aux);
-                    //actual_->hCostes_[j] = aux->tipo_;
-                    actual_->hijos_[j] = N;
-                    trayectoria* A = new trayectoria;
-                    (*A).recorrido_ = (*T).recorrido_;
-                    A->coste_ = T->coste_ + aux->tipo_;
-                    A->recorrido_.push_back(N);
-                    cout<<"Voy a meter ";
-                    aux->imprimir();
-                    cout<<" y estoy en "<<x_<<" , "<<y_<<endl;
-                    insertar(A);
-                    b=true;
-                }
             }
-            if(!b){
-                insertar(T);
-            }else{
-                delete T;
+            F->completo_=true;
+            nodo* K = comprobarCamino(F);
+            while(K==F || esSucesor(F,listaAbierta_.first()->recorrido_.last()) && K!=NULL && !fin_){
+                cout<<"Profundizar"<<endl;
+                K = expandir(listaAbierta_.first()->recorrido_.at(F->profundidad_+1));
             }
-            if(comprobarCamino()!=NULL){
-                cout<<"No hay salida"<<endl;
-                return actual_->padre_;
-            }
-            nodo* N = listaDeTrayectorias_.first()->recorrido_.last();
-            short d = N->dirLlegar_;
-            costazo_ = listaDeTrayectorias_.first()->coste_;
-            caminoRecorrido_.push_back(listaDeTrayectorias_.first()->recorrido_.last());
-            actualizarcoordenadas(d);
-            expandir(N);
-            switch (d) {
-            case arriba:
-                d =abajo;
-                break;
-            case abajo:
-                d = arriba;
-                break;
-            case derecha:
-                d = izquierda;
-                break;
-            case izquierda:
-                d  = derecha;
-                break;
-            }
-            actualizarcoordenadas(d);
-            caminoRecorrido_.takeLast();
-            return F;
+            cout<<"Retornando"<<endl;
+            actualizarcoordenadas(F->dirLlegar_+4);
+            return K;
+        }else{
+            cout<<"La lista abierta esta vacia"<<endl;
         }
     }else{
-        cout<<"Un nulo"<<endl;
+        cout<<"Objetivo encontrado"<<endl;
+        fin_ = true;
+        return NULL;
     }
+}
+
+bool agente::esSucesor(nodo* F, nodo* N){
+    while(N->profundidad_ >= F->profundidad_){
+        if(N==F){
+            return true;
+        }
+        N = N->padre_;
+    }
+    return false;
 }
 
 void agente::imprimir(){
-    for(int i=0;i<listaDeTrayectorias_.count();i++){
-        for(int j=0;j<listaDeTrayectorias_.at(i)->recorrido_.count();j++){
+    for(int i=0;i<listaAbierta_.count();i++){
+        for(int j=0;j<listaAbierta_.at(i)->recorrido_.count();j++){
             cout<<" | ";
-            listaDeTrayectorias_.at(i)->recorrido_.at(j)->celda_->imprimir();
+            listaAbierta_.at(i)->recorrido_.at(j)->celda_->imprimir();
             cout<<" | ";
         }
-        cout<<" <- {"<<listaDeTrayectorias_.at(i)->coste_<<"}"<<endl;
+        cout<<" <- {"<<listaAbierta_.at(i)->coste_<<"}"<<endl;
     }
     cout<<endl;
 }
 
 void agente::insertar(trayectoria* A){
-    int i=0;
-    if(listaDeTrayectorias_.count()==0){
-        listaDeTrayectorias_.push_back(A);
+    if(listaAbierta_.count()==0){
+        listaAbierta_.push_back(A);
     }else{
-        while(i<listaDeTrayectorias_.count() && A->coste_ >listaDeTrayectorias_.at(i)->coste_){
+        int i=0;
+        while(i<listaAbierta_.count() && A->coste_ >=listaAbierta_.at(i)->coste_){
             i++;
         }
-        listaDeTrayectorias_.insert(i,A);
+        listaAbierta_.insert(i,A);
     }
 }
 
@@ -341,22 +345,48 @@ void agente::recuperar(){
 
 }
 
-nodo* agente::comprobarCamino(){
-    if(!caminoRecorrido_.isEmpty()){
-        QList<nodo*>* aux= new QList<nodo*>;
-        QList<nodo*>* aux2 = new QList<nodo*>;
-        QList<nodo*>* aux3 = new QList<nodo*>;
-        QList<nodo*>* aux4 = new QList<nodo*>;
-
-        for(int i=0;i<4;i++){
-            *aux = listaDeTrayectorias_.at(i)->recorrido_;
-            aux->takeLast();
-            if(caminoRecorrido_ != *aux){
-                return aux->first();
-            }else{
-                return NULL;
+void agente::ajustarAbierta(){
+    int i = 0;
+    int n = listaAbierta_.count();
+    while(i<n){
+        nodo* N = listaAbierta_.at(i)->recorrido_.last();
+        for(int j=i+1;j<n;j++){
+            nodo* M = listaAbierta_.at(j)->recorrido_.last();
+            if(M == N){
+                cout<<"Eliminando trayectorias"<<endl;
+                if(listaAbierta_.at(i)->coste_ > listaAbierta_.at(j)->coste_){
+                    listaAbierta_.removeAt(i);
+                }else if(listaAbierta_.at(i)->coste_ < listaAbierta_.at(j)->coste_){
+                    listaAbierta_.removeAt(j);
+                }
             }
         }
+        i++;
     }
-    return NULL;
+}
+
+nodo* agente::comprobarCamino(nodo* N){
+    /*Retorna N si estamos en el mismo camino
+     * o el nodo comun mas proximo si estamos en otro*/
+    nodo* aux = N;
+    nodo* list = listaAbierta_.first()->recorrido_.last();
+    list = list->padre_;
+    while(aux!=raiz_){
+        if(aux!=list){
+            while(aux->profundidad_>list->profundidad_){
+                aux = aux->padre_;
+            }
+            while(aux->profundidad_<list->profundidad_){
+                list = list->padre_;
+            }
+            while(aux!=list){
+                aux = aux->padre_;
+                list = list->padre_;
+            }
+
+            return list;
+        }
+        aux = aux->padre_;
+    }
+    return N;
 }

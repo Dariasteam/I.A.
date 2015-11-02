@@ -48,6 +48,7 @@ public:
     short* escanearEntorno(int x, int y);
     QPoint getFilaColumna(QPointF);
     double getEscala();
+    int getCoste(celda* pos, celda* objetivo);
     void enfocar(double x, double y);
     std::mutex                              mu_;
 private:

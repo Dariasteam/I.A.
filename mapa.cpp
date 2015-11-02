@@ -95,7 +95,11 @@ void mapa::zoom(int i){
 }
 
 celda* mapa::getCelda(int f, int c){
-    return &mapa_[pos(f,c)];
+    if(f<f_ && f>-1 && c<c_ && c>-1){
+        return &mapa_[pos(f,c)];
+    }else{
+        return NULL;
+    }
 }
 
 double mapa::getEscala(){
@@ -181,6 +185,12 @@ void mapa::setCelda(int x, int y, short v){
     sustituirCelda(x,y,v);
 }
 
+int mapa::getCoste(celda *pos, celda *objetivo){
+    return abs(pos->x_ - objetivo->x_) + abs(pos->y_ - objetivo->y_) -2;
+}
+
 void celda::imprimir(){
     cout<<"("<<y_<<","<<x_<<")["<<tipo_<<"]";
 }
+
+

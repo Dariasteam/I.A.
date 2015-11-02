@@ -29,10 +29,12 @@ public:
         pCoste_ = pcoste;
         dirLlegar_ = dirllegar;
         celda_ = c;
+        completo_ = false;
         for(int i=0;i<4;i++){
             hijos_[i]=NULL;
             hCostes_[i] = -1;
             explorado_[i]=false;
+            profundidad_=0;
         }
     }
     nodo*           hijos_[4];
@@ -42,6 +44,8 @@ public:
     short           pCoste_;
     short           dirLlegar_;
     celda*          celda_;
+    int             profundidad_;
+    bool            completo_;
 };
 
 /*struct nodo{
@@ -63,7 +67,6 @@ public:
     void detontante();
     void start();
     bool terminar();
-    void finMovimiento();
     bool pause();
     void setMemoria(bool);
     void setRastro(bool);
@@ -109,22 +112,28 @@ public:
 private:
     nodo*                            raiz_;
     nodo*                            actual_;
-    QList<trayectoria*>              listaDeTrayectorias_;
-    QList<nodo*>                     caminoRecorrido_;
+    celda*                           objetivo_;
+    bool                             fin_;
+    QList<trayectoria*>              listaAbierta_;
+    QList<trayectoria*>              listaCerrada_;
+    QList<nodo*>*                    caminoActual_;
     bool                             regresando_;
     bool                             recuperando_;
     bool                             origen_;
     int                              cuenta_;
     int                              idActual_;
     short                            costazo_;
-    bool celdaPisada(trayectoria*, celda*);
+    void ajustarAbierta();
+    bool esSucesor(nodo*, nodo*);
+    bool celdaPisada(nodo*,celda*);
     void algoritmo();
     void actualizarcoordenadas(short);
     nodo* expandir(nodo* F);
+    celda* escanearDireccion(short);
     void imprimir();
     void insertar(trayectoria* A);
     void recuperar();
-    nodo* comprobarCamino();
+    nodo* comprobarCamino(nodo*);
 };
 
 #endif // agente_H
