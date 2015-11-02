@@ -5,7 +5,8 @@
 #include "dropbot.h"
 //#include "costeuniforme.h"
 //#include "costeuniformesub.h"
-#include "programaciondinamica.h"
+//#include "programaciondinamica.h"
+#include "aestrella.h"
 
 #include <QMainWindow>
 #include <QGridLayout>

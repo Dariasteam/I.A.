@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     mapa.cpp \
     costeuniforme.cpp \
     costeuniformesub.cpp \
-    programaciondinamica.cpp
+    programaciondinamica.cpp \
+    aestrella.cpp
 
 HEADERS  += mainwindow.h \
     graphicsmapa.h \
@@ -31,7 +32,8 @@ HEADERS  += mainwindow.h \
     mapa.h \
     costeuniforme.h \
     costeuniformesub.h \
-    programaciondinamica.h
+    programaciondinamica.h \
+    aestrella.h
 
 FORMS    += mainwindow.ui
 

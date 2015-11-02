@@ -1,19 +1,19 @@
-#include "programaciondinamica.h"
+#include "aestrella.h"
 
 #include <iostream>
 
 using namespace std;
 
-/*programacionDinamica::programacionDinamica(int x, int y, double tiempoMov_, int id, QGraphicsPixmapItem *gPix,
+aEstrella::aEstrella(int x, int y, double tiempoMov_, int id, QGraphicsPixmapItem *gPix,
                             QPixmap *lado, mapa *map, mapa *mem, QWidget *parent) :
                             agente(x,y,tiempoMov_,id,gPix,lado,map,mem,parent)
 {
 
 }
 
-nodo* programacionDinamica::expandir(nodo* F){        //profundidad y coste
+nodo* aEstrella::expandir(nodo* F){        //profundidad y coste
     actualizarcoordenadas(F->dirLlegar_);
-    imprimir();
+    //imprimir();
     ajustarAbierta();
     if(F->celda_!=objetivos_.back() && !fin_){
         if(!listaAbierta_.isEmpty()){
@@ -38,10 +38,11 @@ nodo* programacionDinamica::expandir(nodo* F){        //profundidad y coste
                         trayectoria* A = new trayectoria;
                         (*A).recorrido_ = (*T).recorrido_;
                         A->coste_ = T->coste_ + aux->tipo_;
-                        //A->hCoste_ = mapaReal_->getCoste(aux,objetivos_.back());
-                        cout<<"coste asociado de "<<A->hCoste_<<endl;
+                        A->hCoste_ = mapaReal_->getCoste(aux,objetivos_.back());
                         A->recorrido_.push_back(N);
-                        insertarAbierta(A);
+                        if(!comprobarCerrada(A)){
+                            insertarAbierta(A);
+                        }
                     }
                 }
             }
@@ -68,5 +69,4 @@ nodo* programacionDinamica::expandir(nodo* F){        //profundidad y coste
         }
     }
     return NULL;
-}*/
-
+}

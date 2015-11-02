@@ -1,6 +1,7 @@
 #include "mapa.h"
 
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 
@@ -190,7 +191,8 @@ void mapa::setCelda(int x, int y, short v){
 }
 
 int mapa::getCoste(celda *pos, celda *objetivo){
-    return abs(pos->x_ - objetivo->x_) + abs(pos->y_ - objetivo->y_) -2;
+    return abs(pos->x_ - objetivo->x_) + abs(pos->y_ - objetivo->y_);
+    //return sqrt(abs(pos->x_ - objetivo->x_)^2 + abs(pos->y_ - objetivo->y_)^2);
 }
 
 void celda::imprimir(){

@@ -72,7 +72,7 @@ agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix
 }
 
 agente::~agente(){
-
+    delete &hiloCalculo_;
 }
 
 bool agente::terminar(){
@@ -351,7 +351,6 @@ void agente::ajustarAbierta(){
             nodo* M = listaAbierta_.at(j)->recorrido_.last();
             if(M->celda_ == N->celda_){                 //las trayectorias estan ordenadas
                 listaAbierta_.removeAt(j);
-                cout<<"Eliminando trayectoria j "<<j<<endl;
                 n--;
             }
         }
