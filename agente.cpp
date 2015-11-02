@@ -68,11 +68,14 @@ agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix
     T->recorrido_.push_back(raiz_);
     listaAbierta_.push_back(T);
 
-    hiloAnimacion_ = std::thread(&agente::detontante,this);
-    hiloAnimacion_.detach();
+    hiloCalculo_ = std::thread(&agente::algoritmo,this);
+    hiloCalculo_.detach();
 
-    /*hiloCalculo_ = std::thread(&agente::algoritmo,this);
-    hiloCalculo_.detach();*/
+    /*hiloAnimacion_ = std::thread(&agente::detontante,this);
+    hiloAnimacion_.detach();*/
+
+    detontante();
+
 }
 
 agente::~agente(){
@@ -113,7 +116,6 @@ void agente::start(){
 
 void agente::detontante(){
     tiempo_ = new QTimer();
-    tiempo_->start(5);
     movimientoRestante_ = tiempoMov_;
     connect(tiempo_,&QTimer::timeout,this,&agente::animador);
 }
@@ -277,6 +279,11 @@ nodo* agente::expandir(nodo* F){        //profundidad y coste
                 for(int j=0;j<4;j++){
                     celda* aux = escanearDireccion(j);
                     if(aux!=NULL && aux->tipo_ > -1 && aux->tipo_<5 && !celdaPisada(F,aux)){
+                        if(aux==objetivo_){
+                            cout<<"asaaaa"<<endl;
+                            fin_ = true;
+                            break;
+                        }
                         nodo* N = new nodo(F,aux->tipo_,j,aux);
                         F->hijos_[j] = N;
                         N->profundidad_=F->profundidad_+1;
@@ -290,7 +297,7 @@ nodo* agente::expandir(nodo* F){        //profundidad y coste
             }
             F->completo_=true;
             nodo* K = comprobarCamino(F);
-            while(K==F || esSucesor(F,listaAbierta_.first()->recorrido_.last()) && K!=NULL && !fin_){
+            while((K==F || esSucesor(F,listaAbierta_.first()->recorrido_.last())) && !fin_){
                 cout<<"Profundizar"<<endl;
                 K = expandir(listaAbierta_.first()->recorrido_.at(F->profundidad_+1));
             }
@@ -301,7 +308,7 @@ nodo* agente::expandir(nodo* F){        //profundidad y coste
             cout<<"La lista abierta esta vacia"<<endl;
         }
     }else{
-        cout<<"Objetivo encontrado"<<endl;
+        cout<<"Objetivo encontrado en"<<endl;
         fin_ = true;
         return NULL;
     }
