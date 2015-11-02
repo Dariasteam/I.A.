@@ -17,6 +17,8 @@ agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix
     parent_ = parent;
     x_ = x;
     y_ = y;
+    xAnimacion_ = x;
+    yAnimacion_ = y;
     lado_ = lado;
     gPix_ = gPix;
     tiempoMov_ = tiempoMov;
@@ -68,13 +70,13 @@ agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix
     T->recorrido_.push_back(raiz_);
     listaAbierta_.push_back(T);
 
+    hiloAnimacion_ = std::thread(&agente::detontante,this);
+    hiloAnimacion_.detach();
+
     hiloCalculo_ = std::thread(&agente::algoritmo,this);
     hiloCalculo_.detach();
 
-    /*hiloAnimacion_ = std::thread(&agente::detontante,this);
-    hiloAnimacion_.detach();*/
-
-    detontante();
+    //detontante();
 
 }
 
@@ -122,54 +124,92 @@ void agente::detontante(){
 
 void agente::animador(){
     if(!trayectoDefinido_.isEmpty()){
-        gPix_->setPixmap(lado_[trayectoDefinido_.first()]);
-        if(movimientoRestante_>0){
-            switch (trayectoDefinido_.first()){
-            case arriba:
-                gPix_->moveBy(0,-valor_);
-                break;
-            case abajo:
-                gPix_->moveBy(0,valor_);
-                break;
-            case derecha:
-                gPix_->moveBy(valor_,0);
-                break;
-            case izquierda:
-                gPix_->moveBy(-valor_,0);
-                break;
-            }
-            if(activo_ && checkSeguir_->isChecked()){
-                mapaReal_->enfocar(gPix_->x(),gPix_->y());
+        if(trayectoDefinido_.first()==-1){
+            recoger();
+            trayectoDefinido_.takeFirst();
+            regresando_ = true;
+            pintarRastro();
+        }else{
+            gPix_->setPixmap(lado_[trayectoDefinido_.first()]);
+            if(movimientoRestante_>0){
+                switch (trayectoDefinido_.first()){
+                case arriba:
+                    gPix_->moveBy(0,-valor_);
+                    break;
+                case abajo:
+                    gPix_->moveBy(0,valor_);
+                    break;
+                case derecha:
+                    gPix_->moveBy(valor_,0);
+                    break;
+                case izquierda:
+                    gPix_->moveBy(-valor_,0);
+                    break;
+                }
+                if(activo_ && checkSeguir_->isChecked()){
+                    mapaReal_->enfocar(gPix_->x(),gPix_->y());
+                }
             }
             movimientoRestante_= movimientoRestante_-valor_;
             if(!movimientoRestante_){
+                switch (trayectoDefinido_.first()){
+                case arriba:
+                    yAnimacion_--;
+                    break;
+                case abajo:
+                    yAnimacion_++;
+                    break;
+                case derecha:
+                    xAnimacion_++;
+                    break;
+                case izquierda:
+                    xAnimacion_--;
+                    break;
+                }
                 writeMem();
                 trayectoDefinido_.takeFirst();
                 if(checkRastro_->isChecked()){
-                    QPixmap* pix = new QPixmap(gPix_->pixmap());
-                    pix->fill(color_);
-                    QGraphicsPixmapItem* aux = ((mapa*)mapaReal_)->pintarPixmap(y_,x_,pix);
-                    aux->setZValue(1);
-                    aux->setOpacity(0.2);
+                    pintarRastro();
                 }
                 movimientoRestante_ = tiempoMov_;
             }
         }
+    }else{
+
+    }
+}
+
+void agente::pintarRastro(){
+    QPixmap* pix = new QPixmap(gPix_->pixmap());
+    if(!regresando_){
+        pix->fill(color_);
+        QGraphicsPixmapItem* aux = ((mapa*)mapaReal_)->pintarPixmap(yAnimacion_,xAnimacion_,pix);
+        aux->setZValue(1);
+        aux->setOpacity(0.2);
+    }else{
+        pix->fill(QColor(255,255,255));
+        QGraphicsPixmapItem* aux = ((mapa*)mapaReal_)->pintarPixmap(yAnimacion_,xAnimacion_,pix);
+        aux->setZValue(1);
+        aux->setOpacity(1);
     }
 }
 
 void agente::writeMem(){
     if(checkMemoria_->isChecked() && mapaMem_!=NULL){
-        short* direccion_ = mapaReal_->escanearEntorno(x_,y_);
+        short* direccion_ = mapaReal_->escanearEntorno(xAnimacion_,yAnimacion_);
         while(!mapaMem_->mu_.try_lock()){
             cout<<"Esperando desbloqueo del mutex"<<endl;
         }
-        mapaMem_->setCelda(y_-1,x_,direccion_[arriba]);
-        mapaMem_->setCelda(y_+1,x_,direccion_[abajo]);
-        mapaMem_->setCelda(y_,x_+1,direccion_[derecha]);
-        mapaMem_->setCelda(y_,x_-1,direccion_[izquierda]);
+        mapaMem_->setCelda(yAnimacion_-1,xAnimacion_,direccion_[arriba]);
+        mapaMem_->setCelda(yAnimacion_+1,xAnimacion_,direccion_[abajo]);
+        mapaMem_->setCelda(yAnimacion_,xAnimacion_+1,direccion_[derecha]);
+        mapaMem_->setCelda(yAnimacion_,xAnimacion_-1,direccion_[izquierda]);
         mapaMem_->mu_.unlock();
     }
+}
+
+void agente::recoger(){
+    mapaReal_->setCelda(objetivo_->y_,objetivo_->x_,1);
 }
 
 bool agente::pause(){
@@ -211,12 +251,10 @@ void agente::setMemoria(bool b){
 
 bool agente::celdaPisada(nodo* N, celda* C){
     if(C  == raiz_->celda_){
-        cout<<"raiz pisada"<<endl;
         return true;
     }
     while(N!=raiz_){
         if(C == N->celda_){
-            cout<<"Celda pisada"<<endl;
             return true;
         }
         N = N->padre_;
@@ -229,19 +267,19 @@ void agente::actualizarcoordenadas(short d){
     if(d==arriba || d==abajo+4){
         y_--;
         e = arriba;
-        cout<<"Mover arriba"<<endl;
+        //cout<<"Mover arriba"<<endl;
     }else if(d==abajo || d==arriba+4){
         y_++;
         e = abajo;
-        cout<<"Mover abajo"<<endl;
+        //cout<<"Mover abajo"<<endl;
     }else if(d==derecha|| d==izquierda+4){
         x_++;
         e = derecha;
-        cout<<"Mover derecha"<<endl;
+        //cout<<"Mover derecha"<<endl;
     }else if(d==izquierda || d==derecha+4){
         x_--;
         e = izquierda;
-        cout<<"Mover izquierda"<<endl;
+        //cout<<"Mover izquierda"<<endl;
     }
     if(e>-1 && e<4){
         trayectoDefinido_.push_back(e);
@@ -272,7 +310,6 @@ nodo* agente::expandir(nodo* F){        //profundidad y coste
     actualizarcoordenadas(F->dirLlegar_);
     //imprimir();
     if(F->celda_->tipo_!=0 && !fin_){
-        cout<<"Profundidad: "<<F->profundidad_<<endl;
         if(!listaAbierta_.isEmpty()){
             if(!F->completo_){
                 trayectoria* T = listaAbierta_.takeFirst();
@@ -282,6 +319,7 @@ nodo* agente::expandir(nodo* F){        //profundidad y coste
                         if(aux==objetivo_){
                             cout<<"Objetivo encontrado"<<endl;
                             fin_ = true;
+                            trayectoDefinido_.push_back(-1);
                             break;
                         }
                         nodo* N = new nodo(F,aux->tipo_,j,aux);
@@ -297,9 +335,7 @@ nodo* agente::expandir(nodo* F){        //profundidad y coste
             }
             if(!fin_){
                 F->completo_=true;
-                cout<<"a"<<endl;
                 nodo* K = comprobarCamino(F);
-
                 //Esta K es peligrosa porque si entra por ser sucesor, retorna lo que no es
                 bool su = false;
                 while(listaAbierta_.count()>0 && listaAbierta_.first()->recorrido_.count()>0 &&
@@ -317,7 +353,7 @@ nodo* agente::expandir(nodo* F){        //profundidad y coste
             actualizarcoordenadas(F->dirLlegar_+4);
             return F;
         }else{
-            cout<<"La lista abierta esta vacia"<<endl;
+
         }
     }
 }

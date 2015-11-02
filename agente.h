@@ -69,6 +69,7 @@ public:
     bool terminar();
     bool pause();
     void setMemoria(bool);
+    void pintarRastro();
     void setRastro(bool);
     void setSeguir(bool);
     void setVelocidad(int);
@@ -82,6 +83,8 @@ private:
     int                             id_;
     int                             x_;
     int                             y_;
+    int                             xAnimacion_;
+    int                             yAnimacion_;
     std::thread                     hiloAnimacion_;
     std::thread                     hiloCalculo_;
     int                             dir_;
@@ -126,6 +129,7 @@ private:
     void ajustarAbierta();
     bool esSucesor(nodo*, nodo*);
     bool celdaPisada(nodo*,celda*);
+    void recoger();
     void algoritmo();
     void actualizarcoordenadas(short);
     nodo* expandir(nodo* F);
