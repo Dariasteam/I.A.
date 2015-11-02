@@ -20,6 +20,8 @@ using namespace std;
 
 class Agent;
 
+struct Pos;
+
 struct QAgent {
     PixmapItem * pix_;
     Agent * agent_;
@@ -73,6 +75,7 @@ private:
     Agents          agents_;
     vector<QPixmap> agentDirections_;
     QTimer *        timer_;
+    int             speed_;
 public:
     explicit Map(int columns, int rows
                  , short wall=0, short ground=0, short network=0, short metal=0, QWidget *parent = 0);
@@ -102,7 +105,7 @@ public:
 
     void addAgent(int col, int row);
 
-    void moveAgent(int col, int row, int id);
+    void moveAgent(Pos before, Pos current, QAgent & agent);
 
 signals:
     void newAgent(Map *, int id);

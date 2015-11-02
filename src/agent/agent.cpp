@@ -36,25 +36,17 @@ void Agent::insertSort(Path path) {
 }
 
 Pos Agent::operator()(QList<CellWeight> tr) {
-    // TODO: Aqui viene a aplicarse toda la IA
-    // TODO: Ver como representaremos la memoria
     if (!joinPath_.path_.empty()) {
-        cout << "devolviendonos" << endl;
-        cout << "cost : "<< joinPath_.cost_ << " {";
-        for (auto j :joinPath_.path_) {
+        return joinPath_.path_.takeLast();
+    }
+    cout << "Nuevo camino"<< endl;
+    for (auto i:paths_) {
+        cout << "cost : "<< i.cost_ << " {";
+        for (auto j :i.path_) {
             cout << "(x: " << j.x_ << " y:" << j.y_ << ")";
         }
         cout << endl;
-        return joinPath_.path_.takeFirst();
     }
-//    cout << "Nuevo camino"<< endl;
-//    for (auto i:paths_) {
-//        cout << "cost : "<< i.cost_ << " {";
-//        for (auto j :i.path_) {
-//            cout << "(x: " << j.x_ << " y:" << j.y_ << ")";
-//        }
-//        cout << endl;
-//    }
     if (noFinded_) {
         Path path = paths_.front();
         paths_.pop_front();
@@ -79,7 +71,7 @@ Pos Agent::operator()(QList<CellWeight> tr) {
         }
         noFinded_ = !paths_.empty();
         if(noFinded_) {
-            //pathJoin(paths_.front(), path);
+            pathJoin(paths_.front(), path);
             x_ = paths_.front().path_.back().x_;
             y_ = paths_.front().path_.back().y_;
         }
@@ -87,22 +79,43 @@ Pos Agent::operator()(QList<CellWeight> tr) {
     return {x_,y_};
 }
 
-void Agent::pathJoin(Path p, Path p2) {// fatal
-    for (auto i = p2.path_.end(); i != p2.path_.begin(); i--) {
+void Agent::pathJoin(Path p_, Path p2_) {
+    cout << "PathJoin" << endl;
+    cout << "p_ : " << " {";
+    for (auto j :p_.path_) {
+        cout << "(x: " << j.x_ << " y:" << j.y_ << ")";
+    }
+    cout << endl;
+    cout << "p2_" << " {";
+    for (auto j :p2_.path_) {
+        cout << "(x:" << j.x_ << " y:" << j.y_ << ")";
+    }
+    cout << endl;
+    list<Pos> p = p_.path_.toStdList();
+    list<Pos> p2 = p2_.path_.toStdList();
+    bool stop = false;
+    auto i = p2.rbegin();
+    while (i != p2.rend() && !stop) {
         Path aux;
-        bool stop = false;
-        for (auto j = p.path_.end(); j != p.path_.begin(); j--) {
+        auto j = p.rbegin();
+        while (j != p.rend() && !stop) {
             if ((i->x_ == j->x_) && (i->y_ == j->y_)) {
                 stop = true;
-                break;
+            } else {
+                aux.path_.push_front(*j);
             }
-            aux.path_.push_back(*j);
-            joinPath_.path_.push_back(*i);
+            j++;
         }
+        joinPath_.path_.push_back(*i);
         if (stop) {
             joinPath_.path_ += aux.path_;
             break;
         }
+        i++;
     }
+    cout << "joinPath" << " {";
+    for (auto j :joinPath_.path_) {
+        cout << "(x:" << j.x_ << " y:" << j.y_ << ")";
+    }
+    cout << endl;
 }
-

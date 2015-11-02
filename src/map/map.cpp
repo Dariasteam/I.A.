@@ -14,7 +14,8 @@ Map::Map(int columns, int rows
     loadFactor_(0),
     agents_(),
     agentDirections_(4),
-    timer_(new QTimer(this))
+    timer_(new QTimer(this)),
+    speed_(250)
 {
     initMap();
     for (int j = 0; j < rows_; j++) {
@@ -50,8 +51,8 @@ Map::Map(ifstream* fich, QWidget *parent):
     loadFactor_(0),
     agents_(),
     agentDirections_(4),
-    timer_(new QTimer(this))
-
+    timer_(new QTimer(this)),
+    speed_(250)
 {
     *fich>>rows_;
     *fich>>cols_;
@@ -190,19 +191,15 @@ void Map::addAgent(int col, int row) {
     agents_.push_back({drawPixmap(col,row,agentDirections_[Down]),agent, count});
     emit newAgent(this,count);
     QPropertyAnimation * anim= new QPropertyAnimation(agents_.back().pix_, "pos");
-    anim->setDuration(10000);
+    anim->setDuration(speed_);
     //anim->setStartValue(QPointF(0,0));
     anim->setEndValue(QPointF(100,100));
     anim->start();
 }
 
-void Map::moveAgent(int col, int row, int id) {
-    for (auto it = agents_.begin(); it < agents_.end(); it++) {
-        if (it->id_==id) {
-            it->pix_->setPos(sizeTile_*col, sizeTile_*row);
-            it->pix_->setScale(sizeTile_/32);
-        }
-    }
+void Map::moveAgent(Pos before, Pos current, QAgent & agent) {
+    agent.pix_->setPos(sizeTile_*current.x_, sizeTile_*current.y_);
+    // agent->pix_->setScale(sizeTile_/32);
 }
 
 void Map::removeAgent(int id) {
@@ -216,6 +213,7 @@ void Map::removeAgent(int id) {
 
 void Map::speedMove(int speed) {
     timer_->setInterval(speed);
+    speed_ = speed;
 }
 
 
@@ -226,9 +224,10 @@ void Map::startAI(void) {
 }
 
 void Map::tick() {
-    for (auto i : agents_) {
-        Pos pos = (*i.agent_)(getAroundCells(i.agent_->x_,i.agent_->y_));
-        moveAgent(pos.x_,pos.y_,i.id_);
+    for (auto &i : agents_) {
+        Pos posBefore = {i.agent_->x_, i.agent_->y_};
+        Pos current = (*i.agent_)(getAroundCells(i.agent_->x_,i.agent_->y_));
+        moveAgent(posBefore,current,i);
     }
 }
 

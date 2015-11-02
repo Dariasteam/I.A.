@@ -50,17 +50,23 @@
    </item>
    <item>
     <widget class="QSlider" name="speedMove">
-     <property name="maximum">
+     <property name="minimum">
       <number>100</number>
      </property>
+     <property name="maximum">
+      <number>500</number>
+     </property>
+     <property name="value">
+      <number>250</number>
+     </property>
      <property name="sliderPosition">
-      <number>50</number>
+      <number>250</number>
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="invertedAppearance">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="invertedControls">
       <bool>true</bool>
