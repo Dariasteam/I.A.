@@ -54,6 +54,7 @@ public:
     agente(int x, int y, double tiempoMov_, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, mapa* map, mapa* mem, QWidget* parent);
     void mouseDoubleClickEvent(QMouseEvent* );
     ~agente();
+    void constructorGui();
     void detontanteAnimacion();
     void detonanteCalculo();
     void start();
@@ -74,11 +75,10 @@ protected:
     int                             id_;
     int                             x_;
     int                             y_;
+    int                             valor_;
     int                             xAnimacion_;
     int                             yAnimacion_;
-    std::thread                     hiloAnimacion_;
     std::thread                     hiloCalculo_;
-    int                             dir_;
     QGraphicsPixmapItem*            gPix_;
     bool                            activo_;
     QLabel                          labelBot_;
@@ -92,7 +92,6 @@ protected:
     QCheckBox*                      checkMemoria_;
     QTimer*                         tiempo_;
     QPixmap*                        lado_;
-    double                          valor_;
     mapa*                           mapaReal_;
     mapa*                           mapaMem_;
     QList<short>                    trayectoDefinido_;

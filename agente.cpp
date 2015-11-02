@@ -13,7 +13,8 @@ class MainWindow;
 
 using namespace std;
 
-agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, mapa* map, mapa* mem, QWidget* parent) : QGroupBox(parent){
+agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, mapa* map, mapa* mem, QWidget* parent)
+    : QGroupBox(parent){
     parent_ = parent;
     x_ = x;
     y_ = y;
@@ -22,11 +23,27 @@ agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix
     lado_ = lado;
     gPix_ = gPix;
     tiempoMov_ = tiempoMov;
-    id_ = id;
     valor_=1;
-    dir_= 0;
+    id_ = id;
     mapaMem_ = mem;
     mapaReal_ = map;
+    regresando_ = false;
+    raiz_ = new nodo();
+    raiz_->profundidad_=0;
+    raiz_->celda_ = mapaReal_->getCelda(y_,x_);
+    raiz_->dirLlegar_=-8;
+    fin_ = false;
+    trayectoria* T = new trayectoria;
+    T->coste_=0;
+    T->recorrido_.push_back(raiz_);
+    listaAbierta_.push_back(T);
+    activo_=false;
+    movimientoRestante_=0;
+    constructorGui();
+    detontanteAnimacion();
+}
+
+void agente::constructorGui(){
     lay_ = new QGridLayout(this);
     lay_->setSizeConstraint(QLayout::SetMinimumSize);
     labelBot_.setPixmap(QPixmap("../I.A./recursos/robotAbajo.png"));
@@ -50,25 +67,6 @@ agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix
     setCheckable(true);
     connect(this,&QGroupBox::clicked,this,&agente::check);
     connect(checkSeguir_,&QAbstractButton::clicked,((agente*)this),&agente::setSeguir);
-    activo_=false;
-    movimientoRestante_=0;
-
-    regresando_ = false;
-    raiz_ = new nodo();
-    raiz_->profundidad_=0;
-    raiz_->celda_ = mapaReal_->getCelda(y_,x_);
-    raiz_->dirLlegar_=-8;
-    fin_ = false;
-
-    objetivos_;
-
-
-    trayectoria* T = new trayectoria;
-    T->coste_=0;
-    T->recorrido_.push_back(raiz_);
-    listaAbierta_.push_back(T);
-
-    detontanteAnimacion();
 }
 
 agente::~agente(){
@@ -259,6 +257,8 @@ void agente::setMemoria(bool b){
 }
 
 bool agente::celdaPisada(nodo* N, celda* C){
+    /*devuelve true si esta celda ya ha sido pisada
+     * en esta trayectoria y false si no es así*/
     if(C  == raiz_->celda_){
         return true;
     }
@@ -272,23 +272,21 @@ bool agente::celdaPisada(nodo* N, celda* C){
 }
 
 void agente::actualizarcoordenadas(short d){
+    /*actualiza las coordenadas al punto en el que se encuentre
+     *el hilo de cálculo*/
     short e=-1;
     if(d==arriba || d==abajo+4){
         y_--;
         e = arriba;
-        //cout<<"Mover arriba"<<endl;
     }else if(d==abajo || d==arriba+4){
         y_++;
         e = abajo;
-        //cout<<"Mover abajo"<<endl;
     }else if(d==derecha|| d==izquierda+4){
         x_++;
         e = derecha;
-        //cout<<"Mover derecha"<<endl;
     }else if(d==izquierda || d==derecha+4){
         x_--;
         e = izquierda;
-        //cout<<"Mover izquierda"<<endl;
     }
     if(e>-1 && e<4){
         trayectoDefinido_.push_back(e);
@@ -309,6 +307,10 @@ celda* agente::escanearDireccion(short d){
 }
 
 bool agente::esSucesor(nodo* F, nodo* N){
+    /*retorna true si el nodo N es un sucesor del
+     *nodo F y false si no es asi. Permite averiguar
+     *si la función recursiva debe explorar nuevos caminos
+     *o aun no ha llegado al extremo de uno*/
     while(N->profundidad_ >= F->profundidad_){
         if(N==F){
             return true;
@@ -319,6 +321,9 @@ bool agente::esSucesor(nodo* F, nodo* N){
 }
 
 void agente::imprimir(){
+    /*muestra la lista de trayectorias, el contenido de
+     *cada una y su coste con el formato:
+     *Trayectoria1 (celda1 x,y)[tipo] (celda2 x,y)[tipo] {coste}*/
     for(int i=0;i<listaAbierta_.count();i++){
         for(int j=0;j<listaAbierta_.at(i)->recorrido_.count();j++){
             cout<<" | ";
@@ -331,6 +336,8 @@ void agente::imprimir(){
 }
 
 void agente::insertarAbierta(trayectoria* A){
+    /*Inserta la nueva trayectoria en la lista abierta
+     * en la posición correspondente segun su coste*/
     if(listaAbierta_.count()==0){
         listaAbierta_.push_back(A);
     }else{
@@ -343,6 +350,7 @@ void agente::insertarAbierta(trayectoria* A){
 }
 
 void agente::ajustarAbierta(){
+    /*Elimina trayectorias repetidas de mayor coste de la lista abierta*/
     int i = 0;
     int n = listaAbierta_.count();
     while(i<n){
@@ -363,6 +371,8 @@ nodo* agente::expandir(nodo* F){
 }
 
 bool agente::comprobarCerrada(trayectoria* T){
+    /*retorna true si existe una trayectoria mejor a la propuesta
+     * en la lista cerrada y false si no es así*/
     for(int i=0;i<listaCerrada_.count();i++){
         if(listaCerrada_.at(i)->coste_ + listaCerrada_.at(i)->hCoste_ < T->coste_ + T->hCoste_
           && listaCerrada_.at(i)->recorrido_.last()->celda_==T->recorrido_.last()->celda_){
