@@ -7,6 +7,10 @@ AgentOptions::AgentOptions(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->horizontalLayout->replaceWidget(ui->dropbot, new DragAgent(this));
+
+    connect(ui->simulation,&QPushButton::clicked, this, &AgentOptions::simulate);
+    connect(ui->step,      &QPushButton::clicked, this, &AgentOptions::step);
+    connect(ui->speedMove,&QSlider::valueChanged, this, &AgentOptions::speed);
 }
 
 AgentOptions::~AgentOptions()

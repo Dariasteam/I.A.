@@ -23,6 +23,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void connectMap();
+    void disconnectMap();
 signals:
 
 public slots:
@@ -34,6 +36,7 @@ private:
     Ui::MainWindow *ui;
     Map * widMap_;
     MapOptions * mapOptions_;
+    AgentOptions * agentOptions_;
     QString * rutaArchivo_;
     QFileDialog * dialogoAbrir_;
     QAction * active_;

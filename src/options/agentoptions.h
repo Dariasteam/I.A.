@@ -23,6 +23,11 @@ private:
     Ui::AgentOptions *ui;
 public slots:
     void createAgentInfo(Map* map, int id);
+
+signals:
+    void simulate(bool stop);
+    void step(void);
+    void speed(int);
 };
 
 #endif // AGENTOPTIONS_H

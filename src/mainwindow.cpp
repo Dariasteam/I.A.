@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         active_ = action;
         active_->setChecked(true);
     };
+
     connect(muro_, &QAction::triggered, this, ([=] (void) { changeActive(muro_); widMap_->setPencil(Wall);}));
     connect(rojo_, &QAction::triggered, this, ([=] (void) { changeActive(rojo_); widMap_->setPencil(RedTile);}));
     connect(suelo_, &QAction::triggered, this, ([=] (void) { changeActive(suelo_); widMap_->setPencil(Ground);}));
@@ -54,25 +55,43 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     mapOptions_ = new MapOptions(toolBox);
     toolBox->addItem(mapOptions_, "Mapa");
-    AgentOptions * agentOptions = new AgentOptions(toolBox);
-    toolBox->addItem(agentOptions,"Agentes");
+    agentOptions_ = new AgentOptions(toolBox);
+    toolBox->addItem(agentOptions_,"Agentes");
 
-    connect(ui->zoom,SIGNAL(valueChanged(int)),widMap_,SLOT(makeZoom(int)));
+
     connect(mapOptions_,SIGNAL(onSpawn()),this,SLOT(onUpdateMap()));
     connect(ui->actionAbrir,SIGNAL(triggered(bool)),this,SLOT(onOpen()));
     connect(ui->actionGuardar,SIGNAL(triggered(bool)),this,SLOT(onSave()));
     connect(ui->actionGuardar_Como ,SIGNAL(triggered(bool)),this,SLOT(onSaveAs()));
 
-    connect(widMap_,SIGNAL(newAgent(Map*,int)),agentOptions,SLOT(createAgentInfo(Map*,int)));
+    connectMap();
 }
 
 MainWindow::~MainWindow() {
     delete ui;
 }
 
+void MainWindow::connectMap() {
+    connect(agentOptions_,&AgentOptions::simulate, widMap_, [=] (bool checked) {
+        if (checked)
+            widMap_->startAI();
+        else
+            widMap_->stopAI();
+    });
+    connect(agentOptions_,&AgentOptions::step    , widMap_, &Map::tick);
+    connect(agentOptions_,&AgentOptions::speed   , widMap_, &Map::speedMove);
+    connect(widMap_,SIGNAL(newAgent(Map*,int)),agentOptions_,SLOT(createAgentInfo(Map*,int)));
+
+    connect(ui->zoom,SIGNAL(valueChanged(int)),widMap_,SLOT(makeZoom(int)));
+}
+
+void MainWindow::disconnectMap() {
+    disconnect(widMap_,SIGNAL(newAgent(Map*,int)),agentOptions_,SLOT(createAgentInfo(Map*,int)));
+}
+
 void MainWindow::onUpdateMap(){
     Map* aux;
-    disconnect(ui->zoom,SIGNAL(valueChanged(int)),widMap_,SLOT(makeZoom(int)));
+    disconnectMap();
     cout<<"Generando nuevo mapa"<<endl;
     aux = new Map(mapOptions_->cols(),mapOptions_->rows(),
                    mapOptions_->muro(),
@@ -82,7 +101,7 @@ void MainWindow::onUpdateMap(){
     ui->map_layout->replaceWidget(widMap_, aux);
     delete widMap_;
     widMap_=aux;
-    connect(ui->zoom,SIGNAL(valueChanged(int)),widMap_,SLOT(makeZoom(int)));
+    connectMap();
 }
 
 void MainWindow::onOpen(){
@@ -91,12 +110,14 @@ void MainWindow::onOpen(){
     if(rutaArchivo_->contains(".map")){
         fich.open(rutaArchivo_->toStdString().c_str(), ios::in);
         if(fich.is_open()){
+            disconnectMap();
             Map* aux;
             aux = new Map(&fich,this);
             ui->map_layout->replaceWidget(widMap_,aux);
             delete widMap_;
             widMap_=aux;
             fich.close();
+            connectMap();
             ui->actionGuardar->setEnabled(true);
             this->setWindowTitle("I.A.[*] - "+*rutaArchivo_);
         }else{
