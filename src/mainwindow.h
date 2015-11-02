@@ -11,7 +11,7 @@
 #include "ui_mainwindow.h"
 #include "options/mapoptions.h"
 #include "options/agentoptions.h"
-#include "map.h"
+#include "map/map.h"
 
 namespace Ui {
     class MainWindow;

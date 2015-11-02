@@ -13,7 +13,8 @@ Map::Map(int columns, int rows
     sizeTile_(0),
     loadFactor_(0),
     agents_(),
-    agentDirections_(4)
+    agentDirections_(4),
+    timer_(new QTimer(this))
 {
     initMap();
     for (int j = 0; j < rows_; j++) {
@@ -48,7 +49,9 @@ Map::Map(ifstream* fich, QWidget *parent):
     sizeTile_(0),
     loadFactor_(0),
     agents_(),
-    agentDirections_(4)
+    agentDirections_(4),
+    timer_(new QTimer(this))
+
 {
     *fich>>rows_;
     *fich>>cols_;
@@ -89,12 +92,13 @@ void Map::makeZoom(int factor) {
     lastZoom_ = factor;
 }
 
-QGraphicsPixmapItem* Map::drawPixmap(int column, int row, QPixmap & pixmap) {
-    QGraphicsPixmapItem * auxPix = this->scene()->addPixmap(pixmap);
-    auxPix->setScale(sizeTile_/pixmap.size().height());
-    auxPix->setPos(sizeTile_*column, sizeTile_*row);
-    auxPix->setZValue(2);
-    return auxPix;
+PixmapItem* Map::drawPixmap(int column, int row, QPixmap & pixmap) {
+    PixmapItem * pix = new PixmapItem(pixmap);
+    scene()->addItem(pix);
+    pix->setScale(sizeTile_/pixmap.size().height());
+    pix->setPos(sizeTile_*column, sizeTile_*row);
+    pix->setZValue(2);
+    return pix;
 }
 
 
@@ -185,7 +189,11 @@ void Map::addAgent(int col, int row) {
     Agent * agent = new Agent(col,row);
     agents_.push_back({drawPixmap(col,row,agentDirections_[Down]),agent, count});
     emit newAgent(this,count);
-    startAI();
+    QPropertyAnimation * anim= new QPropertyAnimation(agents_.back().pix_, "pos");
+    anim->setDuration(10000);
+    //anim->setStartValue(QPointF(0,0));
+    anim->setEndValue(QPointF(100,100));
+    anim->start();
 }
 
 void Map::moveAgent(int col, int row, int id) {
@@ -207,16 +215,14 @@ void Map::removeAgent(int id) {
 }
 
 void Map::speedMove(int speed) {
-
+    timer_->setInterval(speed);
 }
 
 
 void Map::startAI(void) {
-    cout << "startAI" << endl;
-    QTimer * timer = new QTimer(this);
-    timer->setInterval(500);
-    timer->start();
-    connect(timer,&QTimer::timeout,this, &Map::tick);
+    timer_->start();
+    connect(timer_,&QTimer::timeout,this, &Map::tick);
+
 }
 
 void Map::tick() {
@@ -226,7 +232,7 @@ void Map::tick() {
     }
 }
 
-
 void Map::stopAI(void) {
-
+    timer_->stop();
+    disconnect(timer_,&QTimer::timeout,this, &Map::tick);
 }

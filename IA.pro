@@ -15,23 +15,25 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-    src/map.cpp \
-    src/mapscene.cpp \
+    src/map/map.cpp \
+    src/map/mapscene.cpp \
     src/mainwindow.cpp \
     src/options/mapoptions.cpp \
     src/agent/agent.cpp \
     src/options/agentoptions.cpp \
     src/options/dragagent.cpp \
-    src/options/agenttoken.cpp
+    src/options/agenttoken.cpp \
+    src/map/pixmapitem.cpp
 
-HEADERS  += src/map.h \
-    src/mapscene.h \
+HEADERS  += src/map/map.h \
+    src/map/mapscene.h \
     src/mainwindow.h \
     src/options/mapoptions.h \
     src/agent/agent.hpp \
     src/options/agentoptions.h \
     src/options/dragagent.h \
-    src/options/agenttoken.h
+    src/options/agenttoken.h \
+    src/map/pixmapitem.h
 
 DISTFILES +=
 

@@ -47,14 +47,14 @@ Pos Agent::operator()(QList<CellWeight> tr) {
         cout << endl;
         return joinPath_.path_.takeFirst();
     }
-    cout << "Nuevo camino"<< endl;
-    for (auto i:paths_) {
-        cout << "cost : "<< i.cost_ << " {";
-        for (auto j :i.path_) {
-            cout << "(x: " << j.x_ << " y:" << j.y_ << ")";
-        }
-        cout << endl;
-    }
+//    cout << "Nuevo camino"<< endl;
+//    for (auto i:paths_) {
+//        cout << "cost : "<< i.cost_ << " {";
+//        for (auto j :i.path_) {
+//            cout << "(x: " << j.x_ << " y:" << j.y_ << ")";
+//        }
+//        cout << endl;
+//    }
     if (noFinded_) {
         Path path = paths_.front();
         paths_.pop_front();
@@ -79,7 +79,7 @@ Pos Agent::operator()(QList<CellWeight> tr) {
         }
         noFinded_ = !paths_.empty();
         if(noFinded_) {
-            pathJoin(paths_.front(), path);
+            //pathJoin(paths_.front(), path);
             x_ = paths_.front().path_.back().x_;
             y_ = paths_.front().path_.back().y_;
         }

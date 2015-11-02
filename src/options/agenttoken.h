@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QColorDialog>
-#include "../map.h"
+#include "../map/map.h"
 
 namespace Ui {
 class AgentToken;

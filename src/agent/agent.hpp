@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QList>
-#include "../map.h"
+#include "../map/map.h"
 
 
 using namespace std;

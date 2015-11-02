@@ -74,7 +74,7 @@
         <x>0</x>
         <y>0</y>
         <width>180</width>
-        <height>327</height>
+        <height>295</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -104,9 +104,19 @@
     </widget>
    </item>
    <item>
+    <widget class="QPushButton" name="step">
+     <property name="text">
+      <string>Step</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QPushButton" name="simulation">
      <property name="text">
       <string>Simular</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
      </property>
     </widget>
    </item>

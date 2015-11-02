@@ -5,7 +5,7 @@
 #include "dragagent.h"
 #include "agenttoken.h"
 #include "../agent/agent.hpp"
-#include "../map.h"
+#include "../map/map.h"
 
 namespace Ui {
 class AgentOptions;

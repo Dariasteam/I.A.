@@ -3,8 +3,8 @@
 
 #include <QGraphicsView>
 #include <QGraphicsPixmapItem>
+#include <QPropertyAnimation>
 #include <QResizeEvent>
-#include <QLabel>
 #include <QList>
 #include <QTimer>
 
@@ -12,15 +12,16 @@
 #include <fstream>
 #include <iostream>
 
-#include "agent/agent.hpp"
+#include "../agent/agent.hpp"
 #include "mapscene.h"
+#include "pixmapitem.h"
 
 using namespace std;
 
 class Agent;
 
 struct QAgent {
-    QGraphicsPixmapItem * pix_;
+    PixmapItem * pix_;
     Agent * agent_;
     int id_;
 };
@@ -71,7 +72,7 @@ private:
 
     Agents          agents_;
     vector<QPixmap> agentDirections_;
-
+    QTimer *        timer_;
 public:
     explicit Map(int columns, int rows
                  , short wall=0, short ground=0, short network=0, short metal=0, QWidget *parent = 0);
@@ -79,7 +80,7 @@ public:
 
     void initMap(void);
 
-    QGraphicsPixmapItem* drawPixmap(int column, int row, QPixmap & pixmap);
+    PixmapItem* drawPixmap(int column, int row, QPixmap & pixmap);
 
     void exchangeCell(int column, int row, CellTile cell);
 
@@ -96,8 +97,6 @@ public:
     }
 
     void setPencil(CellTile);
-
-    void tick(void);
 
     QList<CellWeight> getAroundCells(int col, int row);
 
@@ -120,6 +119,8 @@ public slots:
     void speedMove(int speed);
 
     void startAI(void);
+
+    void tick(void);
 
     void stopAI(void);
 
