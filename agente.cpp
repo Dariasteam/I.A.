@@ -325,7 +325,7 @@ void agente::imprimir(){
             listaAbierta_.at(i)->recorrido_.at(j)->celda_->imprimir();
             cout<<" | ";
         }
-        cout<<" <- {"<<listaAbierta_.at(i)->coste_<<"}"<<endl;
+        cout<<" <- {"<<listaAbierta_.at(i)->coste_+listaAbierta_.at(i)->hCoste_<<"}"<<endl;
     }
     cout<<endl;
 }
@@ -335,7 +335,7 @@ void agente::insertar(trayectoria* A){
         listaAbierta_.push_back(A);
     }else{
         int i=0;
-        while(i<listaAbierta_.count() && A->coste_ >=listaAbierta_.at(i)->coste_){
+        while(i<listaAbierta_.count() && A->coste_+A->hCoste_ >=listaAbierta_.at(i)->coste_ + listaAbierta_.at(i)->hCoste_){
             i++;
         }
         listaAbierta_.insert(i,A);

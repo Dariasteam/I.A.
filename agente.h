@@ -45,6 +45,7 @@ public:
 struct trayectoria{
     QList<nodo*>    recorrido_;
     short           coste_;
+    short           hCoste_ = 0;
 };
 
 

@@ -13,7 +13,7 @@ costeUniformeSub::costeUniformeSub(int x, int y, double tiempoMov_, int id, QGra
 
 nodo* costeUniformeSub::expandir(nodo* F){        //profundidad y coste
     actualizarcoordenadas(F->dirLlegar_);
-    //imprimir();
+    imprimir();
     if(F->celda_!=objetivos_.back() && !fin_){
         if(!listaAbierta_.isEmpty()){
             if(!F->completo_){
@@ -34,6 +34,8 @@ nodo* costeUniformeSub::expandir(nodo* F){        //profundidad y coste
                         trayectoria* A = new trayectoria;
                         (*A).recorrido_ = (*T).recorrido_;
                         A->coste_ = T->coste_ + aux->tipo_;
+                        A->hCoste_ = mapaReal_->getCoste(aux,objetivos_.back());
+                        cout<<"coste asociado de "<<A->hCoste_<<endl;
                         A->recorrido_.push_back(N);
                         insertar(A);
                     }
