@@ -3,7 +3,8 @@
 
 #include "mapa.h"
 #include "dropbot.h"
-#include "agente.h"
+//#include "costeuniforme.h"
+#include "costeuniformesub.h"
 
 #include <QMainWindow>
 #include <QGridLayout>

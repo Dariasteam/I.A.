@@ -27,7 +27,6 @@ agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix
     dir_= 0;
     mapaMem_ = mem;
     mapaReal_ = map;
-    cuenta_=0;
     lay_ = new QGridLayout(this);
     lay_->setSizeConstraint(QLayout::SetMinimumSize);
     labelBot_.setPixmap(QPixmap("../I.A./recursos/robotAbajo.png"));
@@ -54,15 +53,14 @@ agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix
     activo_=false;
     movimientoRestante_=0;
 
+    regresando_ = false;
     raiz_ = new nodo();
     raiz_->profundidad_=0;
     raiz_->celda_ = mapaReal_->getCelda(y_,x_);
     raiz_->dirLlegar_=-8;
-    actual_ = raiz_;
     fin_ = false;
 
-    objetivo_ = mapaReal_->getCelda(1,1);
-
+    objetivos_;
 
 
     trayectoria* T = new trayectoria;
@@ -70,14 +68,7 @@ agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix
     T->recorrido_.push_back(raiz_);
     listaAbierta_.push_back(T);
 
-    hiloAnimacion_ = std::thread(&agente::detontante,this);
-    hiloAnimacion_.detach();
-
-    hiloCalculo_ = std::thread(&agente::algoritmo,this);
-    hiloCalculo_.detach();
-
-    //detontante();
-
+    detontanteAnimacion();
 }
 
 agente::~agente(){
@@ -113,21 +104,41 @@ void agente::check(bool b){
 void agente::start(){
     mapaMem_->setCelda(y_,x_,mapaReal_->getCelda(y_,x_)->tipo_);
     activo_ = true;
-    algoritmo();
+    hiloCalculo_ = std::thread(&agente::detonanteCalculo,this);
+    hiloCalculo_.detach();
 }
 
-void agente::detontante(){
+void agente::detontanteAnimacion(){
     tiempo_ = new QTimer();
     movimientoRestante_ = tiempoMov_;
     connect(tiempo_,&QTimer::timeout,this,&agente::animador);
 }
 
+void agente::detonanteCalculo(){
+    srand(time(NULL));
+    int n = mapaReal_->objetivos_.count();
+    while(n>0 && activo_){
+        fin_ = false;
+        int f = rand()%n;
+        objetivos_.push_back(mapaReal_->objetivos_.at(f));
+        expandir(raiz_);
+        listaAbierta_.clear();
+        trayectoDefinido_.push_back(-1);
+        n = mapaReal_->objetivos_.count();
+        while(!trayectoDefinido_.isEmpty()){
+
+        }
+    }
+}
+
 void agente::animador(){
     if(!trayectoDefinido_.isEmpty()){
         if(trayectoDefinido_.first()==-1){
-            recoger();
+            if(!regresando_){
+                recoger();
+            }
             trayectoDefinido_.takeFirst();
-            regresando_ = true;
+            regresando_ = !regresando_;
             pintarRastro();
         }else{
             gPix_->setPixmap(lado_[trayectoDefinido_.first()]);
@@ -168,29 +179,27 @@ void agente::animador(){
                 }
                 writeMem();
                 trayectoDefinido_.takeFirst();
-                if(checkRastro_->isChecked()){
-                    pintarRastro();
-                }
+                pintarRastro();
                 movimientoRestante_ = tiempoMov_;
             }
         }
     }else{
-
+        tiempo_->stop();
     }
 }
 
 void agente::pintarRastro(){
     QPixmap* pix = new QPixmap(gPix_->pixmap());
-    if(!regresando_){
+    if(regresando_){
+        pix->fill(QColor(255,255,255));
+        QGraphicsPixmapItem* aux = ((mapa*)mapaReal_)->pintarPixmap(yAnimacion_,xAnimacion_,pix);
+        aux->setZValue(2);
+        aux->setOpacity(1);
+    }else if(checkRastro_->isChecked()){
         pix->fill(color_);
         QGraphicsPixmapItem* aux = ((mapa*)mapaReal_)->pintarPixmap(yAnimacion_,xAnimacion_,pix);
         aux->setZValue(1);
         aux->setOpacity(0.2);
-    }else{
-        pix->fill(QColor(255,255,255));
-        QGraphicsPixmapItem* aux = ((mapa*)mapaReal_)->pintarPixmap(yAnimacion_,xAnimacion_,pix);
-        aux->setZValue(1);
-        aux->setOpacity(1);
     }
 }
 
@@ -209,7 +218,7 @@ void agente::writeMem(){
 }
 
 void agente::recoger(){
-    mapaReal_->setCelda(objetivo_->y_,objetivo_->x_,1);
+    mapaReal_->setCelda(objetivos_.first()->y_,objetivos_.first()->x_,1);
 }
 
 bool agente::pause(){
@@ -296,66 +305,7 @@ celda* agente::escanearDireccion(short d){
     }else if(d==izquierda){
         return mapaReal_->getCelda(y_,x_-1);
     }
-}
-
-void agente::algoritmo(){
-    if(activo_){
-        //while(!listaAbierta_.isEmpty() && !fin_){
-            expandir(raiz_);
-        cout<<"Fin"<<endl;
-    }
-}
-
-nodo* agente::expandir(nodo* F){        //profundidad y coste
-    actualizarcoordenadas(F->dirLlegar_);
-    //imprimir();
-    if(F->celda_->tipo_!=0 && !fin_){
-        if(!listaAbierta_.isEmpty()){
-            if(!F->completo_){
-                trayectoria* T = listaAbierta_.takeFirst();
-                for(int j=0;j<4;j++){
-                    celda* aux = escanearDireccion(j);
-                    if(aux!=NULL && aux->tipo_ > -1 && aux->tipo_<5 && !celdaPisada(F,aux)){
-                        if(aux==objetivo_){
-                            cout<<"Objetivo encontrado"<<endl;
-                            fin_ = true;
-                            trayectoDefinido_.push_back(-1);
-                            break;
-                        }
-                        nodo* N = new nodo(F,aux->tipo_,j,aux);
-                        F->hijos_[j] = N;
-                        N->profundidad_=F->profundidad_+1;
-                        trayectoria* A = new trayectoria;
-                        (*A).recorrido_ = (*T).recorrido_;
-                        A->coste_ = T->coste_ + aux->tipo_;
-                        A->recorrido_.push_back(N);
-                        insertar(A);
-                    }
-                }
-            }
-            if(!fin_){
-                F->completo_=true;
-                nodo* K = comprobarCamino(F);
-                //Esta K es peligrosa porque si entra por ser sucesor, retorna lo que no es
-                bool su = false;
-                while(listaAbierta_.count()>0 && listaAbierta_.first()->recorrido_.count()>0 &&
-                     (K==F || esSucesor(F,listaAbierta_.first()->recorrido_.last())) && !fin_){
-                    su = true;
-                    K = expandir(listaAbierta_.first()->recorrido_.at(F->profundidad_+1));
-                }
-                actualizarcoordenadas(F->dirLlegar_+4);
-                if(!su){
-                    return K;
-                }else{
-                    return F;
-                }
-            }
-            actualizarcoordenadas(F->dirLlegar_+4);
-            return F;
-        }else{
-
-        }
-    }
+    return NULL;
 }
 
 bool agente::esSucesor(nodo* F, nodo* N){
@@ -392,10 +342,6 @@ void agente::insertar(trayectoria* A){
     }
 }
 
-void agente::recuperar(){
-
-}
-
 void agente::ajustarAbierta(){
     int i = 0;
     int n = listaAbierta_.count();
@@ -415,6 +361,11 @@ void agente::ajustarAbierta(){
         i++;
     }
 }
+
+nodo* agente::expandir(nodo* F){
+    return F;
+}
+
 
 nodo* agente::comprobarCamino(nodo* N){
     /*Retorna N si estamos en el mismo camino

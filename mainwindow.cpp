@@ -14,8 +14,6 @@
 
 using namespace std;
 
-class agente;
-
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
@@ -485,10 +483,9 @@ void MainWindow::actualizarMemoria(bool b){
 void MainWindow::addAgente(QPointF posReal){
     QPoint P = widMapa_->getFilaColumna(posReal);
     QGraphicsPixmapItem* gPix = (widMapa_->pintarPixmap(P.y(),P.x(),&graficosAgente_[1]));
-    agente* aux = new agente(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),gPix,graficosAgente_,widMapa_,memoria_,this);
+    agente* aux = new costeUniformeSub(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),gPix,graficosAgente_,widMapa_,memoria_,this);
     layScrollAgentes_->addWidget(aux);
     agentes_.push_back(aux);
-    aux->detontante();
     aux->setVelocidad(velocidadSlider_->value());
     if(botonSimular_->isChecked()){
         aux->start();

@@ -128,7 +128,7 @@ QGraphicsPixmapItem* mapa::pintarPixmap(double fila, double columna, QPixmap* pi
         auxPix = escena_->addPixmap(*pix);
         auxPix->setScale(escala_);
         auxPix->setPos(columna*escala_*pix->size().height(),fila*escala_*pix->size().height());
-        auxPix->setZValue(2);
+        auxPix->setZValue(3);
         return auxPix;
     }else
         return NULL;
@@ -150,6 +150,10 @@ void mapa::sustituirCelda(double fila, double columna, short idPix){
         mapa_[pos(fila,columna)].x_=columna;
         mapa_[pos(fila,columna)].y_=fila;
         mapa_[pos(fila,columna)].tipo_=idPix;
+        objetivos_.removeAll(&mapa_[pos(fila,columna)]);
+        if(idPix == nuclear){
+           objetivos_.push_back(&mapa_[pos(fila,columna)]);
+        }
     }
 }
 

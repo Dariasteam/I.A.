@@ -1,7 +1,6 @@
 #ifndef mapa_H
 #define mapa_H
 
-#include "agente.h"
 #include "graphicsmapa.h"
 #include "mainwindow.h"
 
@@ -51,6 +50,7 @@ public:
     int getCoste(celda* pos, celda* objetivo);
     void enfocar(double x, double y);
     std::mutex                              mu_;
+    QList<celda*>                           objetivos_;
 private:
     celda*                                  mapa_;
     QPixmap*                                graficosTerrenos_;

@@ -19,13 +19,17 @@ SOURCES += main.cpp\
     graphicsmapa.cpp \
     dropbot.cpp \
     agente.cpp \
-    mapa.cpp
+    mapa.cpp \
+    costeuniforme.cpp \
+    costeuniformesub.cpp
 
 HEADERS  += mainwindow.h \
     graphicsmapa.h \
     dropbot.h \
     agente.h \
-    mapa.h
+    mapa.h \
+    costeuniforme.h \
+    costeuniformesub.h
 
 FORMS    += mainwindow.ui
 

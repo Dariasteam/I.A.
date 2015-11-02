@@ -24,33 +24,23 @@ struct celda;
 
 class nodo{
 public:
-    nodo(nodo* padre = 0, short pcoste = 0, short dirllegar = -1, celda* c = 0){
+    nodo(nodo* padre = 0, short dirllegar = -1, celda* c = 0){
         padre_ = padre;
-        pCoste_ = pcoste;
         dirLlegar_ = dirllegar;
         celda_ = c;
         completo_ = false;
         for(int i=0;i<4;i++){
             hijos_[i]=NULL;
-            hCostes_[i] = -1;
-            explorado_[i]=false;
             profundidad_=0;
         }
     }
     nodo*           hijos_[4];
-    bool            explorado_[4];
     nodo*           padre_;
-    short           hCostes_[4];
-    short           pCoste_;
     short           dirLlegar_;
     celda*          celda_;
     int             profundidad_;
     bool            completo_;
 };
-
-/*struct nodo{
-    celda*      contenido_;
-};*/
 
 struct trayectoria{
     QList<nodo*>    recorrido_;
@@ -58,13 +48,13 @@ struct trayectoria{
 };
 
 
-
 class agente : public QGroupBox{
 public:
     agente(int x, int y, double tiempoMov_, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, mapa* map, mapa* mem, QWidget* parent);
     void mouseDoubleClickEvent(QMouseEvent* );
     ~agente();
-    void detontante();
+    void detontanteAnimacion();
+    void detonanteCalculo();
     void start();
     bool terminar();
     bool pause();
@@ -77,7 +67,7 @@ public:
     void writeMem();
     int getX();
     int getY();
-private:
+protected:
     int                             tiempoMov_;
     int                             movimientoRestante_;
     int                             id_;
@@ -108,36 +98,24 @@ private:
 public slots:
     void check(bool);
     void animador();
-
     //ALGORITMO
-public:
-
-private:
+protected:
     nodo*                            raiz_;
-    nodo*                            actual_;
-    celda*                           objetivo_;
     bool                             fin_;
     QList<trayectoria*>              listaAbierta_;
     QList<trayectoria*>              listaCerrada_;
-    QList<nodo*>*                    caminoActual_;
     bool                             regresando_;
-    bool                             recuperando_;
-    bool                             origen_;
-    int                              cuenta_;
-    int                              idActual_;
-    short                            costazo_;
-    void ajustarAbierta();
+    QList<celda*>                    objetivos_;
     bool esSucesor(nodo*, nodo*);
     bool celdaPisada(nodo*,celda*);
     void recoger();
-    void algoritmo();
     void actualizarcoordenadas(short);
-    nodo* expandir(nodo* F);
+    virtual nodo* expandir(nodo*);
     celda* escanearDireccion(short);
     void imprimir();
     void insertar(trayectoria* A);
-    void recuperar();
     nodo* comprobarCamino(nodo*);
+    void ajustarAbierta();
 };
 
 #endif // agente_H
