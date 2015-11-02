@@ -270,7 +270,7 @@ void agente::algoritmo(){
 
 nodo* agente::expandir(nodo* F){        //profundidad y coste
     actualizarcoordenadas(F->dirLlegar_);
-    imprimir();
+    //imprimir();
     if(F->celda_->tipo_!=0 && !fin_){
         cout<<"Profundidad: "<<F->profundidad_<<endl;
         if(!listaAbierta_.isEmpty()){
@@ -280,7 +280,7 @@ nodo* agente::expandir(nodo* F){        //profundidad y coste
                     celda* aux = escanearDireccion(j);
                     if(aux!=NULL && aux->tipo_ > -1 && aux->tipo_<5 && !celdaPisada(F,aux)){
                         if(aux==objetivo_){
-                            cout<<"asaaaa"<<endl;
+                            cout<<"Objetivo encontrado"<<endl;
                             fin_ = true;
                             break;
                         }
@@ -295,22 +295,30 @@ nodo* agente::expandir(nodo* F){        //profundidad y coste
                     }
                 }
             }
-            F->completo_=true;
-            nodo* K = comprobarCamino(F);
-            while((K==F || esSucesor(F,listaAbierta_.first()->recorrido_.last())) && !fin_){
-                cout<<"Profundizar"<<endl;
-                K = expandir(listaAbierta_.first()->recorrido_.at(F->profundidad_+1));
+            if(!fin_){
+                F->completo_=true;
+                cout<<"a"<<endl;
+                nodo* K = comprobarCamino(F);
+
+                //Esta K es peligrosa porque si entra por ser sucesor, retorna lo que no es
+                bool su = false;
+                while(listaAbierta_.count()>0 && listaAbierta_.first()->recorrido_.count()>0 &&
+                     (K==F || esSucesor(F,listaAbierta_.first()->recorrido_.last())) && !fin_){
+                    su = true;
+                    K = expandir(listaAbierta_.first()->recorrido_.at(F->profundidad_+1));
+                }
+                actualizarcoordenadas(F->dirLlegar_+4);
+                if(!su){
+                    return K;
+                }else{
+                    return F;
+                }
             }
-            cout<<"Retornando"<<endl;
             actualizarcoordenadas(F->dirLlegar_+4);
-            return K;
+            return F;
         }else{
             cout<<"La lista abierta esta vacia"<<endl;
         }
-    }else{
-        cout<<"Objetivo encontrado en"<<endl;
-        fin_ = true;
-        return NULL;
     }
 }
 
