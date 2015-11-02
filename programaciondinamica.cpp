@@ -1,23 +1,27 @@
-#include "costeuniformesub.h"
+#include "programaciondinamica.h"
 
 #include <iostream>
 
-/*using namespace std;
+using namespace std;
 
-costeUniformeSub::costeUniformeSub(int x, int y, double tiempoMov_, int id, QGraphicsPixmapItem *gPix,
+programacionDinamica::programacionDinamica(int x, int y, double tiempoMov_, int id, QGraphicsPixmapItem *gPix,
                             QPixmap *lado, mapa *map, mapa *mem, QWidget *parent) :
                             agente(x,y,tiempoMov_,id,gPix,lado,map,mem,parent)
 {
 
 }
 
-nodo* costeUniformeSub::expandir(nodo* F){        //profundidad y coste
+nodo* programacionDinamica::expandir(nodo* F){        //profundidad y coste
     actualizarcoordenadas(F->dirLlegar_);
     imprimir();
+    ajustarAbierta();
     if(F->celda_!=objetivos_.back() && !fin_){
         if(!listaAbierta_.isEmpty()){
             if(!F->completo_){
                 trayectoria* T = listaAbierta_.takeFirst();
+                if(!comprobarCerrada(T)){
+                    listaCerrada_.push_back(T);
+                }
                 for(int j=0;j<4;j++){
                     celda* aux = escanearDireccion(j);
                     if(aux!=NULL && aux->tipo_ > -1 && aux->tipo_<5 && !celdaPisada(F,aux)){
@@ -34,7 +38,7 @@ nodo* costeUniformeSub::expandir(nodo* F){        //profundidad y coste
                         trayectoria* A = new trayectoria;
                         (*A).recorrido_ = (*T).recorrido_;
                         A->coste_ = T->coste_ + aux->tipo_;
-                        A->hCoste_ = mapaReal_->getCoste(aux,objetivos_.back());
+                        //A->hCoste_ = mapaReal_->getCoste(aux,objetivos_.back());
                         cout<<"coste asociado de "<<A->hCoste_<<endl;
                         A->recorrido_.push_back(N);
                         insertarAbierta(A);
@@ -46,7 +50,7 @@ nodo* costeUniformeSub::expandir(nodo* F){        //profundidad y coste
                 nodo* K = comprobarCamino(F);
                 bool su = false;
                 while(listaAbierta_.count()>0 && listaAbierta_.first()->recorrido_.count()>0 &&
-                     (K==F || esSucesor(F,listaAbierta_.first()->recorrido_.last())) && !fin_){
+                    (K==F || esSucesor(F,listaAbierta_.first()->recorrido_.last())) && !fin_){
                     su = true;
                     K = expandir(listaAbierta_.first()->recorrido_.at(F->profundidad_+1));
                 }
@@ -64,4 +68,5 @@ nodo* costeUniformeSub::expandir(nodo* F){        //profundidad y coste
         }
     }
     return NULL;
-}*/
+}
+

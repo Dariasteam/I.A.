@@ -35,7 +35,7 @@ nodo* costeUniforme::expandir(nodo* F){        //profundidad y coste
                         (*A).recorrido_ = (*T).recorrido_;
                         A->coste_ = T->coste_ + aux->tipo_;
                         A->recorrido_.push_back(N);
-                        insertar(A);
+                        insertarAbierta(A);
                     }
                 }
             }

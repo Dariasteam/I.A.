@@ -4,7 +4,8 @@
 #include "mapa.h"
 #include "dropbot.h"
 //#include "costeuniforme.h"
-#include "costeuniformesub.h"
+//#include "costeuniformesub.h"
+#include "programaciondinamica.h"
 
 #include <QMainWindow>
 #include <QGridLayout>

@@ -330,7 +330,7 @@ void agente::imprimir(){
     cout<<endl;
 }
 
-void agente::insertar(trayectoria* A){
+void agente::insertarAbierta(trayectoria* A){
     if(listaAbierta_.count()==0){
         listaAbierta_.push_back(A);
     }else{
@@ -349,13 +349,10 @@ void agente::ajustarAbierta(){
         nodo* N = listaAbierta_.at(i)->recorrido_.last();
         for(int j=i+1;j<n;j++){
             nodo* M = listaAbierta_.at(j)->recorrido_.last();
-            if(M == N){
-                cout<<"Eliminando trayectorias"<<endl;
-                if(listaAbierta_.at(i)->coste_ > listaAbierta_.at(j)->coste_){
-                    listaAbierta_.removeAt(i);
-                }else if(listaAbierta_.at(i)->coste_ < listaAbierta_.at(j)->coste_){
-                    listaAbierta_.removeAt(j);
-                }
+            if(M->celda_ == N->celda_){                 //las trayectorias estan ordenadas
+                listaAbierta_.removeAt(j);
+                cout<<"Eliminando trayectoria j "<<j<<endl;
+                n--;
             }
         }
         i++;
@@ -366,6 +363,15 @@ nodo* agente::expandir(nodo* F){
     return F;
 }
 
+bool agente::comprobarCerrada(trayectoria* T){
+    for(int i=0;i<listaCerrada_.count();i++){
+        if(listaCerrada_.at(i)->coste_ + listaCerrada_.at(i)->hCoste_ < T->coste_ + T->hCoste_
+          && listaCerrada_.at(i)->recorrido_.last()->celda_==T->recorrido_.last()->celda_){
+            return true;
+        }
+    }
+    return false;
+}
 
 nodo* agente::comprobarCamino(nodo* N){
     /*Retorna N si estamos en el mismo camino
@@ -385,7 +391,6 @@ nodo* agente::comprobarCamino(nodo* N){
                 aux = aux->padre_;
                 list = list->padre_;
             }
-
             return list;
         }
         aux = aux->padre_;

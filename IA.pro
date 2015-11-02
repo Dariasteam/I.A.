@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     agente.cpp \
     mapa.cpp \
     costeuniforme.cpp \
-    costeuniformesub.cpp
+    costeuniformesub.cpp \
+    programaciondinamica.cpp
 
 HEADERS  += mainwindow.h \
     graphicsmapa.h \
@@ -29,7 +30,8 @@ HEADERS  += mainwindow.h \
     agente.h \
     mapa.h \
     costeuniforme.h \
-    costeuniformesub.h
+    costeuniformesub.h \
+    programaciondinamica.h
 
 FORMS    += mainwindow.ui
 

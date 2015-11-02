@@ -108,13 +108,14 @@ protected:
     bool                             regresando_;
     QList<celda*>                    objetivos_;
     bool esSucesor(nodo*, nodo*);
+    bool comprobarCerrada(trayectoria* T);
     bool celdaPisada(nodo*,celda*);
     void recoger();
     void actualizarcoordenadas(short);
     virtual nodo* expandir(nodo*);
     celda* escanearDireccion(short);
     void imprimir();
-    void insertar(trayectoria* A);
+    void insertarAbierta(trayectoria* A);
     nodo* comprobarCamino(nodo*);
     void ajustarAbierta();
 };
