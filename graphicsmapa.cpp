@@ -27,13 +27,13 @@ void graphicsMapa::mousePressEvent(QGraphicsSceneMouseEvent *event){
 }
 
 void graphicsMapa::dragMoveEvent(QGraphicsSceneDragDropEvent* E){
-    if(E->mimeData()->hasText() && E->mimeData()->text()=="mimeBot"){
+    if(E->mimeData()->hasText() && E->mimeData()->text()=="1"){
         E->acceptProposedAction();
     }
 }
 
 void graphicsMapa::dropEvent(QGraphicsSceneDragDropEvent* E){
-    if(E->mimeData()->hasText() && E->mimeData()->text()=="mimeBot"){
+    if(E->mimeData()->hasText() && E->mimeData()->text()=="1"){
          ((MainWindow*)(parent_))->addAgente(E->scenePos());
     }
 }

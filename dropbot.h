@@ -9,8 +9,10 @@
 
 class dropbot : public QLabel{
 public:
-    dropbot(QWidget* parent);
+    dropbot(short id, QWidget* parent);
     void mousePressEvent(QMouseEvent* );
+private:
+    short id_;
 };
 
 #endif // DROPBOT_H

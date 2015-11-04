@@ -63,10 +63,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     graficosTerrenos_[rejilla]  = QPixmap("../I.A./recursos/rejilla.png");
     graficosTerrenos_[nuclear]  = QPixmap("../I.A./recursos/nuclear.png");
     graficosAgente_ = new QPixmap[4];
-    graficosAgente_[arriba]     = QPixmap("../I.A./recursos/robotArriba.png");
-    graficosAgente_[abajo]      = QPixmap("../I.A./recursos/robotAbajo.png");
-    graficosAgente_[derecha]    = QPixmap("../I.A./recursos/robotDerecha.png");
-    graficosAgente_[izquierda]  = QPixmap("../I.A./recursos/robotIzquierda.png");
+    graficosAgente_[arriba]     = QPixmap("../I.A./recursos/cuArriba.png");
+    graficosAgente_[abajo]      = QPixmap("../I.A./recursos/cuAbajo.png");
+    graficosAgente_[derecha]    = QPixmap("../I.A./recursos/cuDerecha.png");
+    graficosAgente_[izquierda]  = QPixmap("../I.A./recursos/cuIzquierda.png");
     pincel_ = 5;
 
     widMapa_ = new mapa(10,10,barraProgreso_,0,0,0,0,graficosTerrenos_,((QWidget*)this));
@@ -139,15 +139,29 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     botonMemoria_->setCheckable(true);
 
     QBoxLayout* layDropBot = new QBoxLayout(QBoxLayout::LeftToRight,NULL);
-    layDropBot->setSizeConstraint(QBoxLayout::SetFixedSize);
+    layDropBot->setSizeConstraint(QBoxLayout::SetMaximumSize);
 
     layOpcionesAlgoritmo_->addLayout(layDropBot);
 
-    dropbot* drop = new dropbot(this);
-    drop->setPixmap(QPixmap("../I.A./recursos/robotAbajo.png"));
+    dropbot* drop1 = new dropbot(1,this);
+    dropbot* drop2 = new dropbot(2,this);
+    dropbot* drop3 = new dropbot(3,this);
+    dropbot* drop4 = new dropbot(4,this);
+    drop1->setPixmap(QPixmap("../I.A./recursos/cuAbajo.png"));
+    drop2->setPixmap(QPixmap("../I.A./recursos/cusubAbajo.png"));
+    drop3->setPixmap(QPixmap("../I.A./recursos/progdinAbajo.png"));
+    drop4->setPixmap(QPixmap("../I.A./recursos/A*Abajo.png"));
 
-    layDropBot->addWidget(drop);
-    layDropBot->addWidget(new QLabel("Arrastra y suelta\npara añadir\nun agente\n\nVelocidad:"));
+    drop1->setMinimumSize(40,40);
+    drop2->setMinimumSize(40,40);
+    drop3->setMinimumSize(40,40);
+    drop4->setMinimumSize(40,40);
+
+    layDropBot->addWidget(drop1);
+    layDropBot->addWidget(drop2);
+    layDropBot->addWidget(drop3);
+    layDropBot->addWidget(drop4);
+    //layDropBot->addWidget(new QLabel("Arrastra y suelta\npara añadir\nun agente\n\nVelocidad:"));
 
     velocidadSlider_ = new QSlider(Qt::Horizontal,contenedor);
     velocidadSlider_->setRange(1,100);
@@ -163,7 +177,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     layOpcionesAlgoritmo_->setSizeConstraint(QLayout::SetMinimumSize);
     layScrollAgentes_->setSizeConstraint(QLayout::SetFixedSize);
     layScrollAgentes_->setMargin(0);
-    drop->setMinimumSize(110,110);
 
     layOpcionesAlgoritmo_->addWidget(velocidadSlider_);
     layOpcionesAlgoritmo_->addWidget(scrollAgentes_);

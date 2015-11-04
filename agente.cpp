@@ -29,6 +29,7 @@ agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix
     mapaReal_ = map;
     regresando_ = false;
     raiz_ = new nodo();
+    pasos_=0;
     raiz_->profundidad_=0;
     raiz_->celda_ = mapaReal_->getCelda(y_,x_);
     raiz_->dirLlegar_=-8;
@@ -120,6 +121,7 @@ void agente::detonanteCalculo(){
         int f = rand()%n;
         objetivos_.push_back(mapaReal_->objetivos_.at(f));
         expandir(raiz_);
+        cout<<"He caminado "<<pasos_<<" pasos "<<endl;
         listaAbierta_.clear();
         trayectoDefinido_.push_back(-1);
         n = mapaReal_->objetivos_.count();
@@ -384,25 +386,66 @@ bool agente::comprobarCerrada(trayectoria* T){
 
 nodo* agente::comprobarCamino(nodo* N){
     /*Retorna N si estamos en el mismo camino
-     * o el nodo comun mas proximo si estamos en otro*/
-    nodo* aux = N;
-    nodo* list = listaAbierta_.first()->recorrido_.last();
-    list = list->padre_;
-    while(aux!=raiz_){
-        if(aux!=list){
-            while(aux->profundidad_>list->profundidad_){
-                aux = aux->padre_;
+     * o el nodo comun mas proximo si estamos en otro.
+     * En caso de no quedar caminos que comprobar
+     * informa de que el problema es irresoluble y
+     * devuelve la raiz*/
+    if(!listaAbierta_.empty()){
+        nodo* aux = N;
+        nodo* list = listaAbierta_.first()->recorrido_.last();
+        list = list->padre_;
+        while(aux!=raiz_){
+            if(aux!=list){          //YA SABEMOS QUE ESTAMOS EN OTRO CAMINO
+                while(aux->profundidad_>list->profundidad_){
+                    aux = aux->padre_;
+                }
+                while(aux->profundidad_<list->profundidad_){
+                    list = list->padre_;
+                }
+                while(aux!=list){
+                    aux = aux->padre_;
+                    list = list->padre_;
+                }
+                return list;
             }
-            while(aux->profundidad_<list->profundidad_){
-                list = list->padre_;
-            }
-            while(aux!=list){
-                aux = aux->padre_;
-                list = list->padre_;
-            }
-            return list;
+            aux = aux->padre_;
         }
-        aux = aux->padre_;
+        return N;
+    }else{
+        cout<<"El problema no tiene solución"<<endl;
+        fin_=true;
+        return raiz_;
     }
-    return N;
+}
+
+void agente::setHijosNodo(nodo* F){
+    if(!F->completo_){
+        trayectoria* T;
+        T = listaAbierta_.takeFirst();
+        if(!comprobarCerrada(T)){
+            listaCerrada_.push_back(T);
+        }
+        for(int j=0;j<4;j++){
+            celda* aux = escanearDireccion(j);
+            if(aux!=NULL && aux->tipo_ > -1 && aux->tipo_<5 && !celdaPisada(F,aux)){
+                if(aux==objetivos_.back()){
+                    cout<<"Encontrado "<<endl;
+                    mapaReal_->objetivos_.removeOne(aux);
+                    trayectoDefinido_.push_back(-1);
+                    fin_ = true;
+                    break;
+                }
+                nodo* N = new nodo(F,j,aux,F->profundidad_+1);
+                trayectoria* A = new trayectoria;
+                (*A).recorrido_ = (*T).recorrido_;
+                A->coste_ = T->coste_ + aux->tipo_;
+                A->hCoste_ = mapaReal_->getCoste(aux,objetivos_.back());
+                A->recorrido_.push_back(N);
+                if(!comprobarCerrada(A)){
+                    insertarAbierta(A);
+                }
+            }
+        }
+        F->completo_=true;
+    }
 }

@@ -24,17 +24,13 @@ struct celda;
 
 class nodo{
 public:
-    nodo(nodo* padre = 0, short dirllegar = -1, celda* c = 0){
+    nodo(nodo* padre = 0, short dirllegar = -1, celda* c = 0, int profundidad = 0){
         padre_ = padre;
         dirLlegar_ = dirllegar;
         celda_ = c;
         completo_ = false;
-        for(int i=0;i<4;i++){
-            hijos_[i]=NULL;
-            profundidad_=0;
-        }
+        profundidad_ = profundidad;
     }
-    nodo*           hijos_[4];
     nodo*           padre_;
     short           dirLlegar_;
     celda*          celda_;
@@ -100,12 +96,14 @@ public slots:
     void animador();
     //ALGORITMO
 protected:
+    int                              pasos_;
     nodo*                            raiz_;
     bool                             fin_;
     QList<trayectoria*>              listaAbierta_;
     QList<trayectoria*>              listaCerrada_;
     bool                             regresando_;
     QList<celda*>                    objetivos_;
+    void setHijosNodo(nodo* F);
     bool esSucesor(nodo*, nodo*);
     bool comprobarCerrada(trayectoria* T);
     bool celdaPisada(nodo*,celda*);
