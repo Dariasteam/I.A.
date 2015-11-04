@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>recursos/metal.png</file>
+        <file>recursos/muro.png</file>
+        <file>recursos/nuclear.png</file>
+        <file>recursos/rejilla.png</file>
+        <file>recursos/robotAbajo.png</file>
+        <file>recursos/robotArriba.png</file>
+        <file>recursos/robotDerecha.png</file>
+        <file>recursos/robotIzquierda.png</file>
+        <file>recursos/rojo.png</file>
+        <file>recursos/suelo.png</file>
+        <file>recursos/testigo.png</file>
+        <file>recursos/tierra.png</file>
+    </qresource>
+</RCC>

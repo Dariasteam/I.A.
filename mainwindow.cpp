@@ -55,18 +55,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 //INICIALIZACION DE LOS PIX
 
     graficosTerrenos_ = new QPixmap[7];
-    graficosTerrenos_[muro]     = QPixmap("../I.A./recursos/muro.png");
-    graficosTerrenos_[rojo]     = QPixmap("../I.A./recursos/rojo.png");
-    graficosTerrenos_[suelo]    = QPixmap("../I.A./recursos/suelo.png");
-    graficosTerrenos_[metal]    = QPixmap("../I.A./recursos/metal.png");
-    graficosTerrenos_[tierra]   = QPixmap("../I.A./recursos/tierra.png");
-    graficosTerrenos_[rejilla]  = QPixmap("../I.A./recursos/rejilla.png");
-    graficosTerrenos_[nuclear]  = QPixmap("../I.A./recursos/nuclear.png");
+    graficosTerrenos_[muro]     = QPixmap(":/recursos/muro.png");
+    graficosTerrenos_[rojo]     = QPixmap(":/recursos/rojo.png");
+    graficosTerrenos_[suelo]    = QPixmap(":/recursos/suelo.png");
+    graficosTerrenos_[metal]    = QPixmap(":/recursos/metal.png");
+    graficosTerrenos_[tierra]   = QPixmap(":/recursos/tierra.png");
+    graficosTerrenos_[rejilla]  = QPixmap(":/recursos/rejilla.png");
+    graficosTerrenos_[nuclear]  = QPixmap(":/recursos/nuclear.png");
     graficosAgente_ = new QPixmap[4];
-    graficosAgente_[arriba]     = QPixmap("../I.A./recursos/robotArriba.png");
-    graficosAgente_[abajo]      = QPixmap("../I.A./recursos/robotAbajo.png");
-    graficosAgente_[derecha]    = QPixmap("../I.A./recursos/robotDerecha.png");
-    graficosAgente_[izquierda]  = QPixmap("../I.A./recursos/robotIzquierda.png");
+    graficosAgente_[arriba]     = QPixmap(":/recursos/robotArriba.png");
+    graficosAgente_[abajo]      = QPixmap(":/recursos/robotAbajo.png");
+    graficosAgente_[derecha]    = QPixmap(":/recursos/robotDerecha.png");
+    graficosAgente_[izquierda]  = QPixmap(":/recursos/robotIzquierda.png");
     pincel_ = 5;
 
     widMapa_ = new mapa(10,10,barraProgreso_,0,0,0,0,graficosTerrenos_,((QWidget*)this));
@@ -144,7 +144,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     layOpcionesAlgoritmo_->addLayout(layDropBot);
 
     dropbot* drop = new dropbot(this);
-    drop->setPixmap(QPixmap("../I.A./recursos/robotAbajo.png"));
+    drop->setPixmap(QPixmap(":/recursos/robotAbajo.png"));
 
     layDropBot->addWidget(drop);
     layDropBot->addWidget(new QLabel("Arrastra y suelta\npara añadir\nun agente\n\nVelocidad:"));
