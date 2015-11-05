@@ -1,0 +1,28 @@
+<RCC>
+    <qresource prefix="/">
+        <file>recursos/metal.png</file>
+        <file>recursos/muro.png</file>
+        <file>recursos/nuclear.png</file>
+        <file>recursos/rejilla.png</file>
+        <file>recursos/rojo.png</file>
+        <file>recursos/suelo.png</file>
+        <file>recursos/testigo.png</file>
+        <file>recursos/tierra.png</file>
+        <file>recursos/A*Abajo.png</file>
+        <file>recursos/A*Arriba.png</file>
+        <file>recursos/A*Derecha.png</file>
+        <file>recursos/A*Izquierda.png</file>
+        <file>recursos/cuAbajo.png</file>
+        <file>recursos/cuArriba.png</file>
+        <file>recursos/cuDerecha.png</file>
+        <file>recursos/cuIzquierda.png</file>
+        <file>recursos/cusubAbajo.png</file>
+        <file>recursos/cusubArriba.png</file>
+        <file>recursos/cusubDerecha.png</file>
+        <file>recursos/cusubIzquierda.png</file>
+        <file>recursos/progdinAbajo.png</file>
+        <file>recursos/progdinArriba.png</file>
+        <file>recursos/progdinDerecha.png</file>
+        <file>recursos/progdinIzquierda.png</file>
+    </qresource>
+</RCC>

@@ -48,7 +48,8 @@ void agente::constructorGui(){
     lay_ = new QGridLayout(this);
     lay_->setSizeConstraint(QLayout::SetMinimumSize);
     labelBot_.setPixmap(lado_[abajo]);
-    QPixmap P("../I.A./recursos/testigo.png");
+    QPixmap P(":/recursos/testigo.png");
+
     color_ = QColor(rand()%255+1,rand()%255+1,rand()%255+1);
     P.fill(color_);
     labelColor_.setPixmap(P);
@@ -84,7 +85,7 @@ void agente::mouseDoubleClickEvent(QMouseEvent* E){
     if(E->button() ==Qt::LeftButton){
         if(isChecked()){
             QColorDialog* d = new QColorDialog(this);
-            QPixmap P("../I.A./recursos/testigo.png");
+            QPixmap P(":/recursos/testigo.png");
             color_ = d->getColor();
             P.fill(color_);
             labelColor_.setPixmap(P);

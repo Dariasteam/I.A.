@@ -55,36 +55,39 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 //INICIALIZACION DE LOS PIX
 
     graficosTerrenos_ = new QPixmap[7];
-    graficosTerrenos_[muro]     = QPixmap("../I.A./recursos/muro.png");
-    graficosTerrenos_[rojo]     = QPixmap("../I.A./recursos/rojo.png");
-    graficosTerrenos_[suelo]    = QPixmap("../I.A./recursos/suelo.png");
-    graficosTerrenos_[metal]    = QPixmap("../I.A./recursos/metal.png");
-    graficosTerrenos_[tierra]   = QPixmap("../I.A./recursos/tierra.png");
-    graficosTerrenos_[rejilla]  = QPixmap("../I.A./recursos/rejilla.png");
-    graficosTerrenos_[nuclear]  = QPixmap("../I.A./recursos/nuclear.png");
+    graficosTerrenos_[muro]     = QPixmap(":/recursos/muro.png");
+    graficosTerrenos_[rojo]     = QPixmap(":/recursos/rojo.png");
+    graficosTerrenos_[suelo]    = QPixmap(":/recursos/suelo.png");
+    graficosTerrenos_[metal]    = QPixmap(":/recursos/metal.png");
+    graficosTerrenos_[tierra]   = QPixmap(":/recursos/tierra.png");
+    graficosTerrenos_[rejilla]  = QPixmap(":/recursos/rejilla.png");
+    graficosTerrenos_[nuclear]  = QPixmap(":/recursos/nuclear.png");
+
     graficosCu_    = new QPixmap[4];
     graficosCuSub_ = new QPixmap[4];
     graficosProg_  = new QPixmap[4];
     graficosA_     = new QPixmap[4];
-    graficosCu_[arriba]     = QPixmap("../I.A./recursos/cuArriba.png");
-    graficosCu_[abajo]      = QPixmap("../I.A./recursos/cuAbajo.png");
-    graficosCu_[derecha]    = QPixmap("../I.A./recursos/cuDerecha.png");
-    graficosCu_[izquierda]  = QPixmap("../I.A./recursos/cuIzquierda.png");
 
-    graficosCuSub_[arriba]     = QPixmap("../I.A./recursos/cusubArriba.png");
-    graficosCuSub_[abajo]      = QPixmap("../I.A./recursos/cusubAbajo.png");
-    graficosCuSub_[derecha]    = QPixmap("../I.A./recursos/cusubDerecha.png");
-    graficosCuSub_[izquierda]  = QPixmap("../I.A./recursos/cusubIzquierda.png");
+    graficosCu_[arriba]     = QPixmap(":/recursos/cuArriba.png");
+    graficosCu_[abajo]      = QPixmap(":/recursos/cuAbajo.png");
+    graficosCu_[derecha]    = QPixmap(":/recursos/cuDerecha.png");
+    graficosCu_[izquierda]  = QPixmap(":/recursos/cuIzquierda.png");
 
-    graficosProg_[arriba]     = QPixmap("../I.A./recursos/progdinArriba.png");
-    graficosProg_[abajo]      = QPixmap("../I.A./recursos/progdinAbajo.png");
-    graficosProg_[derecha]    = QPixmap("../I.A./recursos/progdinDerecha.png");
-    graficosProg_[izquierda]  = QPixmap("../I.A./recursos/progdinIzquierda.png");
+    graficosCuSub_[arriba]     = QPixmap(":/recursos/cusubArriba.png");
+    graficosCuSub_[abajo]      = QPixmap(":/recursos/cusubAbajo.png");
+    graficosCuSub_[derecha]    = QPixmap(":/recursos/cusubDerecha.png");
+    graficosCuSub_[izquierda]  = QPixmap(":/recursos/cusubIzquierda.png");
 
-    graficosA_[arriba]     = QPixmap("../I.A./recursos/A*Arriba.png");
-    graficosA_[abajo]      = QPixmap("../I.A./recursos/A*Abajo.png");
-    graficosA_[derecha]    = QPixmap("../I.A./recursos/A*Derecha.png");
-    graficosA_[izquierda]  = QPixmap("../I.A./recursos/A*Izquierda.png");
+    graficosProg_[arriba]     = QPixmap(":/recursos/progdinArriba.png");
+    graficosProg_[abajo]      = QPixmap(":/recursos/progdinAbajo.png");
+    graficosProg_[derecha]    = QPixmap(":/recursos/progdinDerecha.png");
+    graficosProg_[izquierda]  = QPixmap(":/recursos/progdinIzquierda.png");
+
+    graficosA_[arriba]     = QPixmap(":/recursos/A*Arriba.png");
+    graficosA_[abajo]      = QPixmap(":/recursos/A*Abajo.png");
+    graficosA_[derecha]    = QPixmap(":/recursos/A*Derecha.png");
+    graficosA_[izquierda]  = QPixmap(":/recursos/A*Izquierda.png");
+
     pincel_ = 5;
 
     widMapa_ = new mapa(10,10,barraProgreso_,0,0,0,0,graficosTerrenos_,((QWidget*)this));
@@ -156,7 +159,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     botonMemoria_=new QPushButton("Memoria todos",this);
     botonMemoria_->setCheckable(true);
 
-    QGridLayout* layDropBot = new QGridLayout(contenedor);
+    QGridLayout* layDropBot = new QGridLayout();
     layDropBot->setSizeConstraint(QBoxLayout::SetMaximumSize);
 
     layOpcionesAlgoritmo_->addLayout(layDropBot);
@@ -165,10 +168,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     dropbot* drop2 = new dropbot(2,this);
     dropbot* drop3 = new dropbot(3,this);
     dropbot* drop4 = new dropbot(4,this);
-    drop1->setPixmap(QPixmap("../I.A./recursos/cuAbajo.png"));
-    drop2->setPixmap(QPixmap("../I.A./recursos/cusubAbajo.png"));
-    drop3->setPixmap(QPixmap("../I.A./recursos/progdinAbajo.png"));
-    drop4->setPixmap(QPixmap("../I.A./recursos/A*Abajo.png"));
+    drop1->setPixmap(QPixmap(":/recursos/cuAbajo.png"));
+    drop2->setPixmap(QPixmap(":/recursos/cusubAbajo.png"));
+    drop3->setPixmap(QPixmap(":/recursos/progdinAbajo.png"));
+    drop4->setPixmap(QPixmap(":/recursos/A*Abajo.png"));
 
     drop1->setMinimumSize(40,40);
     drop2->setMinimumSize(40,40);
