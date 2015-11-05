@@ -94,6 +94,7 @@ protected:
 public slots:
     void check(bool);
     void animador();
+    void animar();
     //ALGORITMO
 protected:
     int                              pasos_;
