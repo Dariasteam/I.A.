@@ -1,7 +1,7 @@
 #ifndef agente_H
 #define agente_H
 
-#include "../mapa.h"
+#include "../mapa/mapa.h"
 
 #include <QGroupBox>
 #include <QWidget>

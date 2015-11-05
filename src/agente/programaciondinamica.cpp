@@ -20,10 +20,8 @@ nodo* programacionDinamica::expandir(nodo* F){        //profundidad y coste
             setHijosNodo(F);
             if(!fin_){
                 nodo* K = comprobarCamino(F);
-                bool su = false;
                 while(listaAbierta_.count()>0 && listaAbierta_.first()->recorrido_.count()>0 &&
                     (K==F || esSucesor(F,listaAbierta_.first()->recorrido_.last())) && !fin_){
-                    su = true;
                     K = expandir(listaAbierta_.first()->recorrido_.at(F->profundidad_+1));
                 }
             }

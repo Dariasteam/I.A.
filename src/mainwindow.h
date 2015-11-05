@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "mapa.h"
+#include "mapa/mapa.h"
 #include "dropbot.h"
 
 #include "agente/costeuniforme.h"
@@ -26,9 +26,6 @@
 #include <QTabWidget>
 #include <QSlider>
 
-namespace Ui {
-    class MainWindow;
-}
 
 struct menuTerreno{
     QSlider*                            slider_;
@@ -52,7 +49,6 @@ public:
     void addAgente(QPointF,short);
     void operacionesActualizacion(mapa*);
 private:
-    Ui::MainWindow*                     ui;
     QWidget*                            widPrincipal_;
     QBoxLayout*                         layPrincipal_;
     mapa*                               widMapa_;

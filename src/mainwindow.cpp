@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "mapa.h"
+#include "mapa/mapa.h"
 
 #include <iostream>
 #include <QLabel>
@@ -13,13 +13,10 @@
 
 using namespace std;
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
 
 //INICIALIZACION DE LA VENTANA Y SUS WIDGETS
-
-    ui->setupUi(this);
     widPrincipal_   = new QWidget(this);
     layPrincipal_   = new QBoxLayout(QBoxLayout::TopToBottom,widPrincipal_);
     barraProgreso_  = new QProgressBar(this);
@@ -286,9 +283,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     mapas_->addTab(memoria_,"Memoria");
 }
 
-MainWindow::~MainWindow(){
-    delete ui;
-}
+MainWindow::~MainWindow(){}
 
 void MainWindow::crearLabelSlider(QString nombre, int posLay, int i){
     editoresTerreno_[i].slider_ = new QSlider(Qt::Horizontal);

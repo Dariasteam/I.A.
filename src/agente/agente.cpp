@@ -1,4 +1,4 @@
-#include "../mapa.h"
+#include "../mapa/mapa.h"
 #include "../mainwindow.h"
 
 class MainWindow;
@@ -159,7 +159,7 @@ void agente::animador(){
                     break;
                 }
                 if(activo_ && checkSeguir_->isChecked()){
-                    mapaReal_->enfocar(gPix_->x(),gPix_->y());
+                    mapaReal_->centerOn(gPix_);
                 }
             }
             movimientoRestante_= movimientoRestante_-valor_;
