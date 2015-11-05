@@ -149,8 +149,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
 //INICIALIZACION DEL PANEL "AGENTE"
 
+
     QWidget* contenedor = new QWidget(this);
     layScrollAgentes_ = new QBoxLayout(QBoxLayout::TopToBottom,contenedor);
+
 
     botonSimular_ = new QPushButton("Simular",this);
     botonSimular_->setCheckable(true);
@@ -159,10 +161,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     botonMemoria_=new QPushButton("Memoria todos",this);
     botonMemoria_->setCheckable(true);
 
-    QGridLayout* layDropBot = new QGridLayout();
-    layDropBot->setSizeConstraint(QBoxLayout::SetMaximumSize);
-
+    QBoxLayout* layDropBot = new QBoxLayout(QBoxLayout::LeftToRight);
     layOpcionesAlgoritmo_->addLayout(layDropBot);
+    layDropBot->setSizeConstraint(QBoxLayout::SetMaximumSize);
 
     dropbot* drop1 = new dropbot(1,this);
     dropbot* drop2 = new dropbot(2,this);
@@ -173,18 +174,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     drop3->setPixmap(QPixmap(":/recursos/progdinAbajo.png"));
     drop4->setPixmap(QPixmap(":/recursos/A*Abajo.png"));
 
-    drop1->setMinimumSize(40,40);
-    drop2->setMinimumSize(40,40);
-    drop3->setMinimumSize(40,40);
-    drop4->setMinimumSize(40,40);
+    drop1->setMinimumSize(55,40);
+    drop2->setMinimumSize(55,40);
+    drop3->setMinimumSize(55,40);
+    drop4->setMinimumSize(55,40);
 
-    layDropBot->addWidget(drop2,0,0);
-    layDropBot->addWidget(new QLabel("H"),0,1);
-    layDropBot->addWidget(drop1,0,2);
-    layDropBot->addWidget(new QLabel("H"),0,3);
-    layDropBot->addWidget(drop3,0,4);
-    layDropBot->addWidget(new QLabel("H"),0,5);
-    layDropBot->addWidget(drop4,0,6);
+    layDropBot->addWidget(drop2);
+    layDropBot->addWidget(drop1);
+    layDropBot->addWidget(drop3);
+    layDropBot->addWidget(drop4);
+
     //layDropBot->addWidget(new QLabel("Arrastra y suelta\npara añadir\nun agente\n\nVelocidad:"));
 
     velocidadSlider_ = new QSlider(Qt::Horizontal,contenedor);
@@ -198,6 +197,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     scrollAgentes_->setWidgetResizable(true);
 
     layDropBot->setSizeConstraint(QLayout::SetMinimumSize);
+
     layOpcionesAlgoritmo_->setSizeConstraint(QLayout::SetMinimumSize);
     layScrollAgentes_->setSizeConstraint(QLayout::SetFixedSize);
     layScrollAgentes_->setMargin(0);
