@@ -58,7 +58,7 @@ public:
     void crearLabelSlider(QString,int,int);
     void guardar(std::ofstream*);
     void pintar();
-    void addAgente(QPointF);
+    void addAgente(QPointF,short);
     void operacionesActualizacion(mapa*);
 private:
     Ui::MainWindow*                     ui;
@@ -100,7 +100,10 @@ private:
     QSlider*                            velocidadSlider_;
     QTabWidget*                         mapas_;
     QPixmap*                            graficosTerrenos_;
-    QPixmap*                            graficosAgente_;
+    QPixmap*                            graficosCu_;
+    QPixmap*                            graficosCuSub_;
+    QPixmap*                            graficosProg_;
+    QPixmap*                            graficosA_;
     short                               pincel_;
     QList<agente*>                      agentes_;
     QPointF                             mousePos_;

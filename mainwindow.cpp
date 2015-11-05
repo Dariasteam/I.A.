@@ -62,11 +62,29 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     graficosTerrenos_[tierra]   = QPixmap("../I.A./recursos/tierra.png");
     graficosTerrenos_[rejilla]  = QPixmap("../I.A./recursos/rejilla.png");
     graficosTerrenos_[nuclear]  = QPixmap("../I.A./recursos/nuclear.png");
-    graficosAgente_ = new QPixmap[4];
-    graficosAgente_[arriba]     = QPixmap("../I.A./recursos/cuArriba.png");
-    graficosAgente_[abajo]      = QPixmap("../I.A./recursos/cuAbajo.png");
-    graficosAgente_[derecha]    = QPixmap("../I.A./recursos/cuDerecha.png");
-    graficosAgente_[izquierda]  = QPixmap("../I.A./recursos/cuIzquierda.png");
+    graficosCu_    = new QPixmap[4];
+    graficosCuSub_ = new QPixmap[4];
+    graficosProg_  = new QPixmap[4];
+    graficosA_     = new QPixmap[4];
+    graficosCu_[arriba]     = QPixmap("../I.A./recursos/cuArriba.png");
+    graficosCu_[abajo]      = QPixmap("../I.A./recursos/cuAbajo.png");
+    graficosCu_[derecha]    = QPixmap("../I.A./recursos/cuDerecha.png");
+    graficosCu_[izquierda]  = QPixmap("../I.A./recursos/cuIzquierda.png");
+
+    graficosCuSub_[arriba]     = QPixmap("../I.A./recursos/cusubArriba.png");
+    graficosCuSub_[abajo]      = QPixmap("../I.A./recursos/cusubAbajo.png");
+    graficosCuSub_[derecha]    = QPixmap("../I.A./recursos/cusubDerecha.png");
+    graficosCuSub_[izquierda]  = QPixmap("../I.A./recursos/cusubIzquierda.png");
+
+    graficosProg_[arriba]     = QPixmap("../I.A./recursos/progdinArriba.png");
+    graficosProg_[abajo]      = QPixmap("../I.A./recursos/progdinAbajo.png");
+    graficosProg_[derecha]    = QPixmap("../I.A./recursos/progdinDerecha.png");
+    graficosProg_[izquierda]  = QPixmap("../I.A./recursos/progdinIzquierda.png");
+
+    graficosA_[arriba]     = QPixmap("../I.A./recursos/A*Arriba.png");
+    graficosA_[abajo]      = QPixmap("../I.A./recursos/A*Abajo.png");
+    graficosA_[derecha]    = QPixmap("../I.A./recursos/A*Derecha.png");
+    graficosA_[izquierda]  = QPixmap("../I.A./recursos/A*Izquierda.png");
     pincel_ = 5;
 
     widMapa_ = new mapa(10,10,barraProgreso_,0,0,0,0,graficosTerrenos_,((QWidget*)this));
@@ -138,7 +156,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     botonMemoria_=new QPushButton("Memoria todos",this);
     botonMemoria_->setCheckable(true);
 
-    QBoxLayout* layDropBot = new QBoxLayout(QBoxLayout::LeftToRight,NULL);
+    QGridLayout* layDropBot = new QGridLayout(contenedor);
     layDropBot->setSizeConstraint(QBoxLayout::SetMaximumSize);
 
     layOpcionesAlgoritmo_->addLayout(layDropBot);
@@ -157,10 +175,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     drop3->setMinimumSize(40,40);
     drop4->setMinimumSize(40,40);
 
-    layDropBot->addWidget(drop1);
-    layDropBot->addWidget(drop2);
-    layDropBot->addWidget(drop3);
-    layDropBot->addWidget(drop4);
+    layDropBot->addWidget(drop2,0,0);
+    layDropBot->addWidget(new QLabel("H"),0,1);
+    layDropBot->addWidget(drop1,0,2);
+    layDropBot->addWidget(new QLabel("H"),0,3);
+    layDropBot->addWidget(drop3,0,4);
+    layDropBot->addWidget(new QLabel("H"),0,5);
+    layDropBot->addWidget(drop4,0,6);
     //layDropBot->addWidget(new QLabel("Arrastra y suelta\npara añadir\nun agente\n\nVelocidad:"));
 
     velocidadSlider_ = new QSlider(Qt::Horizontal,contenedor);
@@ -493,10 +514,28 @@ void MainWindow::actualizarMemoria(bool b){
     }
 }
 
-void MainWindow::addAgente(QPointF posReal){
+void MainWindow::addAgente(QPointF posReal, short tipo){
     QPoint P = widMapa_->getFilaColumna(posReal);
-    QGraphicsPixmapItem* gPix = (widMapa_->pintarPixmap(P.y(),P.x(),&graficosAgente_[1]));
-    agente* aux = new aEstrella(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),gPix,graficosAgente_,widMapa_,memoria_,this);
+    agente* aux;
+    QGraphicsPixmapItem* gPix;
+    switch (tipo) {
+    case 1:
+        gPix = (widMapa_->pintarPixmap(P.y(),P.x(),&graficosCu_[abajo]));
+        aux = new aEstrella(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),gPix,graficosCu_,widMapa_,memoria_,this);
+        break;
+    case 2:
+        gPix = (widMapa_->pintarPixmap(P.y(),P.x(),&graficosCuSub_[abajo]));
+        aux = new aEstrella(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),gPix,graficosCuSub_,widMapa_,memoria_,this);
+        break;
+    case 3:
+        gPix = (widMapa_->pintarPixmap(P.y(),P.x(),&graficosProg_[abajo]));
+        aux = new aEstrella(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),gPix,graficosProg_,widMapa_,memoria_,this);
+        break;
+    case 4:
+        gPix = (widMapa_->pintarPixmap(P.y(),P.x(),&graficosA_[abajo]));
+        aux = new aEstrella(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),gPix,graficosA_,widMapa_,memoria_,this);
+        break;
+    }
     layScrollAgentes_->addWidget(aux);
     agentes_.push_back(aux);
     aux->setVelocidad(velocidadSlider_->value());

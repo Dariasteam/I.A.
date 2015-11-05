@@ -47,7 +47,7 @@ agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix
 void agente::constructorGui(){
     lay_ = new QGridLayout(this);
     lay_->setSizeConstraint(QLayout::SetMinimumSize);
-    labelBot_.setPixmap(QPixmap("../I.A./recursos/robotAbajo.png"));
+    labelBot_.setPixmap(lado_[abajo]);
     QPixmap P("../I.A./recursos/testigo.png");
     color_ = QColor(rand()%255+1,rand()%255+1,rand()%255+1);
     P.fill(color_);
