@@ -3,9 +3,10 @@
 
 #include "mapa.h"
 #include "dropbot.h"
-//#include "costeuniforme.h"
-//#include "costeuniformesub.h"
-//#include "programaciondinamica.h"
+
+#include "costeuniforme.h"
+#include "costeuniformesub.h"
+#include "programaciondinamica.h"
 #include "aestrella.h"
 
 #include <QMainWindow>
@@ -33,16 +34,6 @@ struct menuTerreno{
     QSlider*                            slider_;
     QLabel*                             label_;
     short                               valorAnterior_;
-};
-
-enum tile {
-    nuclear,
-    suelo,
-    metal,
-    rejilla,
-    tierra,
-    rojo,
-    muro,
 };
 
 class agente;

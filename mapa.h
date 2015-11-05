@@ -2,9 +2,10 @@
 #define mapa_H
 
 #include "graphicsmapa.h"
-#include "mainwindow.h"
+//#include "mainwindow.h"
 
 #include <QGraphicsView>
+#include <QGraphicsPixmapItem>
 #include <QProgressBar>
 #include <fstream>
 #include <QScrollBar>
@@ -12,6 +13,17 @@
 
 
 class MainWindow;
+
+enum tile {
+    nuclear,
+    suelo,
+    metal,
+    rejilla,
+    tierra,
+    rojo,
+    muro,
+};
+
 class agente;
 
 struct celda{

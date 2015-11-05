@@ -18,9 +18,9 @@
 #include <QTimer>
 #include <QList>
 
-class mapa;
-
 struct celda;
+
+class mapa;
 
 class nodo{
 public:
@@ -103,13 +103,13 @@ protected:
     QList<trayectoria*>              listaCerrada_;
     bool                             regresando_;
     QList<celda*>                    objetivos_;
-    void setHijosNodo(nodo* F);
     bool esSucesor(nodo*, nodo*);
     bool comprobarCerrada(trayectoria* T);
     bool celdaPisada(nodo*,celda*);
     void recoger();
     void actualizarcoordenadas(short);
-    virtual nodo* expandir(nodo*);
+    virtual nodo* expandir(nodo*) = 0;
+    virtual void setHijosNodo(nodo* F) = 0;
     celda* escanearDireccion(short);
     void imprimir();
     void insertarAbierta(trayectoria* A);

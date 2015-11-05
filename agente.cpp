@@ -117,19 +117,19 @@ void agente::detontanteAnimacion(){
 void agente::detonanteCalculo(){
     srand(time(NULL));
     int n = mapaReal_->objetivos_.count();
-    while(n>0 && activo_){
+    //while(n>0 && activo_){
         fin_ = false;
         int f = rand()%n;
         objetivos_.push_back(mapaReal_->objetivos_.at(f));
         expandir(raiz_);
         cout<<"He caminado "<<pasos_<<" pasos "<<endl;
-        listaAbierta_.clear();
+        listaCerrada_.clear();
         trayectoDefinido_.push_back(-1);
         n = mapaReal_->objetivos_.count();
-        while(!trayectoDefinido_.isEmpty()){
+        //while(!trayectoDefinido_.isEmpty()){
 
-        }
-    }
+        //}
+    //}
 }
 
 void agente::animador(){
@@ -369,10 +369,6 @@ void agente::ajustarAbierta(){
     }
 }
 
-nodo* agente::expandir(nodo* F){
-    return F;
-}
-
 bool agente::comprobarCerrada(trayectoria* T){
     /*retorna true si existe una trayectoria mejor a la propuesta
      * en la lista cerrada y false si no es así*/
@@ -416,37 +412,5 @@ nodo* agente::comprobarCamino(nodo* N){
         cout<<"El problema no tiene solución"<<endl;
         fin_=true;
         return raiz_;
-    }
-}
-
-void agente::setHijosNodo(nodo* F){
-    if(!F->completo_){
-        trayectoria* T;
-        T = listaAbierta_.takeFirst();
-        if(!comprobarCerrada(T)){
-            listaCerrada_.push_back(T);
-        }
-        for(int j=0;j<4;j++){
-            celda* aux = escanearDireccion(j);
-            if(aux!=NULL && aux->tipo_ > -1 && aux->tipo_<5 && !celdaPisada(F,aux)){
-                if(aux==objetivos_.back()){
-                    cout<<"Encontrado "<<endl;
-                    mapaReal_->objetivos_.removeOne(aux);
-                    trayectoDefinido_.push_back(-1);
-                    fin_ = true;
-                    break;
-                }
-                nodo* N = new nodo(F,j,aux,F->profundidad_+1);
-                trayectoria* A = new trayectoria;
-                (*A).recorrido_ = (*T).recorrido_;
-                A->coste_ = T->coste_ + aux->tipo_;
-                A->hCoste_ = mapaReal_->getCoste(aux,objetivos_.back());
-                A->recorrido_.push_back(N);
-                if(!comprobarCerrada(A)){
-                    insertarAbierta(A);
-                }
-            }
-        }
-        F->completo_=true;
     }
 }

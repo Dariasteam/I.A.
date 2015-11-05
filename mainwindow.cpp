@@ -524,19 +524,23 @@ void MainWindow::addAgente(QPointF posReal, short tipo){
     switch (tipo) {
     case 1:
         gPix = (widMapa_->pintarPixmap(P.y(),P.x(),&graficosCu_[abajo]));
-        aux = new aEstrella(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),gPix,graficosCu_,widMapa_,memoria_,this);
+        aux = new costeUniforme(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),
+                                gPix,graficosCu_,widMapa_,memoria_,this);
         break;
     case 2:
         gPix = (widMapa_->pintarPixmap(P.y(),P.x(),&graficosCuSub_[abajo]));
-        aux = new aEstrella(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),gPix,graficosCuSub_,widMapa_,memoria_,this);
+        aux = new costeUniformeSub(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),
+                                   gPix,graficosCuSub_,widMapa_,memoria_,this);
         break;
     case 3:
         gPix = (widMapa_->pintarPixmap(P.y(),P.x(),&graficosProg_[abajo]));
-        aux = new aEstrella(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),gPix,graficosProg_,widMapa_,memoria_,this);
+        aux = new programacionDinamica(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),
+                                       gPix,graficosProg_,widMapa_,memoria_,this);
         break;
     case 4:
         gPix = (widMapa_->pintarPixmap(P.y(),P.x(),&graficosA_[abajo]));
-        aux = new aEstrella(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),gPix,graficosA_,widMapa_,memoria_,this);
+        aux = new aEstrella(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),
+                            gPix,graficosA_,widMapa_,memoria_,this);
         break;
     }
     layScrollAgentes_->addWidget(aux);
