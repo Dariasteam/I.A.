@@ -109,9 +109,9 @@ void agente::start(){
 }
 
 void agente::detontanteAnimacion(){
-    //tiempo_ = new QTimer();
-    //movimientoRestante_ = tiempoMov_;
-    //connect(tiempo_,&QTimer::timeout,this,&agente::animador);
+    tiempo_ = new QTimer();
+    movimientoRestante_ = tiempoMov_;
+    connect(tiempo_,&QTimer::timeout,this,&agente::animador);
 }
 
 void agente::detonanteCalculo(){
@@ -130,9 +130,6 @@ void agente::detonanteCalculo(){
 
         //}
     //}
-}
-
-void agente::animar() {
 }
 
 void agente::animador(){

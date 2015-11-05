@@ -1,5 +1,5 @@
 #include "graphicsmapa.h"
-#include "mainwindow.h"
+#include "../mainwindow.h"
 
 #include <QGraphicsSceneMouseEvent>
 
