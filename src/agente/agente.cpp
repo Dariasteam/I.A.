@@ -1,5 +1,5 @@
-#include "mapa.h"
-#include "mainwindow.h"
+#include "../mapa.h"
+#include "../mainwindow.h"
 
 class MainWindow;
 

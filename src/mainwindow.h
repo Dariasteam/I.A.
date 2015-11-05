@@ -4,10 +4,10 @@
 #include "mapa.h"
 #include "dropbot.h"
 
-#include "costeuniforme.h"
-#include "costeuniformesub.h"
-#include "programaciondinamica.h"
-#include "aestrella.h"
+#include "agente/costeuniforme.h"
+#include "agente/costeuniformesub.h"
+#include "agente/programaciondinamica.h"
+#include "agente/aestrella.h"
 
 #include <QMainWindow>
 #include <QGridLayout>

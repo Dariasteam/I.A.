@@ -14,28 +14,26 @@ TARGET = IA
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    graphicsmapa.cpp \
-    dropbot.cpp \
-    agente.cpp \
-    mapa.cpp \
-    costeuniforme.cpp \
-    costeuniformesub.cpp \
-    programaciondinamica.cpp \
-    aestrella.cpp
+SOURCES += src/main.cpp\
+        src/mainwindow.cpp \
+    src/graphicsmapa.cpp \
+    src/dropbot.cpp \
+    src/agente/agente.cpp \
+    src/mapa.cpp \
+    src/agente/costeuniforme.cpp \
+    src/agente/costeuniformesub.cpp \
+    src/agente/programaciondinamica.cpp \
+    src/agente/aestrella.cpp
 
-HEADERS  += mainwindow.h \
-    graphicsmapa.h \
-    dropbot.h \
-    agente.h \
-    mapa.h \
-    costeuniforme.h \
-    costeuniformesub.h \
-    programaciondinamica.h \
-    aestrella.h
-
-FORMS    += mainwindow.ui
+HEADERS  += src/mainwindow.h \
+    src/graphicsmapa.h \
+    src/dropbot.h \
+    src/agente/agente.h \
+    src/mapa.h \
+    src/agente/costeuniforme.h \
+    src/agente/costeuniformesub.h \
+    src/agente/programaciondinamica.h \
+    src/agente/aestrella.h
 
 DISTFILES +=
 

@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "celda.h"
 #include "mapa.h"
 
 #include <iostream>
