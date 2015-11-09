@@ -1,5 +1,6 @@
 #include "graphicsmapa.h"
 #include "../mainwindow.h"
+#include <QDebug>
 
 #include <QGraphicsSceneMouseEvent>
 
@@ -17,8 +18,9 @@ QPointF graphicsMapa::GetMousePos(){
 
 
 void graphicsMapa::mouseMoveEvent(QGraphicsSceneMouseEvent *e){
-        mousePos_ = e->scenePos();
-        emit sendMousePos(e->scenePos());
+    mousePos_ = e->scenePos();
+    emit sendMousePos(e->scenePos());
+    e->accept();
 }
 
 
@@ -31,7 +33,7 @@ void graphicsMapa::dragMoveEvent(QGraphicsSceneDragDropEvent* E){
                                     E->mimeData()->text()=="2" ||
                                     E->mimeData()->text()=="3" ||
                                     E->mimeData()->text()=="4" )){
-        E->acceptProposedAction();
+       E->acceptProposedAction();
     }
 }
 

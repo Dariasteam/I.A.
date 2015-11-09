@@ -175,8 +175,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     drop3->setMinimumSize(55,40);
     drop4->setMinimumSize(55,40);
 
-    layDropBot->addWidget(drop2);
     layDropBot->addWidget(drop1);
+    layDropBot->addWidget(drop2                                                                                                                                                                                                                                                                       );
     layDropBot->addWidget(drop3);
     layDropBot->addWidget(drop4);
 
@@ -546,6 +546,7 @@ void MainWindow::addAgente(QPointF posReal, short tipo){
 }
 
 void MainWindow::movioMouse(QPointF mousePos){
+
     mousePos_ = mousePos;
     pintar();
 }

@@ -51,6 +51,7 @@ public:
     void mouseDoubleClickEvent(QMouseEvent* );
     ~agente();
     void constructorGui();
+    void reiniciar();
     void detontanteAnimacion();
     void detonanteCalculo();
     void start();
@@ -96,6 +97,7 @@ public slots:
     void animador();
     //ALGORITMO
 protected:
+    objetivo*                        objetivoActual_;
     int                              pasos_;
     nodo*                            raiz_;
     bool                             fin_;

@@ -136,24 +136,25 @@ QGraphicsPixmapItem* mapa::pintarPixmap(double fila, double columna, QPixmap* pi
  }
 
 void mapa::sustituirCelda(double fila, double columna, short idPix){
-    if(fila >= 0 && fila<f_ && columna >= 0 && columna < c_){
-        QPixmap* pix = &graficosTerrenos_[idPix];
-        QGraphicsPixmapItem* auxPixBorrar = mapa_[pos(fila,columna)].pix_;
-        QGraphicsPixmapItem* auxPix;
-        auxPix = escena_->addPixmap(*pix);
-        auxPix->setScale(escala_);
-        auxPix->setPos(columna*escala_*pix->size().height(),fila*escala_*pix->size().height());
-        auxPix->setZValue(-1);
-        if(auxPixBorrar==NULL){
-            delete auxPixBorrar;
-        }
-        mapa_[pos(fila,columna)].pix_=auxPix;
-        mapa_[pos(fila,columna)].x_=columna;
-        mapa_[pos(fila,columna)].y_=fila;
-        mapa_[pos(fila,columna)].tipo_=idPix;
-        objetivos_.removeAll(&mapa_[pos(fila,columna)]);
-        if(idPix == nuclear){
-           objetivos_.push_back(&mapa_[pos(fila,columna)]);
+    if(mapa_[pos(fila,columna)].tipo_ != idPix){
+        if(fila >= 0 && fila<f_ && columna >= 0 && columna < c_){
+            QPixmap* pix = &graficosTerrenos_[idPix];
+            QGraphicsPixmapItem* auxPixBorrar = mapa_[pos(fila,columna)].pix_;
+            QGraphicsPixmapItem* auxPix;
+            auxPix = escena_->addPixmap(*pix);
+            auxPix->setScale(escala_);
+            auxPix->setPos(columna*escala_*pix->size().height(),fila*escala_*pix->size().height());
+            auxPix->setZValue(-1);
+            if(auxPixBorrar==NULL){
+                delete auxPixBorrar;
+            }
+            mapa_[pos(fila,columna)].pix_=auxPix;
+            mapa_[pos(fila,columna)].x_=columna;
+            mapa_[pos(fila,columna)].y_=fila;
+            mapa_[pos(fila,columna)].tipo_=idPix;
+            if(idPix == nuclear){
+               objetivos_.push_back(new objetivo{&mapa_[pos(fila,columna)],false});
+            }
         }
     }
 }

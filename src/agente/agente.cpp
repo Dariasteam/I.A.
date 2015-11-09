@@ -28,16 +28,6 @@ agente::agente(int x, int y, double tiempoMov, int id, QGraphicsPixmapItem* gPix
     mapaMem_ = mem;
     mapaReal_ = map;
     regresando_ = false;
-    raiz_ = new nodo();
-    pasos_=0;
-    raiz_->profundidad_=0;
-    raiz_->celda_ = mapaReal_->getCelda(y_,x_);
-    raiz_->dirLlegar_=-8;
-    fin_ = false;
-    trayectoria* T = new trayectoria;
-    T->coste_=0;
-    T->recorrido_.push_back(raiz_);
-    listaAbierta_.push_back(T);
     activo_=false;
     movimientoRestante_=0;
     constructorGui();
@@ -73,6 +63,20 @@ void agente::constructorGui(){
 
 agente::~agente(){
     delete &hiloCalculo_;
+}
+
+void agente::reiniciar(){
+    listaAbierta_.clear();
+    raiz_ = new nodo();
+    pasos_=0;
+    raiz_->profundidad_=0;
+    raiz_->celda_ = mapaReal_->getCelda(y_,x_);
+    raiz_->dirLlegar_=-8;
+    fin_ = false;
+    trayectoria* T = new trayectoria;
+    T->coste_=0;
+    T->recorrido_.push_back(raiz_);
+    listaAbierta_.push_back(T);
 }
 
 bool agente::terminar(){
@@ -115,21 +119,24 @@ void agente::detontanteAnimacion(){
 }
 
 void agente::detonanteCalculo(){
-    srand(time(NULL));
     int n = mapaReal_->objetivos_.count();
-    //while(n>0 && activo_){
+    while(n>0 && activo_){
+        int i=0;
+        while(i<n && mapaReal_->objetivos_.at(i)->marcado_){
+            i++;
+        }
         fin_ = false;
-        int f = rand()%n;
-        objetivos_.push_back(mapaReal_->objetivos_.at(f));
+        objetivoActual_ = mapaReal_->objetivos_.at(i);
+        objetivoActual_->marcado_ = true;
+        objetivos_.push_back(objetivoActual_->cel_);
+        reiniciar();
+        cout<<"Estoy en "<<raiz_->celda_->x_<<" "<<raiz_->celda_->y_<<endl;
         expandir(raiz_);
         cout<<"He caminado "<<pasos_<<" pasos "<<endl;
-        listaCerrada_.clear();
+        //listaCerrada_.clear();
         trayectoDefinido_.push_back(-1);
         n = mapaReal_->objetivos_.count();
-        //while(!trayectoDefinido_.isEmpty()){
-
-        //}
-    //}
+    }
 }
 
 void agente::animador(){
@@ -219,7 +226,7 @@ void agente::writeMem(){
 }
 
 void agente::recoger(){
-    mapaReal_->setCelda(objetivos_.first()->y_,objetivos_.first()->x_,1);
+    mapaReal_->sustituirCelda(objetivos_.first()->y_,objetivos_.first()->x_,suelo);
 }
 
 bool agente::pause(){

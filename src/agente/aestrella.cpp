@@ -44,7 +44,7 @@ void aEstrella::setHijosNodo(nodo* F){
             if(aux!=NULL && aux->tipo_ > -1 && aux->tipo_<5 && !celdaPisada(F,aux)){
                 if(aux==objetivos_.back()){
                     cout<<"Encontrado "<<endl;
-                    mapaReal_->objetivos_.removeOne(aux);
+                    mapaReal_->objetivos_.removeOne(objetivoActual_);
                     trayectoDefinido_.push_back(-1);
                     fin_ = true;
                     break;

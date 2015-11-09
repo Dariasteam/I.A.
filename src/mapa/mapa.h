@@ -41,6 +41,11 @@ enum direcciones {
     izquierda,
 };
 
+struct objetivo{
+    celda* cel_;
+    bool   marcado_;
+};
+
 class mapa : public QGraphicsView{
 public:
     mapa(int f,int c,QProgressBar*,short,short,short,short,QPixmap*,QWidget* parent);
@@ -60,7 +65,7 @@ public:
     double getEscala();
     int getCoste(celda* pos, celda* objetivo);
     std::mutex                              mu_;
-    QList<celda*>                           objetivos_;
+    QList<objetivo*>                        objetivos_;
 private:
     celda*                                  mapa_;
     QPixmap*                                graficosTerrenos_;

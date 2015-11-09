@@ -14,6 +14,7 @@ costeUniforme::costeUniforme(int x, int y, double tiempoMov_, int id, QGraphicsP
 nodo* costeUniforme::expandir(nodo* F){        //profundidad y coste
     actualizarcoordenadas(F->dirLlegar_);
     //imprimir();
+    pasos_++;
     if(F->celda_!=objetivos_.back() && !fin_){
         if(!listaAbierta_.isEmpty()){
             //EXPANDIR ESTADOS
@@ -41,7 +42,7 @@ void costeUniforme::setHijosNodo(nodo* F){
             if(aux!=NULL && aux->tipo_ > -1 && aux->tipo_<5 && !celdaPisada(F,aux)){
                 if(aux==objetivos_.back()){
                     cout<<"Encontrado "<<endl;
-                    mapaReal_->objetivos_.removeOne(aux);
+                    mapaReal_->objetivos_.removeOne(new objetivo {aux, true});
                     trayectoDefinido_.push_back(-1);
                     fin_ = true;
                     break;
