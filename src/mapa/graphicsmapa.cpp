@@ -32,7 +32,8 @@ void graphicsMapa::dragMoveEvent(QGraphicsSceneDragDropEvent* E){
     if(E->mimeData()->hasText() && (E->mimeData()->text()=="1" ||
                                     E->mimeData()->text()=="2" ||
                                     E->mimeData()->text()=="3" ||
-                                    E->mimeData()->text()=="4" )){
+                                    E->mimeData()->text()=="4" ||
+                                    E->mimeData()->text()=="5" )){
        E->acceptProposedAction();
     }
 }
@@ -41,7 +42,8 @@ void graphicsMapa::dropEvent(QGraphicsSceneDragDropEvent* E){
     if(E->mimeData()->hasText() && (E->mimeData()->text()=="1" ||
                                     E->mimeData()->text()=="2" ||
                                     E->mimeData()->text()=="3" ||
-                                    E->mimeData()->text()=="4" )){
+                                    E->mimeData()->text()=="4" ||
+                                    E->mimeData()->text()=="5" )){
          ((MainWindow*)(parent_))->addAgente(E->scenePos(),E->mimeData()->text().toShort());
     }
 }

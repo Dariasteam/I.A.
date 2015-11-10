@@ -113,6 +113,7 @@ protected:
     virtual nodo* expandir(nodo*) = 0;
     virtual void setHijosNodo(nodo* F) = 0;
     celda* escanearDireccion(short);
+    celda* escanearDireccionMem(short);
     void imprimir();
     void insertarAbierta(trayectoria* A);
     nodo* comprobarCamino(nodo*);

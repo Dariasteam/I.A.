@@ -66,6 +66,7 @@ agente::~agente(){
 }
 
 void agente::reiniciar(){
+    cout<<"Estableciendo variables del algoritmo"<<endl;
     listaAbierta_.clear();
     raiz_ = new nodo();
     pasos_=0;
@@ -120,23 +121,25 @@ void agente::detontanteAnimacion(){
 
 void agente::detonanteCalculo(){
     int n = mapaReal_->objetivos_.count();
+    cout<<"hay "<<n<<" objetivos por encontrar"<<endl;
     while(n>0 && activo_){
         int i=0;
         while(i<n && mapaReal_->objetivos_.at(i)->marcado_){
             i++;
         }
-        fin_ = false;
-        objetivoActual_ = mapaReal_->objetivos_.at(i);
-        objetivoActual_->marcado_ = true;
-        objetivos_.push_back(objetivoActual_->cel_);
-        reiniciar();
-        cout<<"Estoy en "<<raiz_->celda_->x_<<" "<<raiz_->celda_->y_<<endl;
-        expandir(raiz_);
-        cout<<"He caminado "<<pasos_<<" pasos "<<endl;
-        //listaCerrada_.clear();
-        trayectoDefinido_.push_back(-1);
-        n = mapaReal_->objetivos_.count();
+        if(mapaReal_->objetivos_.count()>i){
+            objetivoActual_ = mapaReal_->objetivos_.at(i);
+            objetivoActual_->marcado_ = true;
+            objetivos_.push_back(objetivoActual_->cel_);
+            reiniciar();
+            expandir(raiz_);
+            cout<<"He caminado "<<pasos_<<" pasos "<<endl;
+            listaCerrada_.clear();
+            trayectoDefinido_.push_back(-1);
+            n = mapaReal_->objetivos_.count();
+        }
     }
+    cout<<"Todos los objetivos han sido encontrados"<<endl;
 }
 
 void agente::animador(){
@@ -312,6 +315,19 @@ celda* agente::escanearDireccion(short d){
         return mapaReal_->getCelda(y_,x_+1);
     }else if(d==izquierda){
         return mapaReal_->getCelda(y_,x_-1);
+    }
+    return NULL;
+}
+
+celda* agente::escanearDireccionMem(short d){
+    if(d==arriba){
+        return mapaMem_->getCelda(y_-1,x_);
+    }else if(d==abajo){
+        return mapaMem_->getCelda(y_+1,x_);
+    }else if(d==derecha){
+        return mapaMem_->getCelda(y_,x_+1);
+    }else if(d==izquierda){
+        return mapaMem_->getCelda(y_,x_-1);
     }
     return NULL;
 }

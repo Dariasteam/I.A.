@@ -165,20 +165,26 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     dropbot* drop2 = new dropbot(2,this);
     dropbot* drop3 = new dropbot(3,this);
     dropbot* drop4 = new dropbot(4,this);
-    drop1->setPixmap(QPixmap(":/recursos/cuAbajo.png"));
-    drop2->setPixmap(QPixmap(":/recursos/cusubAbajo.png"));
-    drop3->setPixmap(QPixmap(":/recursos/progdinAbajo.png"));
-    drop4->setPixmap(QPixmap(":/recursos/A*Abajo.png"));
+    dropbot* drop5 = new dropbot(5,this);
+
+    drop1->setPixmap(graficosCu_[abajo]);
+    drop2->setPixmap(graficosCuSub_[abajo]);
+    drop3->setPixmap(graficosProg_[abajo]);
+    drop4->setPixmap(graficosA_[abajo]);
+    drop5->setPixmap(graficosA_[abajo]);
+
 
     drop1->setMinimumSize(55,40);
     drop2->setMinimumSize(55,40);
     drop3->setMinimumSize(55,40);
     drop4->setMinimumSize(55,40);
+    drop5->setMinimumSize(55,40);
 
     layDropBot->addWidget(drop1);
     layDropBot->addWidget(drop2                                                                                                                                                                                                                                                                       );
     layDropBot->addWidget(drop3);
     layDropBot->addWidget(drop4);
+    layDropBot->addWidget(drop5);
 
     //layDropBot->addWidget(new QLabel("Arrastra y suelta\npara añadir\nun agente\n\nVelocidad:"));
 
@@ -534,6 +540,11 @@ void MainWindow::addAgente(QPointF posReal, short tipo){
     case 4:
         gPix = (widMapa_->pintarPixmap(P.y(),P.x(),&graficosA_[abajo]));
         aux = new aEstrella(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),
+                            gPix,graficosA_,widMapa_,memoria_,this);
+        break;
+    case 5:
+        gPix = (widMapa_->pintarPixmap(P.y(),P.x(),&graficosA_[abajo]));
+        aux = new propio(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),
                             gPix,graficosA_,widMapa_,memoria_,this);
         break;
     }

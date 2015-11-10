@@ -8,6 +8,7 @@
 #include "agente/costeuniformesub.h"
 #include "agente/programaciondinamica.h"
 #include "agente/aestrella.h"
+#include "agente/propio.h"
 
 #include <QMainWindow>
 #include <QGridLayout>
