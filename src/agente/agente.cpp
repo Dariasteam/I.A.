@@ -321,6 +321,7 @@ celda* agente::escanearDireccion(short d){
         while(!mapaMem_->mu_.try_lock()){
             cout<<"Esperando desbloqueo del mutex"<<endl;
         }
+        mapaMem_->setValorCelda(x_,y_,mapaReal_->getCelda(y_,x_)->tipo_);
         if(d==arriba){
             celda* aux = mapaReal_->getCelda(y_-1,x_);
             mapaMem_->setValorCelda(x_,y_-1,aux->tipo_);

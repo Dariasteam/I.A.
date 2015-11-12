@@ -10,18 +10,28 @@ propio::propio(int x, int y, double tiempoMov_, int id, QGraphicsPixmapItem *gPi
 {
     this->checkMemoria_->setChecked(true);
     this->checkMemoria_->setEnabled(false);
-
+    objetivoC_=NULL;
+    atajando_=false;
     for(int i=0;i<4;i++){
         celda* aux = escanearDireccion(i);
     }
 }
 
 nodo* propio::expandir(nodo* F){        //profundidad y coste
-    actualizarcoordenadas(F->dirLlegar_);
+    if(atajando_){
+        actualizarcoordenadas(F->dirLlegar_,false);
+    }else{
+        cout<<"\t ME ESTOY MOVIENDO Y MUCHO"<<endl;
+        actualizarcoordenadas(F->dirLlegar_);
+    }
+    if(objetivoC_!=NULL && F->celda_->x_ == objetivoC_->x_ && F->celda_->y_ == objetivoC_->y_){
+        cout<<"Fin del atajo"<<endl;
+        atajando_=false;
+    }
     cout<<"Estoy en ";
     F->celda_->imprimir();
     cout<<" "<<y_<<" "<<x_<<endl;
-    //imprimir();
+    imprimir();
     ajustarAbierta();
     pasos_++;
     if(F->celda_!=objetivos_.back() && !fin_){
@@ -29,9 +39,9 @@ nodo* propio::expandir(nodo* F){        //profundidad y coste
             setHijosNodo(F);
             if(!fin_){
                 nodo* K = comprobarCamino(F);
-                if(K!=F && !esSucesor(F,listaAbierta_.first()->recorrido_.last()) &&F!=raiz_){
+                if(K!=F && !esSucesor(F,listaAbierta_.first()->recorrido_.last())){
                     cout<<"Voy a atajar"<<endl;
-                    imprimir();
+                    //imprimir();
                     dijkstra(F,K);
                     actualizarcoordenadas(F->dirLlegar_+4,false);
                     return F;
@@ -44,7 +54,6 @@ nodo* propio::expandir(nodo* F){        //profundidad y coste
         }
     }
     actualizarcoordenadas(F->dirLlegar_+4,false);
-    cout<<"Retorno"<<endl;
     return F;
 }
 
@@ -80,12 +89,6 @@ void propio::setHijosNodo(nodo* F){
     }
 }
 
-nodo* propio::intermediario(nodo *F){
-    if(!movimientoC_->isEmpty()){
-
-    }
-}
-
 void propio::dijkstra(nodo *I, nodo *F){
     celda* i = I->celda_;
     F = listaAbierta_.first()->recorrido_.last();
@@ -98,11 +101,11 @@ void propio::dijkstra(nodo *I, nodo *F){
     cout<<"Comprobando atajos"<<endl;
     xC_ = x_;
     yC_ = y_;
-    cout<<"Y yo estoy en "<<y_<<" "<<x_<<endl;
     movimientoC_ = new QList<short>;
     listaAbiertaC_.clear();
+    listaCerradaC_.clear();
     trayectoriaC* T = new trayectoriaC;
-    raizC_ = new nodoC(0,-1,i,0);
+    raizC_ = new nodoC(0,-50,i,0);
     T->recorrido_.push_back(raizC_);
     T->coste_=0;
     T->hCoste_=0;
@@ -116,33 +119,31 @@ void propio::dijkstra(nodo *I, nodo *F){
             cout<<trayectoDefinido_.back()<<" ";
         }
     }
+    atajando_ = true;
     cout<<endl;
     cout<<"Al final de atajar me encuentro en "<<yC_<<","<<xC_<<endl;
 }
 
 
 nodoC* propio::expandirC(nodoC* F){        //profundidad y coste
-    //imprimirC();
     actualizarcoordenadasC(F->dirLlegar_);
     ajustarAbiertaC();
-    if(F->celda_!=objetivoC_){
+    if(F->celda_!=objetivoC_ && finC_!=true){
         if(!listaAbiertaC_.isEmpty()){
             setHijosNodoC(F);
             if(!finC_){
                 nodoC* K = comprobarCaminoC(F);
                 while(listaAbiertaC_.count()>0 && listaAbiertaC_.first()->recorrido_.count()>0 &&
-                    (K==F || esSucesorC(F,listaAbiertaC_.first()->recorrido_.last())) && !finC_){
+                   (K==F || esSucesorC(F,listaAbiertaC_.first()->recorrido_.last())) && !finC_){
                     K = expandirC(listaAbiertaC_.first()->recorrido_.at(F->profundidad_+1));
                 }
             }
         }
     }
-    if(finC_){
-       cout<<"Regresando"<<endl;
-       //actualizarcoordenadasC(F->dirLlegar_);
-       movimientoC_->push_front(F->dirLlegar_);
-    }else{
-        if(F!=raizC_){
+    if(F!=raizC_){
+        if(finC_){
+            movimientoC_->push_front(F->dirLlegar_);
+        }else{
             actualizarcoordenadasC(F->dirLlegar_+4);
         }
     }
@@ -164,7 +165,7 @@ void propio::setHijosNodoC(nodoC* F){
                     actualizarcoordenadasC(F->dirLlegar_);
                     movimientoC_->push_front(j);
                     finC_ = true;
-                    break;
+                    return;
                 }
                 nodoC* N = new nodoC(F,j,aux,F->profundidad_+1);
                 trayectoriaC* A = new trayectoriaC;
@@ -309,7 +310,10 @@ nodoC* propio::comprobarCaminoC(nodoC* N){
         return N;
     }else{
         cout<<"El problema no tiene solución"<<endl;
-        finC_=true;
+        while(1){
+
+        }
+        //finC_=true;
         return raizC_;
     }
 }

@@ -35,7 +35,6 @@ public:
     propio(int x, int y, double tiempoMov_, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, mapa* map, mapa* mem, QWidget* parent);
     nodo* expandir(nodo* F);
     void setHijosNodo(nodo* F);
-    nodo* intermediario(nodo* F);
     void dijkstra(nodo* I,nodo* F);
     //Funciones centinela
     nodoC* expandirC(nodoC* F);
