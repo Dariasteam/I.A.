@@ -487,6 +487,7 @@ void MainWindow::onSimular(){
             agentes_.at(i)->pause();
         }
     }
+    velocidad(50);
 }
 
 void MainWindow::velocidad(int i){
