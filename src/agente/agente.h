@@ -109,11 +109,10 @@ protected:
     bool comprobarCerrada(trayectoria* T);
     bool celdaPisada(nodo*,celda*);
     void recoger();
-    void actualizarcoordenadas(short);
+    void actualizarcoordenadas(short,bool b=true);
     virtual nodo* expandir(nodo*) = 0;
     virtual void setHijosNodo(nodo* F) = 0;
     celda* escanearDireccion(short);
-    celda* escanearDireccionMem(short);
     void imprimir();
     void insertarAbierta(trayectoria* A);
     nodo* comprobarCamino(nodo*);

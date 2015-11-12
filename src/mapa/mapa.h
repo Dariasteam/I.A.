@@ -64,6 +64,7 @@ public:
     QPoint getFilaColumna(QPointF);
     double getEscala();
     int getCoste(celda* pos, celda* objetivo);
+    void setValorCelda(int x,int y,short);
     std::mutex                              mu_;
     QList<objetivo*>                        objetivos_;
 private:

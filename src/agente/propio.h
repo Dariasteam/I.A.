@@ -43,10 +43,12 @@ public:
     void actualizarcoordenadasC(short);
     void ajustarAbiertaC();
     bool comprobarCerradaC(trayectoriaC*);
+    celda* escanearDireccionMem(short);
     bool celdaPisadaC(nodoC*, celda*);
     void insertarAbiertaC(trayectoriaC* A);
     bool esSucesorC(nodoC*, nodoC*);
     nodoC* comprobarCaminoC(nodoC* );
+    void imprimirC();
 private:
     int             xC_;
     int             yC_;
@@ -56,6 +58,7 @@ private:
     nodoC*                            raizC_;
     bool                              finC_;
     QList<short>*                     movimientoC_;
+    bool                              atajando_;
 };
 
 #endif // PROPIO_H

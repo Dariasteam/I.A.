@@ -11,15 +11,16 @@ propio::propio(int x, int y, double tiempoMov_, int id, QGraphicsPixmapItem *gPi
     this->checkMemoria_->setChecked(true);
     this->checkMemoria_->setEnabled(false);
 
-    while(!mapaMem_->mu_.try_lock()){
-        cout<<"Esperando desbloqueo del mutex"<<endl;
+    for(int i=0;i<4;i++){
+        celda* aux = escanearDireccion(i);
     }
-    mapaMem_->setCelda(y_,x_,mapaReal_->getCelda(y_,x_)->tipo_);
-    mapaMem_->mu_.unlock();
 }
 
 nodo* propio::expandir(nodo* F){        //profundidad y coste
     actualizarcoordenadas(F->dirLlegar_);
+    cout<<"Estoy en ";
+    F->celda_->imprimir();
+    cout<<" "<<y_<<" "<<x_<<endl;
     //imprimir();
     ajustarAbierta();
     pasos_++;
@@ -28,18 +29,22 @@ nodo* propio::expandir(nodo* F){        //profundidad y coste
             setHijosNodo(F);
             if(!fin_){
                 nodo* K = comprobarCamino(F);
-                if(K!=F){                       //hay que buscar la solución común
+                if(K!=F && !esSucesor(F,listaAbierta_.first()->recorrido_.last()) &&F!=raiz_){
+                    cout<<"Voy a atajar"<<endl;
+                    imprimir();
                     dijkstra(F,K);
-                    intermediario(F);
+                    actualizarcoordenadas(F->dirLlegar_+4,false);
+                    return F;
                 }
-                while(listaAbierta_.count()>0 && listaAbierta_.first()->recorrido_.count()>0 &&
-                    (K==F || esSucesor(F,listaAbierta_.first()->recorrido_.last())) && !fin_){
+                while(listaAbierta_.count()>0 && listaAbierta_.first()->recorrido_.count()>0
+                && K==F || esSucesor(F,listaAbierta_.first()->recorrido_.last()) && !fin_){
                     K = expandir(listaAbierta_.first()->recorrido_.at(F->profundidad_+1));
                 }
             }
-            actualizarcoordenadas(F->dirLlegar_+4);
         }
     }
+    actualizarcoordenadas(F->dirLlegar_+4,false);
+    cout<<"Retorno"<<endl;
     return F;
 }
 
@@ -83,40 +88,41 @@ nodo* propio::intermediario(nodo *F){
 
 void propio::dijkstra(nodo *I, nodo *F){
     celda* i = I->celda_;
+    F = listaAbierta_.first()->recorrido_.last();
     objetivoC_ = F->celda_;
-    cout<<"La celda origen es "<<i->x_<<","<<i->y_<<endl;
-    cout<<"La celda objetivo es "<<objetivoC_->x_<<","<<objetivoC_->y_<<endl;
-    //cout<<"Profundidad actual: "<<I->profundidad_<<endl;
-    //cout<<"Profundidad final: "<<F->profundidad_<<endl;
-    //cout<<"He de caminar: "<<I->profundidad_+F->profundidad_<<" pasos hasta el destino"<<endl;
+    cout<<"La celda origen es ";
+    i->imprimir();
+    cout<<endl<<"La celda objetivo es ";
+    objetivoC_->imprimir();
+    cout<<endl;
     cout<<"Comprobando atajos"<<endl;
     xC_ = x_;
     yC_ = y_;
+    cout<<"Y yo estoy en "<<y_<<" "<<x_<<endl;
     movimientoC_ = new QList<short>;
     listaAbiertaC_.clear();
     trayectoriaC* T = new trayectoriaC;
     raizC_ = new nodoC(0,-1,i,0);
     T->recorrido_.push_back(raizC_);
+    T->coste_=0;
+    T->hCoste_=0;
     listaAbiertaC_.push_back(T);
     finC_ = false;
     expandirC(raizC_);
-    cout<<"Localizado el atajo: "<<endl;
     while(!movimientoC_->isEmpty()){
-        cout<<movimientoC_->takeFirst()<<" "<<endl;
+        short d = movimientoC_->takeFirst();
+        if(d!=-1){
+            trayectoDefinido_.push_back(d);
+            cout<<trayectoDefinido_.back()<<" ";
+        }
     }
-
-    //x_ = xC_;
-    //y_ = yC_;
-
-
-    //trayectoDefinido_ = trayectoDefinido_ + *movimientoC_;
-
-    //movimientoC_->clear();
-    //delete movimientoC_;
+    cout<<endl;
+    cout<<"Al final de atajar me encuentro en "<<yC_<<","<<xC_<<endl;
 }
 
 
 nodoC* propio::expandirC(nodoC* F){        //profundidad y coste
+    //imprimirC();
     actualizarcoordenadasC(F->dirLlegar_);
     ajustarAbiertaC();
     if(F->celda_!=objetivoC_){
@@ -125,14 +131,18 @@ nodoC* propio::expandirC(nodoC* F){        //profundidad y coste
             if(!finC_){
                 nodoC* K = comprobarCaminoC(F);
                 while(listaAbiertaC_.count()>0 && listaAbiertaC_.first()->recorrido_.count()>0 &&
-                    (K==F || esSucesorC(F,listaAbiertaC_.first()->recorrido_.last())) && !fin_){
+                    (K==F || esSucesorC(F,listaAbiertaC_.first()->recorrido_.last())) && !finC_){
                     K = expandirC(listaAbiertaC_.first()->recorrido_.at(F->profundidad_+1));
                 }
             }
-            if(finC_){
-                cout<<"recursivo"<<endl;
-                movimientoC_->push_front(F->dirLlegar_);
-            }
+        }
+    }
+    if(finC_){
+       cout<<"Regresando"<<endl;
+       //actualizarcoordenadasC(F->dirLlegar_);
+       movimientoC_->push_front(F->dirLlegar_);
+    }else{
+        if(F!=raizC_){
             actualizarcoordenadasC(F->dirLlegar_+4);
         }
     }
@@ -149,8 +159,10 @@ void propio::setHijosNodoC(nodoC* F){
         for(int j=0;j<4;j++){
             celda* aux = escanearDireccionMem(j);
             if(aux!=NULL && aux->tipo_ > -1 && aux->tipo_<5 && !celdaPisadaC(F,aux)){
-                if(aux==objetivoC_){
-                    cout<<"Encontrado un atajo"<<endl;
+                if(aux->x_==objetivoC_->x_ && aux->y_==objetivoC_->y_){
+                    cout<<"Atajo encontrado"<<endl;
+                    actualizarcoordenadasC(F->dirLlegar_);
+                    movimientoC_->push_front(j);
                     finC_ = true;
                     break;
                 }
@@ -158,7 +170,7 @@ void propio::setHijosNodoC(nodoC* F){
                 trayectoriaC* A = new trayectoriaC;
                 (*A).recorrido_ = (*T).recorrido_;
                 A->coste_ = T->coste_ + aux->tipo_;
-                A->hCoste_ = mapaMem_->getCoste(aux,objetivos_.back());
+                A->hCoste_ = mapaMem_->getCoste(aux,objetivoC_);
                 A->recorrido_.push_back(N);
                 if(!comprobarCerradaC(A)){
                     insertarAbiertaC(A);
@@ -167,6 +179,19 @@ void propio::setHijosNodoC(nodoC* F){
         }
         F->completo_=true;
     }
+}
+
+celda* propio::escanearDireccionMem(short d){
+    if(d==arriba){
+        return mapaMem_->getCelda(yC_-1,xC_);
+    }else if(d==abajo){
+        return mapaMem_->getCelda(yC_+1,xC_);
+    }else if(d==derecha){
+        return mapaReal_->getCelda(yC_,xC_+1);
+    }else if(d==izquierda){
+        return mapaReal_->getCelda(yC_,xC_-1);
+    }
+    return NULL;
 }
 
 void propio::actualizarcoordenadasC(short d){
@@ -287,4 +312,19 @@ nodoC* propio::comprobarCaminoC(nodoC* N){
         finC_=true;
         return raizC_;
     }
+}
+
+void propio::imprimirC(){
+    /*muestra la lista de trayectorias, el contenido de
+     *cada una y su coste con el formato:
+     *Trayectoria1 (celda1 x,y)[tipo] (celda2 x,y)[tipo] {coste}*/
+    for(int i=0;i<listaAbiertaC_.count();i++){
+        for(int j=0;j<listaAbiertaC_.at(i)->recorrido_.count();j++){
+            cout<<" | ";
+            listaAbiertaC_.at(i)->recorrido_.at(j)->celda_->imprimir();
+            cout<<" | ";
+        }
+        cout<<" <- {"<<listaAbiertaC_.at(i)->coste_+listaAbiertaC_.at(i)->hCoste_<<"}"<<endl;
+    }
+    cout<<endl;
 }

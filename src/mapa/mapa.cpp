@@ -58,6 +58,12 @@ mapa::mapa(int f, int c, QPixmap* graficosTerrenos, QWidget *parent){
     parent_=parent;
     graficosTerrenos_=graficosTerrenos;
     operacionesConstruccion(NULL);
+    for(int i=0;i<f_;i++){
+        for(int j=0;j<c_;j++){
+            sustituirCelda(i,j,-10);
+            mapa_[pos(i,j)].pix_=NULL;
+        }
+    }
 }
 
 void mapa::operacionesConstruccion(QProgressBar* b){
@@ -96,7 +102,7 @@ void mapa::zoom(int i){
 }
 
 celda* mapa::getCelda(int f, int c){
-    if(f<f_ && f>-1 && c<c_ && c>-1){
+    if(f<f_ && f>-1 && c<c_ && c>-1 && mapa_[pos(f,c)].tipo_ > -1){
         return &mapa_[pos(f,c)];
     }else{
         return NULL;
@@ -123,6 +129,10 @@ int mapa::pos(int f,int c){
     }
 }
 
+void mapa::setValorCelda(int x, int y, short v){
+    mapa_[pos(y,x)].tipo_ = v;
+}
+
 QGraphicsPixmapItem* mapa::pintarPixmap(double fila, double columna, QPixmap* pix){
     if(fila >= 0 && fila<f_ && columna >= 0 && columna < c_){
         QGraphicsPixmapItem* auxPix;
@@ -136,7 +146,7 @@ QGraphicsPixmapItem* mapa::pintarPixmap(double fila, double columna, QPixmap* pi
  }
 
 void mapa::sustituirCelda(double fila, double columna, short idPix){
-    if(mapa_[pos(fila,columna)].tipo_ != idPix){
+    if(mapa_[pos(fila,columna)].tipo_ != idPix || mapa_[pos(fila,columna)].pix_==NULL){
         if(fila >= 0 && fila<f_ && columna >= 0 && columna < c_){
             QPixmap* pix = &graficosTerrenos_[idPix];
             QGraphicsPixmapItem* auxPixBorrar = mapa_[pos(fila,columna)].pix_;

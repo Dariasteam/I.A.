@@ -107,7 +107,7 @@ void agente::check(bool b){
 }
 
 void agente::start(){
-    mapaMem_->setCelda(y_,x_,mapaReal_->getCelda(y_,x_)->tipo_);
+    mapaMem_->setValorCelda(x_,y_,mapaReal_->getCelda(y_,x_)->tipo_);
     activo_ = true;
     hiloCalculo_ = std::thread(&agente::detonanteCalculo,this);
     hiloCalculo_.detach();
@@ -284,7 +284,7 @@ bool agente::celdaPisada(nodo* N, celda* C){
     return false;
 }
 
-void agente::actualizarcoordenadas(short d){
+void agente::actualizarcoordenadas(short d,bool b){
     /*actualiza las coordenadas al punto en el que se encuentre
      *el hilo de cálculo*/
     short e=-1;
@@ -301,33 +301,47 @@ void agente::actualizarcoordenadas(short d){
         x_--;
         e = izquierda;
     }
-    if(e>-1 && e<4){
+    if(e>-1 && e<4 && b){
         trayectoDefinido_.push_back(e);
     }
 }
 
 celda* agente::escanearDireccion(short d){
-    if(d==arriba){
-        return mapaReal_->getCelda(y_-1,x_);
-    }else if(d==abajo){
-        return mapaReal_->getCelda(y_+1,x_);
-    }else if(d==derecha){
-        return mapaReal_->getCelda(y_,x_+1);
-    }else if(d==izquierda){
-        return mapaReal_->getCelda(y_,x_-1);
-    }
-    return NULL;
-}
-
-celda* agente::escanearDireccionMem(short d){
-    if(d==arriba){
-        return mapaMem_->getCelda(y_-1,x_);
-    }else if(d==abajo){
-        return mapaMem_->getCelda(y_+1,x_);
-    }else if(d==derecha){
-        return mapaMem_->getCelda(y_,x_+1);
-    }else if(d==izquierda){
-        return mapaMem_->getCelda(y_,x_-1);
+    if(!checkMemoria_->isChecked()){
+        if(d==arriba){
+            return mapaReal_->getCelda(y_-1,x_);
+        }else if(d==abajo){
+            return mapaReal_->getCelda(y_+1,x_);
+        }else if(d==derecha){
+            return mapaReal_->getCelda(y_,x_+1);
+        }else if(d==izquierda){
+            return mapaReal_->getCelda(y_,x_-1);
+        }
+    }else{
+        while(!mapaMem_->mu_.try_lock()){
+            cout<<"Esperando desbloqueo del mutex"<<endl;
+        }
+        if(d==arriba){
+            celda* aux = mapaReal_->getCelda(y_-1,x_);
+            mapaMem_->setValorCelda(x_,y_-1,aux->tipo_);
+            mapaMem_->mu_.unlock();
+            return aux;
+        }else if(d==abajo){
+            celda* aux = mapaReal_->getCelda(y_+1,x_);
+            mapaMem_->setValorCelda(x_,y_+1,aux->tipo_);
+            mapaMem_->mu_.unlock();
+            return aux;
+        }else if(d==derecha){
+            celda* aux = mapaReal_->getCelda(y_,x_+1);
+            mapaMem_->setValorCelda(x_+1,y_,aux->tipo_);
+            mapaMem_->mu_.unlock();
+            return aux;
+        }else if(d==izquierda){
+            celda* aux = mapaReal_->getCelda(y_,x_-1);
+            mapaMem_->setValorCelda(x_-1,y_,aux->tipo_);
+            mapaMem_->mu_.unlock();
+            return aux;
+        }
     }
     return NULL;
 }
