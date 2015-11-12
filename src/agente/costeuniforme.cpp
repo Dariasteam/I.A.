@@ -25,6 +25,7 @@ nodo* costeUniforme::expandir(nodo* F){        //profundidad y coste
                 nodo* K = comprobarCamino(F);
                 while(!listaAbierta_.empty() && !listaAbierta_.first()->recorrido_.isEmpty() &&
                      (K==F || esSucesor(F,listaAbierta_.first()->recorrido_.last())) && !fin_){
+                        ramificacion_++;
                         K = expandir(listaAbierta_.first()->recorrido_.at(F->profundidad_+1));
                 }
             }
@@ -45,7 +46,6 @@ void costeUniforme::setHijosNodo(nodo* F){
                     mapaReal_->objetivos_.removeOne(new objetivo {aux, true});
                     trayectoDefinido_.push_back(-1);
                     fin_ = true;
-                    emit terminado(this);
                     break;
                 }
                 nodo* N = new nodo(F,j,aux,F->profundidad_+1);

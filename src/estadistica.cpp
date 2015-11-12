@@ -17,10 +17,13 @@ void Estadistica::addAgentInfo(agente *agent) {
     infoPasos->setText(1,QString::number(agent->pasos()) + " pasos");
     QTreeWidgetItem * infoPasosCamino = new QTreeWidgetItem();
     infoPasosCamino->setText(0,"Camino minimo en");
-    infoPasosCamino->setText(1,agent->pasosCaminoOptimo() +" pasos");
+    infoPasosCamino->setText(1,QString::number(agent->pasosCaminoOptimo()) +" pasos");
+    QTreeWidgetItem * ramificacion = new QTreeWidgetItem();
+    infoPasosCamino->setText(0,"Ramificacion");
+    infoPasosCamino->setText(1,QString::number(agent->ramificacion()) +" ramas");
     QTreeWidgetItem * porcentajeExplorado = new QTreeWidgetItem();
-    porcentajeExplorado->setText(0,"Camino minimo en");
-    //porcentajeExplorado->setText(1,agent->porcentajeExplorado() +" pasos");
+    porcentajeExplorado->setText(0,"Porcentaje mapa Explorado");
+    //porcentajeExplorado->setText(1,QString::number(agent->porcentajeExplorado()) +" pasos");
     infoAgent->addChild(infoPasos);
     infoAgent->addChild(infoPasosCamino);
     infoAgent->addChild(porcentajeExplorado);

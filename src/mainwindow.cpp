@@ -180,7 +180,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     drop5->setMinimumSize(55,40);
 
     layDropBot->addWidget(drop1);
-    layDropBot->addWidget(drop2                                                                                                                                                                                                                                                                       );
+    layDropBot->addWidget(drop2);
     layDropBot->addWidget(drop3);
     layDropBot->addWidget(drop4);
     layDropBot->addWidget(drop5);

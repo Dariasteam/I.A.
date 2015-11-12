@@ -69,6 +69,7 @@ public:
     int getY();
     int pasos();
     int pasosCaminoOptimo();
+    int ramificacion();
     QString nombre();
 protected:
     int                             tiempoMov_;
@@ -104,6 +105,7 @@ protected:
     objetivo*                        objetivoActual_;
     int                              pasos_;
     int                              pasosCaminoOptimo_;
+    int                              ramificacion_;
     nodo*                            raiz_;
     bool                             fin_;
     QList<trayectoria*>              listaAbierta_;
