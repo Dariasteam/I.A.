@@ -389,6 +389,7 @@ void MainWindow::operacionesActualizacion(mapa* aux){
     botonRastro_->setChecked(false);
     botonSimular_->setChecked(false);
     botonMemoria_->setChecked(false);
+    opcionesEstadistica_->reset();
     while(agentes_.count()>0){
         while(!agentes_.at(0)->terminar()){
         }
