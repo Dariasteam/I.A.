@@ -3,6 +3,7 @@
 
 #include "mapa/mapa.h"
 #include "dropbot.h"
+#include "estadistica.h"
 
 #include "agente/costeuniforme.h"
 #include "agente/costeuniformesub.h"
@@ -74,7 +75,7 @@ private:
     QToolBox*                           panelDesplegable_;
     QGridLayout*                        layOpcionesMapa_;
     QBoxLayout*                         layOpcionesAlgoritmo_;
-    QBoxLayout*                         layOpcionesEstadistica_;
+    Estadistica*                        opcionesEstadistica_;
     menuTerreno*                        editoresTerreno_;
     QAction*                            muro_;
     QAction*                            rojo_;

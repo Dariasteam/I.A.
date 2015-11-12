@@ -257,6 +257,18 @@ int agente::getY(){
     return y_;
 }
 
+int agente::pasos() {
+    return pasos_;
+}
+
+QString agente::nombre() {
+    return labelText_.text();
+}
+
+int agente::pasosCaminoOptimo() {
+    return pasosCaminoOptimo_;
+}
+
 void agente::setVelocidad(int i){
     tiempo_->start(i);
 }

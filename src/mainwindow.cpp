@@ -98,15 +98,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     QWidget* opcionesMapa = new QWidget(panelDesplegable_);
     QWidget* opcionesAlgoritmo = new QWidget(panelDesplegable_);
-    QWidget* opcionesEstadistica = new QWidget(panelDesplegable_);
+    opcionesEstadistica_ = new Estadistica(panelDesplegable_);
 
     panelDesplegable_->addItem(opcionesMapa,       "Mapa");
     panelDesplegable_->addItem(opcionesAlgoritmo,  "Agente");
-    panelDesplegable_->addItem(opcionesEstadistica,"Estadística");
+    panelDesplegable_->addItem(opcionesEstadistica_,"Estadística");
 
     layOpcionesMapa_ = new QGridLayout(opcionesMapa);
     layOpcionesAlgoritmo_ = new QBoxLayout(QBoxLayout::TopToBottom,opcionesAlgoritmo);
-    layOpcionesEstadistica_ = new QBoxLayout(QBoxLayout::TopToBottom,opcionesEstadistica);
     layOpcionesMapa_->setSizeConstraint(QLayout::SetFixedSize);
     addDockWidget(Qt::RightDockWidgetArea,dockIzquierda_);
 
@@ -550,6 +549,7 @@ void MainWindow::addAgente(QPointF posReal, short tipo){
     }
     layScrollAgentes_->addWidget(aux);
     agentes_.push_back(aux);
+    connect(aux,&agente::terminado, opcionesEstadistica_,&Estadistica::addAgentInfo);
     aux->setVelocidad(velocidadSlider_->value());
     if(botonSimular_->isChecked()){
         aux->start();
@@ -557,7 +557,6 @@ void MainWindow::addAgente(QPointF posReal, short tipo){
 }
 
 void MainWindow::movioMouse(QPointF mousePos){
-
     mousePos_ = mousePos;
     pintar();
 }

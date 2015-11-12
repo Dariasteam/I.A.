@@ -45,6 +45,7 @@ void costeUniforme::setHijosNodo(nodo* F){
                     mapaReal_->objetivos_.removeOne(new objetivo {aux, true});
                     trayectoDefinido_.push_back(-1);
                     fin_ = true;
+                    emit terminado(this);
                     break;
                 }
                 nodo* N = new nodo(F,j,aux,F->profundidad_+1);

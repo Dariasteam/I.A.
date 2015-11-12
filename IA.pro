@@ -25,7 +25,8 @@ SOURCES += src/main.cpp\
     src/agente/programaciondinamica.cpp \
     src/agente/aestrella.cpp \
     src/mapa/pixmapitem.cpp \
-    src/agente/propio.cpp
+    src/agente/propio.cpp \
+    src/estadistica.cpp
 
 HEADERS  += src/mainwindow.h \
     src/mapa/graphicsmapa.h \
@@ -37,7 +38,8 @@ HEADERS  += src/mainwindow.h \
     src/agente/programaciondinamica.h \
     src/agente/aestrella.h \
     src/mapa/pixmapitem.h \
-    src/agente/propio.h
+    src/agente/propio.h \
+    src/estadistica.h
 
 DISTFILES +=
 

@@ -46,6 +46,7 @@ struct trayectoria{
 
 
 class agente : public QGroupBox{
+    Q_OBJECT
 public:
     agente(int x, int y, double tiempoMov_, int id, QGraphicsPixmapItem* gPix, QPixmap* lado, mapa* map, mapa* mem, QWidget* parent);
     void mouseDoubleClickEvent(QMouseEvent* );
@@ -66,6 +67,9 @@ public:
     void writeMem();
     int getX();
     int getY();
+    int pasos();
+    int pasosCaminoOptimo();
+    QString nombre();
 protected:
     int                             tiempoMov_;
     int                             movimientoRestante_;
@@ -99,6 +103,7 @@ public slots:
 protected:
     objetivo*                        objetivoActual_;
     int                              pasos_;
+    int                              pasosCaminoOptimo_;
     nodo*                            raiz_;
     bool                             fin_;
     QList<trayectoria*>              listaAbierta_;
@@ -118,6 +123,8 @@ protected:
     void insertarAbierta(trayectoria* A);
     nodo* comprobarCamino(nodo*);
     void ajustarAbierta();
+signals:
+    void terminado(agente*);
 };
 
 #endif // agente_H
