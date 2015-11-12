@@ -24,5 +24,9 @@
         <file>recursos/progdinArriba.png</file>
         <file>recursos/progdinDerecha.png</file>
         <file>recursos/progdinIzquierda.png</file>
+        <file>recursos/propioAbajo.png</file>
+        <file>recursos/propioArriba.png</file>
+        <file>recursos/propioDerecha.png</file>
+        <file>recursos/propioIzquierda.png</file>
     </qresource>
 </RCC>

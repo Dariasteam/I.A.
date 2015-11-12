@@ -92,6 +92,7 @@ private:
     QPixmap*                            graficosCuSub_;
     QPixmap*                            graficosProg_;
     QPixmap*                            graficosA_;
+    QPixmap*                            graficosMaster_;
     short                               pincel_;
     QList<agente*>                      agentes_;
     QPointF                             mousePos_;

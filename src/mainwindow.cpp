@@ -63,6 +63,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     graficosCuSub_ = new QPixmap[4];
     graficosProg_  = new QPixmap[4];
     graficosA_     = new QPixmap[4];
+    graficosMaster_= new QPixmap[4];
 
     graficosCu_[arriba]     = QPixmap(":/recursos/cuArriba.png");
     graficosCu_[abajo]      = QPixmap(":/recursos/cuAbajo.png");
@@ -83,6 +84,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     graficosA_[abajo]      = QPixmap(":/recursos/A*Abajo.png");
     graficosA_[derecha]    = QPixmap(":/recursos/A*Derecha.png");
     graficosA_[izquierda]  = QPixmap(":/recursos/A*Izquierda.png");
+
+    graficosMaster_[arriba]     = QPixmap(":/recursos/propioArriba.png");
+    graficosMaster_[abajo]      = QPixmap(":/recursos/propioAbajo.png");
+    graficosMaster_[derecha]    = QPixmap(":/recursos/propioDerecha.png");
+    graficosMaster_[izquierda]  = QPixmap(":/recursos/propioIzquierda.png");
 
     pincel_ = 5;
 
@@ -171,7 +177,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     drop2->setPixmap(graficosCuSub_[abajo]);
     drop3->setPixmap(graficosProg_[abajo]);
     drop4->setPixmap(graficosA_[abajo]);
-    drop5->setPixmap(graficosA_[abajo]);
+    drop5->setPixmap(graficosMaster_[abajo]);
 
 
     drop1->setMinimumSize(55,40);
@@ -544,9 +550,9 @@ void MainWindow::addAgente(QPointF posReal, short tipo){
                             gPix,graficosA_,widMapa_,memoria_,this);
         break;
     case 5:
-        gPix = (widMapa_->pintarPixmap(P.y(),P.x(),&graficosA_[abajo]));
+        gPix = (widMapa_->pintarPixmap(P.y(),P.x(),&graficosMaster_[abajo]));
         aux = new propio(P.x(),P.y(),widMapa_->getEscala()*32,agentes_.size(),
-                            gPix,graficosA_,widMapa_,memoria_,this);
+                            gPix,graficosMaster_,widMapa_,memoria_,this);
         break;
     }
     layScrollAgentes_->addWidget(aux);

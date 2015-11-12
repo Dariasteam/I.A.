@@ -21,17 +21,12 @@ nodo* propio::expandir(nodo* F){        //profundidad y coste
     if(atajando_){
         actualizarcoordenadas(F->dirLlegar_,false);
     }else{
-        cout<<"\t ME ESTOY MOVIENDO Y MUCHO"<<endl;
         actualizarcoordenadas(F->dirLlegar_);
     }
     if(objetivoC_!=NULL && F->celda_->x_ == objetivoC_->x_ && F->celda_->y_ == objetivoC_->y_){
         cout<<"Fin del atajo"<<endl;
         atajando_=false;
     }
-    cout<<"Estoy en ";
-    F->celda_->imprimir();
-    cout<<" "<<y_<<" "<<x_<<endl;
-    imprimir();
     ajustarAbierta();
     pasos_++;
     if(F->celda_!=objetivos_.back() && !fin_){
@@ -40,8 +35,6 @@ nodo* propio::expandir(nodo* F){        //profundidad y coste
             if(!fin_){
                 nodo* K = comprobarCamino(F);
                 if(K!=F && !esSucesor(F,listaAbierta_.first()->recorrido_.last())){
-                    cout<<"Voy a atajar"<<endl;
-                    //imprimir();
                     dijkstra(F,K);
                     actualizarcoordenadas(F->dirLlegar_+4,false);
                     return F;
@@ -53,7 +46,11 @@ nodo* propio::expandir(nodo* F){        //profundidad y coste
             }
         }
     }
-    actualizarcoordenadas(F->dirLlegar_+4,false);
+    if(!fin_){
+        actualizarcoordenadas(F->dirLlegar_+4,false);
+    }else{
+        actualizarcoordenadas(F->dirLlegar_+4);
+    }
     return F;
 }
 
@@ -93,12 +90,6 @@ void propio::dijkstra(nodo *I, nodo *F){
     celda* i = I->celda_;
     F = listaAbierta_.first()->recorrido_.last();
     objetivoC_ = F->celda_;
-    cout<<"La celda origen es ";
-    i->imprimir();
-    cout<<endl<<"La celda objetivo es ";
-    objetivoC_->imprimir();
-    cout<<endl;
-    cout<<"Comprobando atajos"<<endl;
     xC_ = x_;
     yC_ = y_;
     movimientoC_ = new QList<short>;
@@ -114,14 +105,12 @@ void propio::dijkstra(nodo *I, nodo *F){
     expandirC(raizC_);
     while(!movimientoC_->isEmpty()){
         short d = movimientoC_->takeFirst();
-        if(d!=-1){
+        if(d>-1){
             trayectoDefinido_.push_back(d);
-            cout<<trayectoDefinido_.back()<<" ";
         }
     }
     atajando_ = true;
     cout<<endl;
-    cout<<"Al final de atajar me encuentro en "<<yC_<<","<<xC_<<endl;
 }
 
 
@@ -161,7 +150,6 @@ void propio::setHijosNodoC(nodoC* F){
             celda* aux = escanearDireccionMem(j);
             if(aux!=NULL && aux->tipo_ > -1 && aux->tipo_<5 && !celdaPisadaC(F,aux)){
                 if(aux->x_==objetivoC_->x_ && aux->y_==objetivoC_->y_){
-                    cout<<"Atajo encontrado"<<endl;
                     actualizarcoordenadasC(F->dirLlegar_);
                     movimientoC_->push_front(j);
                     finC_ = true;
