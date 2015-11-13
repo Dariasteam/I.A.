@@ -102,6 +102,7 @@ public slots:
     void animador();
     //ALGORITMO
 protected:
+    bool                             sinSolucion_;
     objetivo*                        objetivoActual_;
     int                              pasos_;
     int                              pasosCaminoOptimo_;

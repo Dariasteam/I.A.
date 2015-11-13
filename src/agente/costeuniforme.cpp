@@ -15,7 +15,7 @@ nodo* costeUniforme::expandir(nodo* F){        //profundidad y coste
     actualizarcoordenadas(F->dirLlegar_);
     //imprimir();
     pasos_++;
-    if(F->celda_!=objetivos_.back() && !fin_){
+    if(F->celda_!=objetivos_.back() && !fin_ &&!sinSolucion_){
         if(!listaAbierta_.isEmpty()){
             //EXPANDIR ESTADOS
             setHijosNodo(F);

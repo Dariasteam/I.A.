@@ -66,7 +66,7 @@ agente::~agente(){
 }
 
 void agente::reiniciar(){
-    cout<<"Estableciendo variables del algoritmo"<<endl;
+    sinSolucion_=false;
     listaAbierta_.clear();
     raiz_ = new nodo();
     pasos_=0;
@@ -411,18 +411,20 @@ void agente::insertarAbierta(trayectoria* A){
 
 void agente::ajustarAbierta(){
     /*Elimina trayectorias repetidas de mayor coste de la lista abierta*/
-    int i = 0;
-    int n = listaAbierta_.count();
-    while(i<n){
-        nodo* N = listaAbierta_.at(i)->recorrido_.last();
-        for(int j=i+1;j<n;j++){
-            nodo* M = listaAbierta_.at(j)->recorrido_.last();
-            if(M->celda_ == N->celda_){                 //las trayectorias estan ordenadas
-                listaAbierta_.removeAt(j);
-                n--;
+    if(!sinSolucion_){
+        int i = 0;
+        int n = listaAbierta_.count();
+        while(i<n){
+            nodo* N = listaAbierta_.at(i)->recorrido_.last();
+            for(int j=i+1;j<n;j++){
+                nodo* M = listaAbierta_.at(j)->recorrido_.last();
+                if(M->celda_ == N->celda_){                 //las trayectorias estan ordenadas
+                    listaAbierta_.removeAt(j);
+                    n--;
+                }
             }
+            i++;
         }
-        i++;
     }
 }
 
@@ -466,8 +468,8 @@ nodo* agente::comprobarCamino(nodo* N){
         }
         return N;
     }else{
+        sinSolucion_=true;
         cout<<"El problema no tiene solución"<<endl;
-        fin_=true;
         return raiz_;
     }
 }

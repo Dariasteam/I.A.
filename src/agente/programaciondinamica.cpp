@@ -16,7 +16,7 @@ nodo* programacionDinamica::expandir(nodo* F){        //profundidad y coste
     //imprimir();
     pasos_++;
     ajustarAbierta();
-    if(F->celda_!=objetivos_.back() && !fin_){
+    if(F->celda_!=objetivos_.back() && !fin_ &&!sinSolucion_){
         if(!listaAbierta_.isEmpty()){
             setHijosNodo(F);
             if(!fin_){
