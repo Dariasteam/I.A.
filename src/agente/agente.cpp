@@ -135,7 +135,6 @@ void agente::detonanteCalculo(){
             objetivos_.push_back(objetivoActual_->cel_);
             reiniciar();
             expandir(raiz_);
-            cout<<"He caminado "<<pasos_<<" pasos "<<endl;
             emit terminado(this);
             listaCerrada_.clear();
             trayectoDefinido_.push_back(-1);

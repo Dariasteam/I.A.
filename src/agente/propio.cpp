@@ -28,21 +28,19 @@ nodo* propio::expandir(nodo* F){        //profundidad y coste
         atajando_=false;
     }
     ajustarAbierta();
-    if(F->celda_!=objetivos_.back() && !fin_){
-        if(!listaAbierta_.isEmpty()){
-            setHijosNodo(F);
-            if(!fin_){
-                nodo* K = comprobarCamino(F);
-                if(K!=F && !sinSolucion_ && !esSucesor(F,listaAbierta_.first()->recorrido_.last())){
-                    dijkstra(F,K);
-                    actualizarcoordenadas(F->dirLlegar_+4,false);
-                    ramificacion_++;
-                    return F;
-                }
-                while((!sinSolucion_  && !fin_)
-                      && (K==F ||  esSucesor(F,listaAbierta_.first()->recorrido_.last()))){
-                    K = expandir(listaAbierta_.first()->recorrido_.at(F->profundidad_+1));
-                }
+    if(F->celda_!=objetivos_.back() && !fin_ && !sinSolucion_){
+        setHijosNodo(F);
+        if(!fin_){
+            nodo* K = comprobarCamino(F);
+            if(K!=F && !sinSolucion_ && !esSucesor(F,listaAbierta_.first()->recorrido_.last())){
+                dijkstra(F,K);
+                actualizarcoordenadas(F->dirLlegar_+4,false);
+                ramificacion_++;
+                return F;
+            }
+            while((!sinSolucion_  && !fin_)
+                  && (K==F ||  esSucesor(F,listaAbierta_.first()->recorrido_.last()))){
+                K = expandir(listaAbierta_.first()->recorrido_.at(F->profundidad_+1));
             }
         }
     }
@@ -158,7 +156,7 @@ void propio::setHijosNodoC(nodoC* F){
                 nodoC* N = new nodoC(F,j,aux,F->profundidad_+1);
                 trayectoriaC* A = new trayectoriaC;
                 (*A).recorrido_ = (*T).recorrido_;
-                A->coste_ = T->coste_ + aux->tipo_;
+                A->coste_ = T->coste_ + 1;
                 A->hCoste_ = mapaMem_->getCoste(aux,objetivoC_);
                 A->recorrido_.push_back(N);
                 if(!comprobarCerradaC(A)){
