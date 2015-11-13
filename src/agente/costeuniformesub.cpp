@@ -23,6 +23,7 @@ nodo* costeUniformeSub::expandir(nodo* F){        //profundidad y coste
                 nodo* K = comprobarCamino(F);
                 while(!listaAbierta_.empty() && !listaAbierta_.first()->recorrido_.isEmpty() &&
                      (K==F || esSucesor(F,listaAbierta_.first()->recorrido_.last())) && !fin_){
+                        ramificacion_++;
                         K = expandir(listaAbierta_.first()->recorrido_.at(F->profundidad_+1));
                 }
             }

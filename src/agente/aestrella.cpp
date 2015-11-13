@@ -23,6 +23,7 @@ nodo* aEstrella::expandir(nodo* F){        //profundidad y coste
                 nodo* K = comprobarCamino(F);
                 while(listaAbierta_.count()>0 && listaAbierta_.first()->recorrido_.count()>0 &&
                     (K==F || esSucesor(F,listaAbierta_.first()->recorrido_.last())) && !fin_){
+                    ramificacion_++;
                     K = expandir(listaAbierta_.first()->recorrido_.at(F->profundidad_+1));
                 }
             }

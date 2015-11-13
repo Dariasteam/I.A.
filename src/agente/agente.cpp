@@ -70,6 +70,8 @@ void agente::reiniciar(){
     listaAbierta_.clear();
     raiz_ = new nodo();
     pasos_=0;
+    ramificacion_=0;
+    pasosCaminoOptimo_=0;
     raiz_->profundidad_=0;
     raiz_->celda_ = mapaReal_->getCelda(y_,x_);
     raiz_->dirLlegar_=-8;
@@ -134,6 +136,7 @@ void agente::detonanteCalculo(){
             reiniciar();
             expandir(raiz_);
             cout<<"He caminado "<<pasos_<<" pasos "<<endl;
+            emit terminado(this);
             listaCerrada_.clear();
             trayectoDefinido_.push_back(-1);
             n = mapaReal_->objetivos_.count();
@@ -255,6 +258,22 @@ int agente::getX(){
 
 int agente::getY(){
     return y_;
+}
+
+int agente::pasos() {
+    return pasos_;
+}
+
+QString agente::nombre() {
+    return labelText_.text();
+}
+
+int agente::pasosCaminoOptimo() {
+    return pasosCaminoOptimo_;
+}
+
+int agente::ramificacion() {
+    return ramificacion_;
 }
 
 void agente::setVelocidad(int i){
