@@ -17,6 +17,14 @@ propio::propio(int x, int y, double tiempoMov_, int id, QGraphicsPixmapItem *gPi
     }
 }
 
+/*Esta algoritmo trabaja como un A* normal pero registrando todo el camino descubierto
+ *en cada momento. Sin embargo, al llegar el punto en que deba cambiar de rama para explorar otra
+ *trayectoria de menor coste no recurre a la información del propio árbol expandido de estados ya
+ *que este, a pesar de contenter todas las celdas conocidas, no contiene los caminos mínimos entre ellas.
+ *Precisamente con el objetivo de minimizar los trayectos, se utiliza un 2º A* interno que trabaja
+ *con la memoria común para asegurar el mínimo numero de movimientos reales del agente.*/
+
+
 nodo* propio::expandir(nodo* F){        //profundidad y coste
     if(atajando_){
         actualizarcoordenadas(F->dirLlegar_,false);

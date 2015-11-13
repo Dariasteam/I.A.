@@ -145,6 +145,11 @@ void agente::detonanteCalculo(){
 }
 
 void agente::animador(){
+    /*Calcula los movimientos del pixmap según lo
+     * descrito por la lista "trayectoDefinido".
+     * Así mismo gestiona el resto de tareas
+     * asociadas a la representación visual
+     * como el rastro y la memoria*/
     if(!trayectoDefinido_.isEmpty()){
         if(trayectoDefinido_.first()==-1){
             if(!regresando_){
@@ -202,6 +207,8 @@ void agente::animador(){
 }
 
 void agente::pintarRastro(){
+    /*Añade un pixmap a mapa con el color asociado
+     * a cada agente*/
     QPixmap* pix = new QPixmap(gPix_->pixmap());
     if(regresando_){
         pix->fill(QColor(255,255,255));
@@ -217,6 +224,10 @@ void agente::pintarRastro(){
 }
 
 void agente::writeMem(){
+    /*Dibuja los gráficos conocidos por el agente a tiempo
+     * real durante la representación de la simulación. No es
+     * utilizada por el hilo de cálculo, quien los trabaja desde
+     * la función escanearDireccion*/
     if(checkMemoria_->isChecked() && mapaMem_!=NULL){
         short* direccion_ = mapaReal_->escanearEntorno(xAnimacion_,yAnimacion_);
         while(!mapaMem_->mu_.try_lock()){
@@ -231,6 +242,7 @@ void agente::writeMem(){
 }
 
 void agente::recoger(){
+    /*elimina el objetivo del mapa*/
     mapaReal_->sustituirCelda(objetivos_.first()->y_,objetivos_.first()->x_,suelo);
 }
 
@@ -325,6 +337,9 @@ void agente::actualizarcoordenadas(short d,bool b){
 }
 
 celda* agente::escanearDireccion(short d){
+    /*Devuelve la celda contigua en la direccion d al
+     * agente. En caso de que este activada la memoria
+     * tambien esribe lo descubierto en ella*/
     if(!checkMemoria_->isChecked()){
         if(d==arriba){
             return mapaReal_->getCelda(y_-1,x_);
