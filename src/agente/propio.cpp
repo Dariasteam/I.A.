@@ -18,6 +18,7 @@ propio::propio(int x, int y, double tiempoMov_, int id, QGraphicsPixmapItem *gPi
 }
 
 nodo* propio::expandir(nodo* F){        //profundidad y coste
+    pasos_++;
     if(atajando_){
         actualizarcoordenadas(F->dirLlegar_,false);
     }else{
@@ -37,6 +38,7 @@ nodo* propio::expandir(nodo* F){        //profundidad y coste
                 if(K!=F && !esSucesor(F,listaAbierta_.first()->recorrido_.last())){
                     dijkstra(F,K);
                     actualizarcoordenadas(F->dirLlegar_+4,false);
+                    ramificacion_++;
                     return F;
                 }
                 while(listaAbierta_.count()>0 && listaAbierta_.first()->recorrido_.count()>0
@@ -115,6 +117,7 @@ void propio::dijkstra(nodo *I, nodo *F){
 
 
 nodoC* propio::expandirC(nodoC* F){        //profundidad y coste
+    pasos_++;
     actualizarcoordenadasC(F->dirLlegar_);
     ajustarAbiertaC();
     if(F->celda_!=objetivoC_ && finC_!=true){
@@ -124,8 +127,7 @@ nodoC* propio::expandirC(nodoC* F){        //profundidad y coste
                 nodoC* K = comprobarCaminoC(F);
                 while(listaAbiertaC_.count()>0 && listaAbiertaC_.first()->recorrido_.count()>0 &&
                    (K==F || esSucesorC(F,listaAbiertaC_.first()->recorrido_.last())) && !finC_){
-                    K = expandirC(listaAbiertaC_.first()->recorrido_.at(F->profundidad_+1));
-                }
+                    K = expandirC(listaAbiertaC_.first()->recorrido_.at(F->profundidad_+1));                }
             }
         }
     }
